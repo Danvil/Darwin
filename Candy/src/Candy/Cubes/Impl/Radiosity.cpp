@@ -74,8 +74,8 @@ namespace Hexa
 //			QuadMidAndNormal(b.side(), b_mid, b_n);
 //			b_mid += b.positionCenter();
 			// compute face midpoints
-			Vec3f a_mid = a.positionCenter() + RandomCubeSidePoint(a.side());
-			Vec3f b_mid = b.positionCenter() + RandomCubeSidePoint(b.side());
+			Vec3f a_mid = a.positionCenter() + RandomCubeSidePoint(a.world(), a.side());
+			Vec3f b_mid = b.positionCenter() + RandomCubeSidePoint(a.world(), b.side());
 			// face normals
 			Vec3f a_n = Properties::SideNormal(a.world(), a.side());
 			Vec3f b_n = Properties::SideNormal(a.world(), b.side());

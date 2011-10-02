@@ -54,7 +54,7 @@ namespace Lighting
 			// this creates soft shadows
 			for(unsigned int s=1; s<cSamples; s++) {
 				// cast ray from random position on cube side
-				Vec3f a = pos + RandomCubeSidePoint(sideIndex);
+				Vec3f a = pos + RandomCubeSidePoint(cw, sideIndex);
 				w_soft += ComputeSampleLight(cubes, a, Appearance::SunPosition, n);
 			}
 			return cCenterWeight * w_center + (1.0f - cCenterWeight) * w_soft / float(cSamples - 1);
@@ -65,7 +65,7 @@ namespace Lighting
 			// this creates soft shadows
 			for(unsigned int s=0; s<PatternCubeSidePointCount; s++) {
 				// cast ray from random position on cube side
-				Vec3f a = pos + PatternCubeSidePoint(sideIndex, s);
+				Vec3f a = pos + PatternCubeSidePoint(cw, sideIndex, s);
 				sum += ComputeSampleLight(cubes, a, Appearance::SunPosition, n);
 			}
 			return sum / float(PatternCubeSidePointCount);

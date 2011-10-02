@@ -10,11 +10,11 @@ namespace Lighting
 {
 	const float cReflectionFactor = 0.95f / 3.1415f; // albedo 0.95
 
-	inline void AddRayLightingAmbient(const Ptr(Cubes)& cubes, const Vec3f& pos, int sideIndex, CubeSideLightData& light) {
+	inline void AddRayLightingAmbient(const Ptr(Cubes)& cubes, const CoordI& cw, const Vec3f& pos, int sideIndex, CubeSideLightData& light) {
 		// emit random ray from side
-		Vec3f a = pos + RandomCubeSidePoint(sideIndex);
+		Vec3f a = pos + RandomCubeSidePoint(cw, sideIndex);
 		float n_dot_u;
-		Vec3f u = RandomDirectionFromCubeSide(sideIndex, n_dot_u);
+		Vec3f u = RandomDirectionFromCubeSide(cw, sideIndex, n_dot_u);
 		// intersect ray with other cubes
 		Ci c;
 		float distance;
@@ -38,9 +38,9 @@ namespace Lighting
 		}
 	}
 
-	inline void AddRayLightingSun(const Ptr(Cubes)& cubes, const Vec3f& pos, int sideIndex, CubeSideLightData& light) {
+	inline void AddRayLightingSun(const Ptr(Cubes)& cubes, const CoordI& cw, const Vec3f& pos, int sideIndex, CubeSideLightData& light) {
 		// emit random ray from side towards sun
-		Vec3f a = pos + RandomCubeSidePoint(sideIndex);
+		Vec3f a = pos + RandomCubeSidePoint(cw, sideIndex);
 		Vec3f u = Appearance::SunPosition;//(1000.0f * Appearance::SunPosition - a).normalized();
 		// intersect ray with other cubes
 		Ci c;
@@ -71,8 +71,8 @@ namespace Lighting
 			// accumulate lighting
 			CubeSideLightData lighting;
 			for(unsigned int i=0; i<new_samples; i++) {
-				AddRayLightingAmbient(cubes, pos, sideIndex, lighting);
-				AddRayLightingSun(cubes, pos, sideIndex, lighting);
+				AddRayLightingAmbient(cubes, it.world(), pos, sideIndex, lighting);
+				AddRayLightingSun(cubes, it.world(), pos, sideIndex, lighting);
 			}
 			// update samples
 			CubeSideLightData& target = data->lighting;

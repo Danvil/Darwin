@@ -4,6 +4,7 @@
 #include <Candy/Tools/LinAlg.h>
 #include <Candy/Tools/Math.h>
 #include <Candy/Tools/Random.h>
+#include <Eigen/Geometry>
 #include <cmath>
 #include <cassert>
 
@@ -13,6 +14,34 @@ typedef unsigned int CubeId;
 
 namespace CandyCubes
 {
+
+	/** For x an integer returns y s.t. x = y*N + a and 0 <= a < N */
+	template<unsigned int Shift>
+	inline int SignedShiftDiv(int x) {
+		if(x >= 0) {
+			return int((unsigned int)(x) >> Shift);
+		} else {
+			return -int((1 + ((unsigned int)(-x - 1) >> Shift)));
+		}
+//		if(x >= 0) {
+//			return x >> Shift;
+//		}
+//		else {
+//			return -((-x) >> Shift) - 1;
+//		}
+	}
+
+	/** For x an integer returns y s.t. x = a*N + y and 0 <= y < N */
+	template<unsigned int Mask>
+	inline unsigned int SignedMaskMod(int x) {
+		// FIXME really corrext?
+		return x & Mask;
+//		if(x >= 0) {
+//			return (unsigned int)(x) & Mask;
+//		} else {
+//			return CellSize - (1 + ((unsigned int)(-x - 1) & Mask));
+//		}
+	}
 
 	struct BaseProperties
 	{
@@ -220,6 +249,26 @@ namespace CandyCubes
 			return cc_world + offset;
 		}
 
+		/** Computes a cube side point
+		 * @param side_index the side of the cube (specifies the normal)
+		 * @param h distance to the cube center in the direction of the side normal
+		 * @param u distance to the cube center in the direction of the first side tangential
+		 * @param v distance to the cube center in the direction of the second side tangential
+		 * @param the cube point
+		 */
+		static inline Vec3f CubeSidePointBase(unsigned int side_index, float h, float u, float v) {
+			assert(side_index < 6);
+			switch(side_index) {
+				case 0: return Vec3f(u, v, -h);
+				case 1: return Vec3f(-h, u, v);
+				case 2: return Vec3f(u, +h, v);
+				case 3: return Vec3f(+h, u, v);
+				case 4: return Vec3f(u, -h, v);
+				case 5: return Vec3f(u, v, +h);
+				default: return Vec3f::Zero();
+			}
+		}
+
 	};
 
 	/**
@@ -368,50 +417,15 @@ namespace CandyCubes
 	{
 	private:
 		static inline unsigned int WorldToLocal(int w) {
-			// solve w = a * n + b for b > 0 with n=CellSize and a an integer
-			return w & CellSizeMask;
-	//		if(w >= 0) {
-	//			return (unsigned int)(w) & CellSizeMask;
-	//		} else {
-	//			return CellSize - (1 + ((unsigned int)(-w - 1) & CellSizeMask));
-	//		}
+			return SignedMaskMod<CellSizeMask>(w);
 		}
 
 		static inline int WorldToCell(int w) {
-			if(w >= 0) {
-				return int((unsigned int)(w) >> CellSizeShift);
-			} else {
-				return -int((1 + ((unsigned int)(-w - 1) >> CellSizeShift)));
-			}
-	//		if(w >= 0) {
-	//			return w >> CellSizeShift;
-	//		}
-	//		else {
-	//			return -((-w) >> CellSizeShift) - 1;
-	//		}
-		}
-
-		static inline void WorldToCellLocal(int w, int& c_cell, unsigned int& c_local) {
-			if(w >= 0) {
-				unsigned int uw = (unsigned int)(w);
-				c_cell = int(uw >> CellSizeShift);
-				c_local = uw & CellSizeMask;
-			} else {
-				unsigned int uw = (unsigned int)(-w - 1);
-				c_cell =  -int((1 + (uw >> CellSizeShift)));
-				c_local = CellSize - (1 + (uw & CellSizeMask));
-			}
-	//		c_local = w & CellSizeMask;
-	//		if(w >= 0) {
-	//			c_cell = w >> CellSizeShift;
-	//		}
-	//		else {
-	//			c_cell = -((-w) >> CellSizeShift) - 1;
-	//		}
+			return SignedShiftDiv<CellSizeShift>(w);
 		}
 
 		static inline int CellLocalToWorld(int cell, unsigned int local) {
-			 return int(CellSize) * cell + (int)local;
+			 return int(CellSize) * cell + int(local);
 		}
 
 		static inline int PositionToWorld(float p) {
@@ -489,11 +503,151 @@ namespace CandyCubes
 			nz = cNormalData[side][2];
 		}
 
+		static inline Vec3f CubeSidePoint(const CoordI&, unsigned int side_index, float h, float u, float v) {
+			return BaseProperties::CubeSidePointBase(side_index, h, u, v);
+		}
 	};
 
+	/** This constructs cubes using the topology of a cone */
 	struct ConeProperties
 	: public BaseProperties
 	{
+		/** Number of cells around the cone perimeter */
+		static const int cPerimeterCellCount = 16;
+		static const int cPerimeterCubeCount = cPerimeterCellCount * CellSize;
+		static const float cRadius = 40.7416201033f; //1.0f / (2.0f * std::tan(3.14159265359f / float(cPerimeterCellCount * CellSize)));
+
+//		static const int cPerimeterCellCount = 64;
+//		static const float cRadius = 162.974150399f; //1.0f / (2.0f * std::tan(3.14159265359f / float(cPerimeterCellCount * CellSize)));
+
+	private:
+		static inline unsigned int WrappedWorld(int w) {
+			return SignedMaskMod<cPerimeterCubeCount - 1>(w);
+		}
+
+		static inline unsigned int WorldToLocal(int w) {
+			return SignedMaskMod<CellSizeMask>(w);
+		}
+
+		static inline int WorldToCellWrapped(int w) {
+			return SignedShiftDiv<CellSizeShift>(int(WrappedWorld(w)));
+		}
+
+		static inline int WorldToCell(int w) {
+			return SignedShiftDiv<CellSizeShift>(w);
+		}
+
+		static inline int CellLocalToWorldWrapped(int cell, unsigned int local) {
+			unsigned int cell_unique = SignedMaskMod<cPerimeterCellCount - 1>(cell);
+			 return int(CellSize * cell_unique + local);
+		}
+
+		static inline int CellLocalToWorld(int cell, unsigned int local) {
+			 return int(CellSize) * cell + int(local);
+		}
+
+		static const float c2Pi = 6.28318530718f;
+
+		static inline float PerimeterAngle(int x) {
+			unsigned int w = WrappedWorld(x);
+			float phi = float(w) / float(cPerimeterCubeCount) * c2Pi;
+			return phi;
+		}
+
+		static unsigned int PerimeterAngleToCube(float phi, float& rest) {
+			assert(0 <= phi && phi < c2Pi);
+			float w = phi / c2Pi * float(cPerimeterCubeCount);
+			float wi_floored = std::floor(w);
+			rest = w - wi_floored;
+			return (unsigned int)(wi_floored);
+		}
+
+	public:
+		static inline void WorldToLocal(int wx, int wy, int wz, unsigned int& lx, unsigned int& ly, unsigned int& lz) {
+			lx = WorldToLocal(wx);
+			ly = WorldToLocal(wy);
+			lz = WorldToLocal(wz);
+		}
+
+		static inline void WorldToCell(int wx, int wy, int wz, int& cx, int& cy, int& cz) {
+			cx = WorldToCellWrapped(wx);
+			cy = WorldToCell(wy);
+			cz = WorldToCell(wz);
+		}
+
+		static inline void CellLocalToWorld(int cx, int cy, int cz, unsigned int lx, unsigned int ly, unsigned int lz, int& wx, int& wy, int& wz) {
+			wx = CellLocalToWorldWrapped(cx, lx);
+			wy = CellLocalToWorld(cy, ly);
+			wz = CellLocalToWorld(cz, lz);
+		}
+
+		static inline void WorldToPosition(int vx, int vy, int vz, float& x, float& y, float& z) {
+			float phi = PerimeterAngle(x);
+			float r = cRadius + float(vz);
+			x = r * std::sin(phi);
+			y = float(vy);
+			z = r * std::cos(phi);
+		}
+
+		static inline void WorldToPositionCenter(int vx, int vy, int vz, float& x, float& y, float& z) {
+			float phi = PerimeterAngle(x);
+			float r = cRadius + float(vz) + 0.5f;
+			x = r * std::sin(phi);
+			y = float(vy) + 0.5f;
+			z = r * std::cos(phi);
+		}
+
+		static inline void PositionToWorld(float px, float py, float pz, int& wx, int& wy, int& wz) {
+			// convert (px,pz) to polar coordinates
+			float r = std::sqrt(px*px + pz*pz);
+			float phi = std::atan2(px, pz);
+			float w_rest;
+			wx = int(PerimeterAngleToCube(phi, w_rest));
+			wy = int(std::floor(py));
+			wz = int(std::floor(r - cRadius));
+		}
+
+		static inline void PositionToWorld(float px, float py, float pz, int& wx, int& wy, int& wz, float& rx, float& ry, float& rz) {
+			// convert (px,pz) to polar coordinates
+			float r = std::sqrt(px*px + pz*pz);
+			float phi = std::atan2(px, pz);
+			wx = int(PerimeterAngleToCube(phi, rx));
+			float wy_floored = std::floor(py);
+			wy = int(wy_floored);
+			ry = py - wy_floored;
+			float wz_floored = std::floor(r - cRadius);
+			wz = int(wz_floored);
+			rz = pz - wz_floored;
+		}
+
+		static inline void GetSideNormal(const CoordI& cw, int side, float& nx, float& ny, float& nz) {
+			float cNormalData[6][3] = {
+				{0, 0, -1}, // 0
+				{-1, 0, 0}, // 1
+				{0, +1, 0}, // 2
+				{+1, 0, 0}, // 3
+				{0, -1, 0}, // 4
+				{0, 0, +1}  // 5
+			};
+			float nx_0 = cNormalData[side][0];
+			float ny_0 = cNormalData[side][1];
+			float nz_0 = cNormalData[side][2];
+			// now rotate the side normal by the perimeter angle around the y axis
+			float phi = PerimeterAngle(cw.x);
+			float cp = std::cos(phi);
+			float sp = std::sin(phi);
+			nx = cp * nx_0 + sp * nz_0;
+			ny = ny_0;
+			nz = - sp * nx_0 + cp * nz_0;
+			// FIXME optimize!
+		}
+
+		static inline Vec3f CubeSidePoint(const CoordI& c_world, unsigned int side_index, float h, float u, float v) {
+			Vec3f a = BaseProperties::CubeSidePointBase(side_index, h, u, v);
+			float phi = PerimeterAngle(c_world.x);
+			Eigen::Affine3f t(Eigen::AngleAxisf(phi, Eigen::Vector3f(0, 1, 0)));
+			return t * a;
+		}
 
 	};
 
@@ -505,7 +659,7 @@ namespace CandyCubes
 
 }
 
-typedef CandyCubes::DerivedProperties<CandyCubes::PlanarProperties> Properties;
+typedef CandyCubes::DerivedProperties<CandyCubes::ConeProperties> Properties;
 
 namespace Exceptions
 {

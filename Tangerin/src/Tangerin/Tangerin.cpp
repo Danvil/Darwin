@@ -26,18 +26,25 @@
 void GenerateWorld(Ptr(Cubes) cubes)
 {
 #ifdef NDEBUG
-	const int cCellRange = 4;
-	const int cCellRangeZMin = -2;
-	const int cCellRangeZMax = +2;
+	const int cCellRange = 8;
+	const int cCellRangeZMin = -1;
+	const int cCellRangeZMax = +1;
 #else
 	const int cCellRange = 2;
 	const int cCellRangeZMin = -1;
 	const int cCellRangeZMax = +1;
 #endif
-//	Ptr(Generator) gen = Generators::FactorPerlin3D();
+	Ptr(Generator) gen = Generators::FactorPerlin3D();
 //	Ptr(Generator) gen = Generators::FactorHillsAndFly();
-	Ptr(Generator) gen = Generators::FactorTerra();
-	WorldSize ws(cCellRange, cCellRangeZMin, cCellRangeZMax);
+//	Ptr(Generator) gen = Generators::FactorTerra();
+//	WorldSize ws(cCellRange, cCellRangeZMin, cCellRangeZMax);
+	WorldSize ws;
+	ws.x1 = 0;
+	ws.x2 = 8;
+	ws.y1 = -4;
+	ws.y2 = +4;
+	ws.z1 = -1;
+	ws.z2 = +1;
 	gen->Generate(cubes.get(), ws);
 }
 

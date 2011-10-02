@@ -8,6 +8,7 @@
 #ifndef LIGHTINGHELPERS_HPP_
 #define LIGHTINGHELPERS_HPP_
 
+#include "../Common.h"
 #include <Candy/Tools/Random.h>
 #include <cassert>
 
@@ -27,34 +28,14 @@ namespace Hexa
 			a = (float(na) * a + b) / float(na + nb);
 		}*/
 
-		/** Computes a cube side point
-		 * @param side_index the side of the cube (specifies the normal)
-		 * @param h distance to the cube center in the direction of the side normal
-		 * @param u distance to the cube center in the direction of the first side tangential
-		 * @param v distance to the cube center in the direction of the second side tangential
-		 * @param the cube point
-		 */
-		inline Vec3f CubeSidePoint(unsigned int side_index, float h, float u, float v) {
-			assert(side_index < 6);
-			switch(side_index) {
-				case 0: return Vec3f(u, v, -h);
-				case 1: return Vec3f(-h, u, v);
-				case 2: return Vec3f(u, +h, v);
-				case 3: return Vec3f(+h, u, v);
-				case 4: return Vec3f(u, -h, v);
-				case 5: return Vec3f(u, v, +h);
-				default: return Vec3f::Zero();
-			}
-		}
-
 		/** Gets the cube face center point but slightly outside the cube */
-		inline Vec3f CenterPointSlightlyOutsideOfCubeSide(unsigned int sideIndex) {
-			return CubeSidePoint(sideIndex, 0.51f, 0.0f, 0.0f);
+		inline Vec3f CenterPointSlightlyOutsideOfCubeSide(const CoordI& c_world, unsigned int sideIndex) {
+			return Properties::CubeSidePoint(c_world, sideIndex, 0.51f, 0.0f, 0.0f);
 		}
 
 		const unsigned int PatternCubeSidePointCount = 9;
 
-		inline Vec3f PatternCubeSidePoint(unsigned int sideIndex, unsigned int i) {
+		inline Vec3f PatternCubeSidePoint(const CoordI& c_world, unsigned int sideIndex, unsigned int i) {
 			const float LightSampleGrid[PatternCubeSidePointCount][2] = {
 					{0, 0}, // center
 					{+0.25f, 0},
@@ -69,21 +50,21 @@ namespace Hexa
 			assert(i < PatternCubeSidePointCount);
 			float u = LightSampleGrid[i][0];
 			float v = LightSampleGrid[i][1];
-			return CubeSidePoint(sideIndex, 0.51f, u, v);
+			return Properties::CubeSidePoint(c_world, sideIndex, 0.51f, u, v);
 		}
 
 		/** Gets a random point on the cube face but slightly outside the cube */
-		inline Vec3f RandomCubeSidePoint(unsigned int sideIndex) {
+		inline Vec3f RandomCubeSidePoint(const CoordI& c_world, unsigned int sideIndex) {
 			float h = 0.51f;
 			float u = 0.49f * Random::UniformMPf();
 			float v = 0.49f * Random::UniformMPf();
-			return CubeSidePoint(sideIndex, h, u, v);
+			return Properties::CubeSidePoint(c_world, sideIndex, h, u, v);
 		}
 
-		inline void QuadMidAndNormal(unsigned int sideIndex, Vec3f& mid, Vec3f& normal) {
+		inline void QuadMidAndNormal(const CoordI& c_world, unsigned int sideIndex, Vec3f& mid, Vec3f& normal) {
 			const float h = 0.51f;
-			mid = CubeSidePoint(sideIndex, h, 0.0f, 0.0f);
-			normal = CubeSidePoint(sideIndex, 1.0f, 0.0f, 0.0f);
+			mid = Properties::CubeSidePoint(c_world, sideIndex, h, 0.0f, 0.0f);
+			normal = Properties::CubeSidePoint(c_world, sideIndex, 1.0f, 0.0f, 0.0f);
 		}
 
 		/// <summary>
@@ -91,11 +72,11 @@ namespace Hexa
 		/// </summary>
 		/// <param name="sideIndex"></param>
 		/// <returns></returns>
-		inline Vec3f RandomDirectionFromCubeSide(int sideIndex, float& n_dot_u) {
+		inline Vec3f RandomDirectionFromCubeSide(const CoordI& c_world, int sideIndex, float& n_dot_u) {
 			float a, b, t;
 			Random::UniformOnHalfSphere(a, b, t);
 			n_dot_u = t;
-			return CubeSidePoint(sideIndex, t, a, b);
+			return Properties::CubeSidePoint(c_world, sideIndex, t, a, b);
 			//Random::PseudoUniformOnHalfSphere(a, b, t);
 		}
 	}
