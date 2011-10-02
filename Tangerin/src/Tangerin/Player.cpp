@@ -136,7 +136,7 @@ void Player::OnMouseReleased(Candy::KeyboardModifiers mod, Candy::MouseButton bu
 		if(cubes_->GetCubes()->Pick(a, u, cube_cc, cube_dist, cube_side)) {
 			// add or delete cube
 			if(set_cube_) {
-				CoordI cw = Geometry::GetSideNeighbour(cube_cc, cube_side);
+				CoordI cw = Properties::GetSideNeighbour(cube_cc, cube_side);
 				cubes_->GetCubes()->SetType(cw, CubeTypes::Stone);
 			}
 			else {

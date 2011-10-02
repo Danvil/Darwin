@@ -51,7 +51,7 @@ namespace Collision
 	//bool CubesRayCellWalk(Cubes* cubes, const Vec3f& a, const Vec3f& u, Ci& min_c_world, float& min_distance, int& side)
 	//{
 	//	Private::CellTester ct(cubes, a, u);
-	//	Vec3f a_cell = (1.0f / float(Common::CellSize)) * a;
+	//	Vec3f a_cell = (1.0f / float(Properties::CellSize)) * a;
 	//	Collision::GridRayIntersect(a_cell, u, ct, min_c_world, min_distance, side);
 	//	if(ct.hits()) {
 	//		min_c_world = ct.cc_world();
@@ -129,8 +129,8 @@ namespace Collision
 	bool CubesRayNear(Cubes* cubes, const Vec3f& a, const Vec3f& u, Ci& min_c_world, float& min_distance, int& side)
 	{
 		// in wich cell is the starting point
-		Ci a_cube = Common::PositionToInt(a);
-		Ci a_cell = Common::WorldToCell(a_cube);
+		Ci a_cube = Properties::PositionToWorld(a);
+		Ci a_cell = Properties::WorldToCell(a_cube);
 		std::vector<Cell*> cells;
 		cells.reserve(4);
 		Cell* cell;
@@ -167,7 +167,7 @@ namespace Collision
 			bool operator()(const Ci& p) {
 				Ci c_cell;
 				Cu c_local;
-				Common::WorldToCellLocal(p, c_cell, c_local);
+				Properties::WorldToCellLocal(p, c_cell, c_local);
 				if(last_cell_ == 0 || last_cell_->coordinate() != c_cell) {
 					cubes_->TryGetCell(c_cell, &last_cell_);
 				}
@@ -187,10 +187,10 @@ namespace Collision
 				bool change_cell = false;
 				if(move == 0) {
 					if(dir < 0 && c_local_.x == 0) {
-						c_local_.x = Common::CellSize - 1;
+						c_local_.x = Properties::CellSize - 1;
 						c_cell_.x --;
 						change_cell = true;
-					} else if(dir > 0 && c_local_.x == Common::CellSize - 1) {
+					} else if(dir > 0 && c_local_.x == Properties::CellSize - 1) {
 						c_local_.x = 0;
 						c_cell_.x ++;
 						change_cell = true;
@@ -199,37 +199,37 @@ namespace Collision
 					}
 				} else if(move == 1) {
 					if(dir < 0 && c_local_.y == 0) {
-						c_local_.y = Common::CellSize - 1;
+						c_local_.y = Properties::CellSize - 1;
 						c_cell_.y --;
 						change_cell = true;
-					} else if(dir > 0 && c_local_.y == Common::CellSize - 1) {
+					} else if(dir > 0 && c_local_.y == Properties::CellSize - 1) {
 						c_local_.y = 0;
 						c_cell_.y ++;
 						change_cell = true;
 					} else {
-						local_data_ += dir * Common::CellSize;
+						local_data_ += dir * Properties::CellSize;
 					}
 				} else if(move == 2) {
 					if(dir < 0 && c_local_.z == 0) {
-						c_local_.z = Common::CellSize - 1;
+						c_local_.z = Properties::CellSize - 1;
 						c_cell_.z --;
 						change_cell = true;
-					} else if(dir > 0 && c_local_.z == Common::CellSize - 1) {
+					} else if(dir > 0 && c_local_.z == Properties::CellSize - 1) {
 						c_local_.z = 0;
 						c_cell_.z ++;
 						change_cell = true;
 					} else {
-						local_data_ += dir * Common::CellSize * Common::CellSize;
+						local_data_ += dir * Properties::CellSize * Properties::CellSize;
 					}
 				} else {
 					// initialize
-					Common::WorldToCellLocal(p, c_cell_, c_local_);
+					Properties::WorldToCellLocal(p, c_cell_, c_local_);
 					change_cell = true;
 				}
 				if(change_cell) {
 					if(cubes_->TryGetCell(c_cell_, &last_cell_)) {
 						is_empty_ = last_cell_->IsFullyEmpty();
-						local_data_ = last_cell_->Begin() + Common::LocalToIndex(c_local_);
+						local_data_ = last_cell_->Begin() + Properties::LocalToIndex(c_local_);
 					}
 				}
 				if(last_cell_ != 0) {

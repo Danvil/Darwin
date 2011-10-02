@@ -58,11 +58,11 @@ struct WorldSize
 	}
 
 	int world_bottom_border() const {
-		return int(Common::CellSize) * z1;
+		return int(Properties::CellSize) * z1;
 	}
 
 	int world_top_border() const {
-		return int(Common::CellSize) * z2 - 1;
+		return int(Properties::CellSize) * z2 - 1;
 	}
 
 	bool is_bottom_border(int z) const {
@@ -82,19 +82,19 @@ struct WorldSize
 	}
 
 	int world_x1() const {
-		return int(Common::CellSize) * x1;
+		return int(Properties::CellSize) * x1;
 	}
 
 	int world_x2() const {
-		return int(Common::CellSize) * x2 - 1;
+		return int(Properties::CellSize) * x2 - 1;
 	}
 
 	int world_y1() const {
-		return int(Common::CellSize) * y1;
+		return int(Properties::CellSize) * y1;
 	}
 
 	int world_y2() const {
-		return int(Common::CellSize) * y2 - 1;
+		return int(Properties::CellSize) * y2 - 1;
 	}
 
 	int cell_count() const {

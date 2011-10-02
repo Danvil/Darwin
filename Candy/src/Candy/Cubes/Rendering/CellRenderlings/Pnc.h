@@ -35,8 +35,9 @@ namespace CellRenderlings
 			static void Add(std::vector<PncVertex>* vertices, const CoordI& cc_world, CubeType cube, CubeSideData* data, int side) {
 				for(int i = 0; i < 4; i++) {
 					PncVertex v;
-					Geometry::GetVertexPosition(cc_world, side, i, v.px, v.py, v.pz);
-					Geometry::SideNormal(side, v.nx, v.ny, v.nz);
+					CoordI vertex_coord = Properties::GetVertexCoord(cc_world, side, i);
+					Properties::WorldToPosition(vertex_coord, v.px, v.py, v.pz);
+					Properties::GetSideNormal(cc_world, side, v.nx, v.ny, v.nz);
 					Vec3f col = data->object_color;
 					v.cr = col.x();
 					v.cg = col.y();

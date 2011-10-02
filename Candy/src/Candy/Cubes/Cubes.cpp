@@ -37,7 +37,7 @@ size_t Cubes::MemoryUsageBytes() const
 {
 	return
 			// cubes
-			CountNonEmptyCells() * size_t(Common::CellCubeCount) * sizeof(CubeInteriorData)
+			CountNonEmptyCells() * size_t(Properties::CellCubeCount) * sizeof(CubeInteriorData)
 			// faces
 			+ CountBorderQuads() * sizeof(CubeSideData);
 }
@@ -48,7 +48,7 @@ float Cubes::MemoryUsageMB() const
 }
 
 //float Cubes::GetGroundZ(float px, float py, float pz) {
-//	Ci cw = Common::PositionToInt(Vec3f(px, py, pz));
+//	Ci cw = Properties::PositionToInt(Vec3f(px, py, pz));
 //	CubeType initial_type = GetType(cw);
 //	if(initial_type == CubeTypes::NonExistent) {
 //		return pz;
@@ -59,13 +59,13 @@ float Cubes::MemoryUsageMB() const
 //		cw.z += d;
 //		CubeType curr_type = GetType(cw);
 //		if(IsEmpty(curr_type) != initial_empty || curr_type == CubeTypes::NonExistent) {
-//			return Common::WorldToPosition(cw.z) + 0.5f*(1.0f - float(d)) * Common::CubeSize;
+//			return Properties::WorldToPosition(cw.z) + 0.5f*(1.0f - float(d)) * Properties::CubeSize;
 //		}
 //	}
 //}
 //
 //float Cubes::GetGroundZ_NonExistentFromGround(float px, float py, float pz) {
-//	Ci cw = Common::PositionToInt(Vec3f(px, py, pz));
+//	Ci cw = Properties::PositionToInt(Vec3f(px, py, pz));
 //	CubeType initial_type = GetType(cw);
 //	bool initial_empty = IsEmpty_NonExistentGround(initial_type, pz > 0);
 //	int d = initial_empty ? -1 : +1;
@@ -73,7 +73,7 @@ float Cubes::MemoryUsageMB() const
 //		cw.z += d;
 //		CubeType curr_type = GetType(cw);
 //		if(IsEmpty_NonExistentGround(curr_type, cw.z > 0) != initial_empty) {
-//			return Common::WorldToPosition(cw.z) + 0.5f*(1.0f - float(d)) * Common::CubeSize;
+//			return Properties::WorldToPosition(cw.z) + 0.5f*(1.0f - float(d)) * Properties::CubeSize;
 //		}
 //	}
 //}
@@ -124,7 +124,7 @@ void Cubes::VitalizeCubeData(Cell* cell)
 #endif
 	// create new border side data
 	std::vector<BorderSideId> border_sides_list;
-	border_sides_list.reserve(Common::CellCubeCount); // TODO better estimate?
+	border_sides_list.reserve(Properties::CellCubeCount); // TODO better estimate?
 	for(Cell::CubeIterator it=cell->IterateCubes(); it.valid(); it.next()) {
 		CubeType type = it.type();
 		if(::IsEmpty(type)) {
@@ -135,7 +135,7 @@ void Cubes::VitalizeCubeData(Cell* cell)
 		for(unsigned int i=0; i<6; i++) {
 			if(IsBorderSide(cc_world, i)) {
 				// add to border sides
-				BorderSideId bs = Common::BuildBorderSide(cc_local, i);
+				BorderSideId bs = Properties::BuildBorderSide(cc_local, i);
 				border_sides_list.push_back(bs);
 			}
 		}

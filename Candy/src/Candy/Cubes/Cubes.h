@@ -33,10 +33,10 @@ public:
 	Cell* GetCell(const CoordI& c_cell) const;
 
 	void SetType(const CoordI& cc_world, CubeType type) {
-		CoordI c_cell = Common::WorldToCell(cc_world);
+		CoordI c_cell = Properties::WorldToCell(cc_world);
 		Cell* cell = GetCell(c_cell);
 		// set type in cell
-		CoordU cc_local = Common::WorldToLocal(cc_world);
+		CoordU cc_local = Properties::WorldToLocal(cc_world);
 		cell->Set(cc_local, type);
 		if(OnChangeCube) {
 			OnChangeCube(cell, cc_world); // FIXME only call if changed
@@ -44,11 +44,11 @@ public:
 	}
 
 	CubeType GetType(const CoordI& cc_world) const {
-		CoordI cc_cell = Common::WorldToCell(cc_world);
+		CoordI cc_cell = Properties::WorldToCell(cc_world);
 		Cell* cell;
 		if(TryGetCell(cc_cell, &cell)) {
 			// set type in cell
-			CoordU cc_local = Common::WorldToLocal(cc_world);
+			CoordU cc_local = Properties::WorldToLocal(cc_world);
 			return cell->At(cc_local);
 		} else {
 			// cube does not exist
@@ -57,11 +57,11 @@ public:
 	}
 
 	CubeInteriorData* GetData(const CoordI& cc_world) const {
-		CoordI cc_cell = Common::WorldToCell(cc_world);
+		CoordI cc_cell = Properties::WorldToCell(cc_world);
 		Cell* cell;
 		if(TryGetCell(cc_cell, &cell)) {
 			// set type in cell
-			CoordU cc_local = Common::WorldToLocal(cc_world);
+			CoordU cc_local = Properties::WorldToLocal(cc_world);
 			return cell->AtData(cc_local);
 		} else {
 			// cube does not exist
@@ -70,18 +70,18 @@ public:
 	}
 
 	bool IsEmpty(const Vec3f& p) const {
-		CoordI ccw = Common::PositionToInt(p);
+		CoordI ccw = Properties::PositionToWorld(p);
 		CubeInteriorData* d = GetData(ccw);
 		return !d || IsEmptyOrNonExistent(d->GetType());
 	}
 	bool IsEmpty(float x, float y, float z) const {
-		CoordI ccw = Common::PositionToInt(x, y, z);
+		CoordI ccw = Properties::PositionToWorld(x, y, z);
 		CubeInteriorData* d = GetData(ccw);
 		return !d || IsEmptyOrNonExistent(d->GetType());
 	}
 
 	bool Exists(const CoordI& cc_world) const {
-		CoordI cc_cell = Common::WorldToCell(cc_world);
+		CoordI cc_cell = Properties::WorldToCell(cc_world);
 		return ExistsCell(cc_cell);
 	}
 
@@ -93,7 +93,7 @@ public:
 		// cell / border side index
 		BorderSideId bs;
 		Ci c_cell;
-		Common::WorldToCellBorderSide(cc_world, side, c_cell, bs);
+		Properties::WorldToCellBorderSide(cc_world, side, c_cell, bs);
 		Cell* cell = cells_[c_cell];
 		if(cell == 0) {
 			return 0;
@@ -102,13 +102,13 @@ public:
 	}
 
 	/*Cube Get(const CoordI& cc_world) {
-		CoordI cc_cell = Common::WorldToCell(cc_world);
+		CoordI cc_cell = Properties::WorldToCell(cc_world);
 		Cell* cell;
 		if(!TryGetCell(cc_cell, &cell)) {
 			// cube does not exists
 			return Cube(NonExistent);
 		} else {
-			CoordU cc_local = Common::WorldToLocal(cc_world);
+			CoordU cc_local = Properties::WorldToLocal(cc_world);
 			return Cube(
 				cell->At(cc_local), // type
 				_data.At(cc_world) // data or null if no data
@@ -225,14 +225,14 @@ public:
 		// FIXME implement
 //		data.vertices()->clear();
 //		// create lod mesh
-//		unsigned int n = Common::CellSize - (1 << lod);
+//		unsigned int n = Properties::CellSize - (1 << lod);
 //		...
 	}
 
 public:
 	CubeType SideNeighbourType(const CoordI& cc_world, int side) {
 		// get coordinate of neighbour
-		CoordI n = Geometry::GetSideNeighbour(cc_world, side);
+		CoordI n = Properties::GetSideNeighbour(cc_world, side);
 		// get type
 		return GetType(n);
 	}

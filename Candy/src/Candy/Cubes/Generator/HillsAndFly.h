@@ -20,9 +20,8 @@ namespace Generators
 				const double cScale = 0.03;
 				const double cAmplitude = 8.0f;
 				const double cOffset = 1.0f;
-				float px = Common::WorldToPositionCenter(cw.x);
-				float py = Common::WorldToPositionCenter(cw.y);
-				float pz = Common::WorldToPositionCenter(cw.z);
+				float px, py, pz;
+				Properties::WorldToPositionCenter(cw, px, py, pz);
 				double n = cAmplitude * (cOffset + Perlin::Noise(cScale * px, cScale * py));
 				if(pz < n) {
 					return CubeTypes::Mud;
@@ -31,9 +30,8 @@ namespace Generators
 			// phase 2 : fly
 			{
 				const double cScale = 0.3;
-				float px = Common::WorldToPositionCenter(cw.x);
-				float py = Common::WorldToPositionCenter(cw.y);
-				float pz = Common::WorldToPositionCenter(cw.z);
+				float px, py, pz;
+				Properties::WorldToPositionCenter(cw, px, py, pz);
 				double n = Perlin::NoiseMP(cScale * px, cScale * py, cScale * pz);
 				if(n > 0.5) {
 					return CubeTypes::Mud;

@@ -77,8 +77,8 @@ namespace Hexa
 			Vec3f a_mid = a.positionCenter() + RandomCubeSidePoint(a.side());
 			Vec3f b_mid = b.positionCenter() + RandomCubeSidePoint(b.side());
 			// face normals
-			Vec3f a_n = Geometry::SideNormal(a.side());
-			Vec3f b_n = Geometry::SideNormal(b.side());
+			Vec3f a_n = Properties::SideNormal(a.world(), a.side());
+			Vec3f b_n = Properties::SideNormal(a.world(), b.side());
 			// contribution if we would have a hit
 			Vec3f d = b_mid - a_mid;
 			float a_cos = a_n.dot(d);

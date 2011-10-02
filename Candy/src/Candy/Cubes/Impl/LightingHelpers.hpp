@@ -27,15 +27,23 @@ namespace Hexa
 			a = (float(na) * a + b) / float(na + nb);
 		}*/
 
-		inline Vec3f CubeSidePoint(unsigned int sideIndex, float h, float u, float v) {
-			switch(sideIndex) {
+		/** Computes a cube side point
+		 * @param side_index the side of the cube (specifies the normal)
+		 * @param h distance to the cube center in the direction of the side normal
+		 * @param u distance to the cube center in the direction of the first side tangential
+		 * @param v distance to the cube center in the direction of the second side tangential
+		 * @param the cube point
+		 */
+		inline Vec3f CubeSidePoint(unsigned int side_index, float h, float u, float v) {
+			assert(side_index < 6);
+			switch(side_index) {
 				case 0: return Vec3f(u, v, -h);
 				case 1: return Vec3f(-h, u, v);
 				case 2: return Vec3f(u, +h, v);
 				case 3: return Vec3f(+h, u, v);
 				case 4: return Vec3f(u, -h, v);
 				case 5: return Vec3f(u, v, +h);
-				default: assert(false);
+				default: return Vec3f::Zero();
 			}
 		}
 
@@ -74,32 +82,8 @@ namespace Hexa
 
 		inline void QuadMidAndNormal(unsigned int sideIndex, Vec3f& mid, Vec3f& normal) {
 			const float h = 0.51f;
-			switch(sideIndex) {
-			case 0:
-				mid = Vec3f(0, 0, -h);
-				normal = Vec3f(0, 0, -1);
-				break;
-			case 1:
-				mid = Vec3f(-h, 0, 0);
-				normal = Vec3f(-1, 0, 0);
-				break;
-			case 2:
-				mid = Vec3f(0, +h, 0);
-				normal = Vec3f(0, +1, 0);
-				break;
-			case 3:
-				mid = Vec3f(+h, 0, 0);
-				normal = Vec3f(+1, 0, 0);
-				break;
-			case 4:
-				mid = Vec3f(0, -h, 0);
-				normal = Vec3f(0, -1, 0);
-				break;
-			case 5:
-				mid = Vec3f(0, 0, +h);
-				normal = Vec3f(0, 0, +1);
-				break;
-			}
+			mid = CubeSidePoint(sideIndex, h, 0.0f, 0.0f);
+			normal = CubeSidePoint(sideIndex, 1.0f, 0.0f, 0.0f);
 		}
 
 		/// <summary>
@@ -111,18 +95,8 @@ namespace Hexa
 			float a, b, t;
 			Random::UniformOnHalfSphere(a, b, t);
 			n_dot_u = t;
+			return CubeSidePoint(sideIndex, t, a, b);
 			//Random::PseudoUniformOnHalfSphere(a, b, t);
-			// create point in the correct half sphere
-			switch(sideIndex) {
-				case 0: return Vec3f(a, b, -t);
-				case 1: return Vec3f(-t, a, b);
-				case 2: return Vec3f(a, +t, b);
-				case 3: return Vec3f(+t, a, b);
-				case 4: return Vec3f(a, -t, b);
-				case 5: return Vec3f(a, b, +t);
-				default:
-					assert(false);
-			}
 		}
 	}
 }

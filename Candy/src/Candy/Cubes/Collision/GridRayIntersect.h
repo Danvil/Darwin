@@ -29,9 +29,8 @@ namespace Collision
 		float ax = a(0);
 		float ay = a(1);
 		float az = a(2);
-		int x = Common::PositionToInt(ax);
-		int y = Common::PositionToInt(ay);
-		int z = Common::PositionToInt(az);
+		int x, y, z;
+		Properties::PositionToWorld(ax, ay, az, x, y, z);
 		// if the starting cube is at the limit of the cell -> round to cell
 		// FIXME is this correct?
 		x = ClampHalfOpen(x, min.x, max.x);
@@ -72,7 +71,7 @@ namespace Collision
 				// x is next
 				x += dx;
 				lambda = lx;
-				side = Geometry::SideIndexX(-dx); // if we move to the right we hit the left side first!
+				side = Properties::SideIndexX(-dx); // if we move to the right we hit the left side first!
 				if(!IsInHalfOpenInterval(x, min.x, max.x)) {
 					break; // quit
 				}
@@ -82,7 +81,7 @@ namespace Collision
 				// y is next
 				y += dy;
 				lambda = ly;
-				side = Geometry::SideIndexY(-dy);
+				side = Properties::SideIndexY(-dy);
 				if(!IsInHalfOpenInterval(y, min.y, max.y)) {
 					break; // quit
 				}
@@ -92,7 +91,7 @@ namespace Collision
 				// z is next
 				z += dz;
 				lambda = lz;
-				side = Geometry::SideIndexZ(-dz);
+				side = Properties::SideIndexZ(-dz);
 				if(!IsInHalfOpenInterval(z, min.z, max.z)) {
 					break; // quit
 				}
@@ -121,7 +120,7 @@ namespace Collision
 		float ay = a(1);
 		float az = a(2);
 		// get initial position to check
-		Ci pos = Common::PositionToInt(a);
+		Ci pos = Properties::PositionToWorld(a);
 		// FIXME check initial position??
 		//if(test(pos)) {
 		//	result = pos;
@@ -177,13 +176,13 @@ namespace Collision
 				// this is done only once!
 				if(last_move == 0) {
 					lambda = lx - dlx; // get the lambda value before we entered the position
-					side = Geometry::SideIndexX(-dx); // if we move to the right we hit the left side first!
+					side = Properties::SideIndexX(-dx); // if we move to the right we hit the left side first!
 				} else if(last_move == 1) {
 					lambda = ly - dly;
-					side = Geometry::SideIndexY(-dy);
+					side = Properties::SideIndexY(-dy);
 				} else /* if(last_move == 2)*/ {
 					lambda = lz - dlz;
-					side = Geometry::SideIndexZ(-dz);
+					side = Properties::SideIndexZ(-dz);
 				}
 				result = pos;
 				return true;
@@ -197,7 +196,7 @@ namespace Collision
 		using namespace Math;
 		lambda = 0.0f;
 		// get initial position to check
-		Ci pos = Common::PositionToInt(a);
+		Ci pos = Properties::PositionToInt(a);
 		// FIXME check initial position??
 		//if(test(pos)) {
 		//	result = pos;
@@ -258,13 +257,13 @@ namespace Collision
 				// this is done only once!
 				if(last_move == 0) {
 					lambda = lx - dlx; // get the lambda value before we entered the position
-					side = Geometry::SideIndexX(-dx); // if we move to the right we hit the left side first!
+					side = Properties::SideIndexX(-dx); // if we move to the right we hit the left side first!
 				} else if(last_move == 1) {
 					lambda = ly - dly;
-					side = Geometry::SideIndexY(-dy);
+					side = Properties::SideIndexY(-dy);
 				} else { //if(last_move == 2)
 					lambda = lz - dlz;
-					side = Geometry::SideIndexZ(-dz);
+					side = Properties::SideIndexZ(-dz);
 				}
 				result = pos;
 				return true;

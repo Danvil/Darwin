@@ -23,9 +23,9 @@ namespace Generators
 
 	public:
 		CornellBox(unsigned int r=4) {
-			cBoxSize = Common::CellSize * r - 2;
-			cLightSize = Common::CellSize * r / 2;
-			cSphereRadius = 0.70 * double(Common::CellSize * r);
+			cBoxSize = Properties::CellSize * r - 2;
+			cLightSize = Properties::CellSize * r / 2;
+			cSphereRadius = 0.70 * double(Properties::CellSize * r);
 			cSphereZOffset = cBoxSize - std::floor(cSphereRadius);
 		}
 
@@ -69,7 +69,7 @@ namespace Generators
 				return t_sides_green;
 			}
 			// sphere
-			Vec3f pos = Common::WorldToPositionCenter(x, y, z + cSphereZOffset);
+			Vec3f pos = Properties::WorldToPositionCenter(x, y, z + cSphereZOffset);
 			if(pos.norm() < cSphereRadius) {
 				return t_sphere;
 			}

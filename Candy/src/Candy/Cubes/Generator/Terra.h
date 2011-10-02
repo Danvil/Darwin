@@ -72,11 +72,11 @@ namespace Generators
 		static const int z2 = +2;
 
 		int world_bottom_border() const {
-			return int(Common::CellSize) * z1;
+			return int(Properties::CellSize) * z1;
 		}
 
 		int world_top_border() const {
-			return int(Common::CellSize) * z2 - 1;
+			return int(Properties::CellSize) * z2 - 1;
 		}
 
 		bool is_bottom_border(int z) const {
@@ -103,9 +103,11 @@ namespace Generators
 			if(is_top_border(cw.z) || is_top_border(cw.z + 1)) {
 				return CubeTypes::Empty;
 			}
-			float x = cWorldScale * Common::WorldToPositionCenter(cw.x);
-			float y = cWorldScale * Common::WorldToPositionCenter(cw.y);
-			float z = cWorldScale * Common::WorldToPositionCenter(cw.z);
+			float x, y, z;
+			Properties::WorldToPositionCenter(cw, x, y, z);
+			x *= cWorldScale;
+			y *= cWorldScale;
+			z *= cWorldScale;
 			float v_cliffy = p_cliffy(x, y, z);
 			float v_plainy = p_plainy(x, y, z);
 			float v_cavy = p_cavy(x, y, z);

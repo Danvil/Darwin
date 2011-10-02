@@ -18,11 +18,9 @@ namespace Generators
 			const double cScale = 0.03;
 			const double cAmplitude = 8.0f;
 			const double cOffset = 1.0f;
-			float px = Common::WorldToPositionCenter(cw.x);
-			float py = Common::WorldToPositionCenter(cw.y);
-			float pz = Common::WorldToPositionCenter(cw.z);
-			double n = cAmplitude * (cOffset + Perlin::Noise(cScale * px, cScale * py));
-			if(pz < n) {
+			Vec3f p = Properties::WorldToPositionCenter(cw);
+			double n = cAmplitude * (cOffset + Perlin::Noise(cScale * p[0], cScale * p[1]));
+			if(p[2] < n) {
 				return CubeTypes::Mud;
 			}
 			else {

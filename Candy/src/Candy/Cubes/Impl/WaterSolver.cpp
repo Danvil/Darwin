@@ -54,7 +54,7 @@ namespace CubesImpl
 		}
 
 		void advect(Ptr(Cubes) cubes, float dt, const CoordI& cw, CubeInteriorData* cd) {
-			Vec3f p = Common::WorldToPositionCenter(cw);
+			Vec3f p = Properties::WorldToPositionCenter(cw);
 			// look back where it flowed from
 			p.x() -= dt * cd->water_vel_x;
 			p.y() -= dt * cd->water_vel_y;

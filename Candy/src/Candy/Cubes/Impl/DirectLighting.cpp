@@ -36,10 +36,11 @@ namespace Lighting
 		}
 	}
 
-	float ComputeSunLight(Cubes* cubes, const Vec3f& pos, int sideIndex)
+	float ComputeSunLight(Cubes* cubes, const CoordI& cw, int sideIndex)
 	{
+		Vec3f pos = Properties::WorldToPositionCenter(cw);
 		const bool cRandomSamples = false;
-		Vec3f n = Geometry::SideNormal(sideIndex);
+		Vec3f n = Properties::SideNormal(cw, sideIndex);
 		if(cRandomSamples) {
 			const unsigned int cSamples = 5;
 			const float cCenterWeight = 0.4f;
@@ -90,8 +91,8 @@ namespace Lighting
 //				return true;
 //			}
 //			// decide by distance
-//			float da = Core::DistanceToEye(Common::CellMid(a->coordinate()));
-//			float db = Core::DistanceToEye(Common::CellMid(b->coordinate()));
+//			float da = Core::DistanceToEye(Properties::CellMid(a->coordinate()));
+//			float db = Core::DistanceToEye(Properties::CellMid(b->coordinate()));
 //			return da < db;
 //		}
 //	};
@@ -155,10 +156,8 @@ namespace Lighting
 
 	void DirectLighting::ComputeCube(Cubes* cubes, const CoordI& cw, unsigned int sideIndex, CubeType type, CubeSideData* data)
 	{
-		Vec3f pos = Common::WorldToPositionCenter(cw);
-		// compute lighting
 		data->lighting.ambient = ComputeAmbientLight(cubes, cw, sideIndex);
-		data->lighting.sun = ComputeSunLight(cubes, pos, sideIndex);
+		data->lighting.sun = ComputeSunLight(cubes, cw, sideIndex);
 		data->lighting.scenery = Appearance::CubeEmitColor(type);
 	}
 

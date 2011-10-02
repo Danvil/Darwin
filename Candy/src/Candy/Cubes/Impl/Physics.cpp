@@ -100,7 +100,7 @@ void PhysicsWorld::StaticThreadMain()
 							// create moving block
 							CreateBlock(
 									type,
-									Common::WorldToPositionCenter(cube_world_coordinate));
+									Properties::WorldToPositionCenter(cube_world_coordinate));
 						}
 					}
 				});
@@ -114,7 +114,7 @@ void PhysicsWorld::CheckCubeCollision(MovingBlockSphere* block)
 	block->ClearContacts();
 	const Vec3f& p = block->position();
 	Vec3f rest;
-	CoordI cw = Common::PositionToInt(p, rest);
+	CoordI cw = Properties::PositionToWorld(p, rest);
 	for(unsigned int i=0; i<3; i++) {
 		if(rest[i] <= block->radius()) {
 			CoordI beneath = cw;
@@ -228,8 +228,8 @@ void PhysicsWorld::Tick(float dt)
 void PhysicsWorld::AssignBlock(MovingBlockSphere* block)
 {
 	// block
-	CoordI cw = Common::PositionToInt(block->position());
-	CoordI cc = Common::WorldToCell(cw);
+	CoordI cw = Properties::PositionToWorld(block->position());
+	CoordI cc = Properties::WorldToCell(cw);
 	PhysicsCell* cell = this->cells_.get(cc, [&]() { return new PhysicsCell(cc); });
 	cell->blocks_.push_back(block);
 }
@@ -237,7 +237,7 @@ void PhysicsWorld::AssignBlock(MovingBlockSphere* block)
 void PhysicsWorld::DeleteBlock(MovingBlockSphere* block)
 {
 	// convert to cube
-	CoordI cw = Common::PositionToInt(block->position());
+	CoordI cw = Properties::PositionToWorld(block->position());
 	cubes_->SetType(cw, block->type());
 	// delete from rendering
 	sphere_renderer_->Remove(block->render_id());

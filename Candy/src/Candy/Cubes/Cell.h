@@ -26,11 +26,11 @@ public:
 		: _cell(0) {}
 
 		CubeIterator(Cell* cell)
-		: _cell(cell), _cc_local(0,0,0), _cc_world(Common::FirstInCell(cell->coordinate())) {
+		: _cell(cell), _cc_local(0,0,0), _cc_world(Properties::CellToWorld(cell->coordinate())) {
 		}
 
 		bool valid() const {
-			return _cc_local.z < Common::CellSize;
+			return _cc_local.z < Properties::CellSize;
 		}
 
 		void next() {
@@ -38,27 +38,27 @@ public:
 			//if(HasNext()) {
 				/*_cc_local.x ++;
 				_cc_world.x ++;
-				if(_cc_local.x == Common::CellSize) {
+				if(_cc_local.x == Properties::CellSize) {
 					_cc_local.x = 0;
 					_cc_local.y ++;
-					_cc_world.x -= Common::CellSize;
+					_cc_world.x -= Properties::CellSize;
 					_cc_world.y ++;
-					if(_cc_local.y == Common::CellSize) {
+					if(_cc_local.y == Properties::CellSize) {
 						_cc_local.y = 0;
 						_cc_local.z ++;
-						_cc_world.y -= Common::CellSize;
+						_cc_world.y -= Properties::CellSize;
 						_cc_world.z ++;
 					}
 				}*/
 				_cc_local.x ++;
 				_cc_world.x ++;
-				int vx = _cc_local.x & Common::CellSize;
+				int vx = _cc_local.x & Properties::CellSize;
 				int dx = vx != 0 ? 1 : 0;
 				_cc_local.x -= vx;
 				_cc_world.x -= vx;
 				_cc_local.y += dx;
 				_cc_world.y += dx;
-				int vy = _cc_local.y & Common::CellSize;
+				int vy = _cc_local.y & Properties::CellSize;
 				int dy = vy != 0 ? 1 : 0;
 				_cc_local.y -= vy;
 				_cc_world.y -= vy;
@@ -85,9 +85,7 @@ public:
 		}
 
 		Vec3f positionCenter() const {
-			Vec3f p;
-			Common::WorldToPositionCenter(_cc_world, p);
-			return p;
+			return Properties::WorldToPositionCenter(_cc_world);
 		}
 
 		CubeType type() const {
@@ -168,11 +166,11 @@ public:
 		}
 
 		Vec3f positionCenter() const {
-			return Common::WorldToPositionCenter(cc_world_);
+			return Properties::WorldToPositionCenter(cc_world_);
 		}
 
 		CubeType type() const {
-			return cell_->At(Common::BorderSideToIndex(*current_bs_key_));
+			return cell_->At(Properties::BorderSideToIndex(*current_bs_key_));
 		}
 
 		CubeSideData* data() const {
@@ -181,8 +179,8 @@ public:
 
 	private:
 		void Update() {
-			Common::BorderSideToLocalSide(*current_bs_key_, cc_local_, side_);
-			Common::CellLocalToWorld(cell_->coordinate(), cc_local_, cc_world_);
+			Properties::BorderSideToLocalSide(*current_bs_key_, cc_local_, side_);
+			cc_world_ = Properties::CellLocalToWorld(cell_->coordinate(), cc_local_);
 		}
 
 	private:
@@ -244,7 +242,7 @@ public:
 		if(IsFullyEmpty()) {
 			return CubeTypes::Empty;
 		} else {
-			return data_[Common::LocalToIndex(local)].GetType();
+			return data_[Properties::LocalToIndex(local)].GetType();
 		}
 	}
 
@@ -260,7 +258,7 @@ public:
 		if(IsFullyEmpty()) {
 			return 0;
 		} else {
-			return data_ + Common::LocalToIndex(local);
+			return data_ + Properties::LocalToIndex(local);
 		}
 	}
 
@@ -291,7 +289,7 @@ public:
 	}
 
 	void Set(const CoordU& local, CubeType type) {
-		Set(Common::LocalToIndex(local), type);
+		Set(Properties::LocalToIndex(local), type);
 	}
 
 	void SetAll(CubeType type) {
@@ -350,12 +348,12 @@ public:
 
 private:
 	void AllocateImpl() {
-		data_ = new CubeInteriorData[Common::CellCubeCount];
+		data_ = new CubeInteriorData[Properties::CellCubeCount];
 	}
 
 	void SetAllImpl(CubeInteriorData x) {
-		//memset(data_, (unsigned char)(type), Common::CellCubeCount);
-		for(size_t i=0; i<Common::CellCubeCount; i++) {
+		//memset(data_, (unsigned char)(type), Properties::CellCubeCount);
+		for(size_t i=0; i<Properties::CellCubeCount; i++) {
 			data_[i] = x;
 		}
 	}

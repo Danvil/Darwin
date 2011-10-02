@@ -100,8 +100,8 @@ namespace Lighting
 			// decide by sample count and distance
 			unsigned int na = a->CountLightingSamples();
 			unsigned int nb = b->CountLightingSamples();
-			float da = Core::DistanceToEye(Common::CellMid(a->coordinate()));
-			float db = Core::DistanceToEye(Common::CellMid(b->coordinate()));
+			float da = Core::DistanceToEye(Properties::CellMid(a->coordinate()));
+			float db = Core::DistanceToEye(Properties::CellMid(b->coordinate()));
 			// if both cells have less than minimal samples decide by distance
 			if((na < cSamplesMin) && (nb < cSamplesMin)) {
 				return da < db;

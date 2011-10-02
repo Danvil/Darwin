@@ -7,379 +7,508 @@
 #include <cmath>
 #include <cassert>
 
-
 typedef unsigned short BorderSideId;
 
 typedef unsigned int CubeId;
 
-#define VERTEX_2_INDEX(x,y,z) ((x) + (y) * (Common::CellVertexCount + (z) * Common::CellVertexCount))
-
-namespace Common
+namespace CandyCubes
 {
-	const unsigned int CellSize = 16;
-	
-	const unsigned int CellSizeMask = 15;
 
-	const unsigned int CellSizeShift = 4;
+	struct BaseProperties
+	{
+		static const unsigned int CellSize = 16;
 
-	const unsigned int CellCubeCount = CellSize * CellSize * CellSize;
+		static const unsigned int CellSizeMask = 15;
 
-	const unsigned int CellVertexCount = CellSize + 1;
+		static const unsigned int CellSizeShift = 4;
 
-	const unsigned int BorderIdBits = 3;
+		static const unsigned int CellCubeCount = CellSize * CellSize * CellSize;
 
-	const unsigned int BorderIdMask = 7;
+		static const unsigned int CellVertexSize = CellSize + 1;
 
-	const float CubeSize = 1.0f;
+		static const unsigned int CellVertexCount = CellVertexSize * CellVertexSize * CellVertexSize;
 
-	inline unsigned int WorldToLocal(int w) {
-		// solve w = a * n + b for b > 0 with n=CellSize and a an integer
-		return w & CellSizeMask;
-//		if(w >= 0) {
-//			return (unsigned int)(w) & CellSizeMask;
-//		} else {
-//			return CellSize - (1 + ((unsigned int)(-w - 1) & CellSizeMask));
+		static const unsigned int BorderIdBits = 3;
+
+		static const unsigned int BorderIdMask = 7;
+
+		static const float CubeSize = 1.0f;
+
+//		/** Converts a coordinate to an index */
+//		static inline unsigned int WorldToIndex(const Ci& c) {
+//			// FIXME optimize?
+//			return c.x + CellSize * (c.y + CellSize * c.z);
 //		}
-	}
-	
-	inline int WorldToCell(int w) {
-//		if(w >= 0) {
-//			return w >> CellSizeShift;
-//		}
-//		else {
-//			return -((-w) >> CellSizeShift) - 1;
-//		}
-		if(w >= 0) {
-			return int((unsigned int)(w) >> CellSizeShift);
-		} else {
-			return -int((1 + ((unsigned int)(-w - 1) >> CellSizeShift)));
+
+		/** Computes index of a cube in an zyx ordered array of all cell cubes */
+		static inline unsigned int LocalToIndex(unsigned int lx, unsigned int ly, unsigned int lz) {
+			return (lx + CellSize * (ly + CellSize * lz));
 		}
-	}
 
-	inline void WorldToCellLocal(int w, int& c_cell, unsigned int& c_local) {
-//		c_local = w & CellSizeMask;
-//		if(w >= 0) {
-//			c_cell = w >> CellSizeShift;
-//		}
-//		else {
-//			c_cell = -((-w) >> CellSizeShift) - 1;
-//		}
-		if(w >= 0) {
-			unsigned int uw = (unsigned int)(w);
-			c_cell = int(uw >> CellSizeShift);
-			c_local = uw & CellSizeMask;
-		} else {
-			unsigned int uw = (unsigned int)(-w - 1);
-			c_cell =  -int((1 + (uw >> CellSizeShift)));
-			c_local = CellSize - (1 + (uw & CellSizeMask));
+		/** Computes index of a cube corner vertex in an zyx ordered array of all cell cube corner vertices */
+		static inline unsigned int VertexToIndex(unsigned int vx, unsigned int vy, unsigned int vz) {
+			return (vx + CellVertexSize * (vy + CellVertexSize * vz));
 		}
-	}
 
-	inline unsigned int LocalToIndex(const Cu& c) {
-		// FIXME optimize?
-		unsigned int x = WorldToLocal(c.x);
-		unsigned int y = WorldToLocal(c.y);
-		unsigned int z = WorldToLocal(c.z);
-		return x + CellSize * (y + CellSize * z);
-	}
+		static inline unsigned int LocalToIndex(const Cu& cl) {
+			return LocalToIndex(cl.x, cl.y, cl.z);
+		}
 
-	inline void BorderSideToLocalSide(unsigned short c, Cu& c_local, unsigned int& side) {
-		side = c & BorderIdMask;
-		c_local.x = (c >> BorderIdBits) & CellSizeMask;
-		c_local.y = (c >> (BorderIdBits + CellSizeShift)) & CellSizeMask;
-		c_local.z = (c >> (BorderIdBits + 2*CellSizeShift)) & CellSizeMask;
-	}
+		static inline void BorderSideToLocalSide(unsigned short c, Cu& c_local, unsigned int& side) {
+			side = c & BorderIdMask;
+			c_local.x = (c >> BorderIdBits) & CellSizeMask;
+			c_local.y = (c >> (BorderIdBits + CellSizeShift)) & CellSizeMask;
+			c_local.z = (c >> (BorderIdBits + 2*CellSizeShift)) & CellSizeMask;
+		}
 
-	inline unsigned int BorderSideToIndex(unsigned short c) {
-		return c >> BorderIdBits;
-	}
+		static inline unsigned int BorderSideToIndex(unsigned short c) {
+			return c >> BorderIdBits;
+		}
 
-	/** Builds the identifier of a cube side
-	 * @param c_local local cube coordinate
-	 * @param side side index of the side [0,6[
-	 *
-	 * The low bits contain the side index. Higher bits contain the (x,y,z)
-	 * coordinate. Border ids can be sorted.
+		/** Builds the identifier of a cube side
+		 * @param c_local local cube coordinate
+		 * @param side side index of the side [0,6[
+		 *
+		 * The low bits contain the side index. Higher bits contain the (x,y,z)
+		 * coordinate. Border ids can be sorted.
+		 */
+		static inline unsigned short BuildBorderSide(const Cu& c_local, unsigned int side) {
+			return (unsigned short)(
+				side + (c_local.x << BorderIdBits) + (c_local.y << (BorderIdBits + CellSizeShift)) + (c_local.z << (BorderIdBits + 2*CellSizeShift))
+			);
+		}
+
+		/** Gets the tangential directions for a side
+		 * @param side_id side index [0, 5[
+		 * @param tangential_dir_1 first tangential direction
+		 * @param tangential_dir_2 second tangential direction
+		 * @param normal_dir normal direction
+		 */
+		static inline void GetTangential(unsigned int side_id, unsigned int& tangential_dir_1, unsigned int& tangential_dir_2, unsigned int& normal_dir) {
+			static const int cTangentialData[6][3] = {
+				{1, 0, 2},
+				{2, 1, 0},
+				{2, 0, 1},
+				{1, 2, 0},
+				{0, 2, 1},
+				{0, 1, 2}
+			};
+			tangential_dir_1 = cTangentialData[side_id][0];
+			tangential_dir_2 = cTangentialData[side_id][1];
+			normal_dir = cTangentialData[side_id][2];
+		}
+
+		static inline int SideIndexX(int sign) {
+			return (sign < 0) ? 1 : 3;
+		}
+
+		static inline int SideIndexY(int sign) {
+			return (sign < 0) ? 4 : 2;
+		}
+
+		static inline int SideIndexZ(int sign) {
+			return (sign < 0) ? 0 : 5;
+		}
+
+		static inline int TopSide() {
+			return 5;
+		}
+
+		static inline unsigned int GetVertexPositionOffset(unsigned int vertex_id, unsigned int i) {
+			const int cVertexPositionOffsetData[8][3] = {
+				// FIXME there is a repetition of this in VertexIndexOffset!
+				{0,0,0}, // 0
+				{0,1,0}, // 1
+				{1,1,0}, // 2
+				{1,0,0}, // 3
+				{0,0,1}, // 4
+				{0,1,1}, // 5
+				{1,1,1}, // 6
+				{1,0,1}  // 7
+			};
+			assert(vertex_id < 8);
+			assert(i < 3);
+			return cVertexPositionOffsetData[vertex_id][i];
+		}
+
+		static inline void GetVertexPositionOffsets(int vertex_id, int& dx, int& dy, int& dz) {
+			dx = GetVertexPositionOffset(vertex_id, 0);
+			dy = GetVertexPositionOffset(vertex_id, 1);
+			dz = GetVertexPositionOffset(vertex_id, 2);
+		}
+
+		static inline CoordI GetVertexCoordOffset(int vertex_id) {
+			return CoordI(
+					GetVertexPositionOffset(vertex_id, 0),
+					GetVertexPositionOffset(vertex_id, 1),
+					GetVertexPositionOffset(vertex_id, 2));
+		}
+
+		static inline unsigned int GetSideVertexIndices(unsigned int vertex_id, unsigned int i) {
+			assert(vertex_id < 8);
+			assert(i < 3);
+			const unsigned int cSideVertexIndices[8][3] = {
+				// FIXME there is a repetition of this in VertexIndexOffset!
+				{0,0,0}, // 0
+				{0,1,0}, // 1
+				{1,1,0}, // 2
+				{1,0,0}, // 3
+				{0,0,1}, // 4
+				{0,1,1}, // 5
+				{1,1,1}, // 6
+				{1,0,1}  // 7
+			};
+			return cSideVertexIndices[vertex_id][i];
+		}
+
+		static inline void GetSideVertexIndices(unsigned int vertex_id, unsigned int& dx, unsigned int& dy, unsigned int& dz) {
+			dx = GetSideVertexIndices(vertex_id, 0);
+			dy = GetSideVertexIndices(vertex_id, 1);
+			dz = GetSideVertexIndices(vertex_id, 2);
+		}
+
+		static inline unsigned int GetSideVertexIndexOffset(unsigned int vertex_id) {
+			unsigned int dx, dy, dz;
+			GetSideVertexIndices(vertex_id, dx, dy, dz);
+			return VertexToIndex(dx, dy, dz);
+		}
+
+		static inline unsigned int GetSideVertexData(unsigned int side_id, unsigned int i) {
+			static const unsigned int cSideVertices[6][4] = {
+				{0,3,2,1}, // z- bottom
+				{0,1,5,4}, // x-
+				{1,2,6,5}, // y+
+				{2,3,7,6}, // x+
+				{3,0,4,7}, // y-
+				{4,5,6,7}  // z+ top
+			}; // FIXME duplicate!
+			assert(side_id < 6);
+			assert(i < 4);
+			return cSideVertices[side_id][i];
+		}
+
+		static inline void GetSideVertices(unsigned int vertex_id, unsigned int& a, unsigned int& b, unsigned int& c, unsigned int& d) {
+			a = GetSideVertexData(vertex_id, 0);
+			b = GetSideVertexData(vertex_id, 1);
+			c = GetSideVertexData(vertex_id, 2);
+			d = GetSideVertexData(vertex_id, 3);
+		}
+
+		static inline unsigned int SideVertexIndexOffset(unsigned int side_id, unsigned int i) {
+			return GetSideVertexIndexOffset(GetSideVertexData(side_id, i));
+		}
+
+		static inline CoordI GetSideNeighbour(const CoordI& cc_world, int side) {
+			int SideNeighbourDirection[6][3] = {
+				{0,0,-1},
+				{-1,0,0},
+				{0,+1,0},
+				{+1,0,0},
+				{0,-1,0},
+				{0,0,+1},
+			};
+			return CoordI(
+				cc_world.x + SideNeighbourDirection[side][0],
+				cc_world.y + SideNeighbourDirection[side][1],
+				cc_world.z + SideNeighbourDirection[side][2]
+			);
+		}
+
+		static inline CoordI GetVertexCoord(const CoordI& cc_world, int side_id, int i) {
+			int vertex_id = GetSideVertexData(side_id, i);
+			CoordI offset = GetVertexCoordOffset(vertex_id);
+			return cc_world + offset;
+		}
+
+	};
+
+	/**
+	 * Base must provide the following functions:
+	 * - derived from BaseProperties
+	 * - static void WorldToLocal(int wx, int wy, int wz, unsigned int& lx, unsigned int& ly, unsigned int& lz);
+	 * - static void WorldToCell(int wx, int wy, int wz, int& cx, int& cy, int& cz);
+	 * - static void CellLocalToWorld(int cx, int cy, int cz, unsigned int lx, unsigned int ly, unsigned int lz, int& wx, int& wy, int& wz);
+	 * - static void WorldToPosition(int wx, int wy, int wz, float& px, float& py, float& pz);
+	 * - static void WorldToPositionCenter(int vx, int vy, int vz, float& x, float& y, float& z);
+	 * - static void PositionToWorld(float px, float py, float pz, int& wx, int& wy, int&wz);
+	 * - static void PositionToWorld(float px, float py, float pz, int& wx, int& wy, int&wz, float& rx, float& ry, float& rz);
+	 * - static void GetSideNormal(const CoordI&, int side, float& nx, float& ny, float& nz);
 	 */
-	inline unsigned short BuildBorderSide(const Cu& c_local, unsigned int side) {
-		return (unsigned short)(
-			side + (c_local.x << BorderIdBits) + (c_local.y << (BorderIdBits + CellSizeShift)) + (c_local.z << (BorderIdBits + 2*CellSizeShift))
-		);
-	}
+	template<typename Base>
+	struct DerivedProperties
+	: public Base
+	{
+		static inline Cu WorldToLocal(const Ci& c_world) {
+			unsigned int lx, ly, lz;
+			Base::WorldToLocal(c_world.x, c_world.y, c_world.z, lx, ly, lz);
+			return CoordU(lx, ly, lz);
+		}
 
-	inline unsigned int WorldToIndex(const Ci& c) {
-		// FIXME optimize?
-		return c.x + CellSize * (c.y + CellSize * c.z);
-	}
+		static inline Ci WorldToCell(const Ci& c_world) {
+			int cx, cy, cz;
+			Base::WorldToCell(c_world.x, c_world.y, c_world.z, cx, cy, cz);
+			return Ci(cx, cy, cz);
+		}
 
-	inline Cu WorldToLocal(const Ci& c) {
-		return CoordU(
-			WorldToLocal(c.x),
-			WorldToLocal(c.y),
-			WorldToLocal(c.z)
-		);
-	}
+		static inline void WorldToCellLocal(const Ci& c_world, Ci& c_cell, Cu& c_local) {
+			Base::WorldToLocal(c_world.x, c_world.y, c_world.z, c_local.x, c_local.y, c_local.z);
+			Base::WorldToCell(c_world.x, c_world.y, c_world.z, c_cell.x, c_cell.y, c_cell.z);
+		}
 
-	inline Ci LocalToWorld(const Ci& c_cell, const Cu& c_local) {
-		return CoordI(
-			CellSize * c_cell.x + int(c_local.x),
-			CellSize * c_cell.y + int(c_local.y),
-			CellSize * c_cell.z + int(c_local.z));
-	}
+		static inline Ci CellLocalToWorld(const Ci& c_cell, const Cu& c_local) {
+			int wx, wy, wz;
+			Base::CellLocalToWorld(c_cell.x, c_cell.y, c_cell.z, c_local.x, c_local.y, c_local.z, wx, wy, wz);
+			return Ci(wx, wy, wz);
+		}
 
-	inline Ci LocalToWorld(const Ci& c_cell, const Ci& c_local) {
-		return CoordI(
-			CellSize * c_cell.x + c_local.x,
-			CellSize * c_cell.y + c_local.y,
-			CellSize * c_cell.z + c_local.z);
-	}
+		static inline Ci CellToWorld(const Ci& c_cell) {
+			int wx, wy, wz;
+			Base::CellLocalToWorld(c_cell.x, c_cell.y, c_cell.z, 0, 0, 0, wx, wy, wz);
+			return Ci(wx, wy, wz);
+		}
 
-	inline Ci WorldToCell(const Ci& c) {
-		return CoordI(
-			WorldToCell(c.x),
-			WorldToCell(c.y),
-			WorldToCell(c.z)
-		);
-	}
+		static inline unsigned int WorldToIndex(const Ci& c_world) {
+			unsigned int lx, ly, lz;
+			Base::WorldToLocal(c_world.x, c_world.y, c_world.z, lx, ly, lz);
+			return Base::LocalToIndex(lx, ly, lz);
+		}
 
-	inline void WorldToCellLocal(const Ci& c, Ci& c_cell, Cu& c_local) {
-		WorldToCellLocal(c.x, c_cell.x, c_local.x);
-		WorldToCellLocal(c.y, c_cell.y, c_local.y);
-		WorldToCellLocal(c.z, c_cell.z, c_local.z);
-	}
+		static inline void WorldToCellBorderSide(const Ci& c_world, unsigned int side, Ci& c_cell, BorderSideId& bs) {
+			Cu c_local;
+			WorldToCellLocal(c_world, c_cell, c_local);
+			bs = Base::BuildBorderSide(c_local, side);
+		}
 
-	inline int CellLocalToWorld(int cell, unsigned int local) {
-		 return int(CellSize) * cell + (int)local;
-	}
+		static inline void WorldToPosition(const CoordI& c_world, float& x, float& y, float& z) {
+			Base::WorldToPosition(c_world.x, c_world.y, c_world.z, x, y, z);
+		}
 
-	inline void CellLocalToWorld(const Ci& c_cell, const Cu& c_local, Ci& c_world) {
-		c_world.x = CellLocalToWorld(c_cell.x, c_local.x);
-		c_world.y = CellLocalToWorld(c_cell.y, c_local.y);
-		c_world.z = CellLocalToWorld(c_cell.z, c_local.z);
-	}
+		static inline Vec3f WorldToPosition(int vx, int vy, int vz) {
+			float x, y, z;
+			Base::WorldToPosition(vx, vy, vz, x, y, z);
+			return Vec3f(x, y, z);
+		}
 
-	inline void WorldToCellBorderSide(const Ci& c, unsigned int side, Ci& c_cell, BorderSideId& bs) {
-		Cu c_local;
-		WorldToCellLocal(c.x, c_cell.x, c_local.x);
-		WorldToCellLocal(c.y, c_cell.y, c_local.y);
-		WorldToCellLocal(c.z, c_cell.z, c_local.z);
-		bs = BuildBorderSide(c_local, side);
-	}
+		static inline Vec3f WorldToPosition(const CoordI& c_world) {
+			return WorldToPosition(c_world.x, c_world.y, c_world.z);
+		}
 
-	inline unsigned int VertexToIndex(unsigned int x, unsigned int y, unsigned int z) {
-		return VERTEX_2_INDEX(x, y, z);
-	}
+		static inline Vec3f CellMin(const Ci& c_world) {
+			return WorldToPosition(
+					int(Base::CellSize) * c_world.x,
+					int(Base::CellSize) * c_world.y,
+					int(Base::CellSize) * c_world.z);
+		}
 
-	inline Ci FirstInCell(const Ci& c) {
-		return CoordI(int(CellSize) * c.x, int(CellSize) * c.y, int(CellSize) * c.z);
-	}
+		static inline Vec3f CellMax(const Ci& c_world) {
+			return WorldToPosition(
+					int(Base::CellSize) * (c_world.x + 1),
+					int(Base::CellSize) * (c_world.y + 1),
+					int(Base::CellSize) * (c_world.z + 1));
+		}
 
-	inline float WorldToPosition(int w) {
-		return float(w);
-	}
+		static inline Vec3f CellMid(const Ci& c) {
+			return 0.5f * (CellMin(c) + CellMax(c));
+		}
 
-	inline Vec3f CellMin(const Ci& c) {
-		return Vec3f(
-			WorldToPosition(int(CellSize) * c.x),
-			WorldToPosition(int(CellSize) * c.y),
-			WorldToPosition(int(CellSize) * c.z));
-	}
+		static inline Vec3f WorldToPositionCenter(int wx, int wy, int wz) {
+			float x, y, z;
+			Base::WorldToPositionCenter(wx, wy, wz, x, y, z);
+			return Vec3f(x, y, z);
+		}
 
-	inline Vec3f CellMid(const Ci& c) {
-		return Vec3f(
-			WorldToPosition(int(CellSize) * c.x) + float(CellSize) * 0.5f,
-			WorldToPosition(int(CellSize) * c.y) + float(CellSize) * 0.5f,
-			WorldToPosition(int(CellSize) * c.z) + float(CellSize) * 0.5f);
-	}
+		static inline Vec3f WorldToPositionCenter(const Ci& cc_world) {
+			return WorldToPositionCenter(cc_world.x, cc_world.y, cc_world.z);
+		}
 
-	inline Vec3f CellMax(const Ci& c) {
-		return Vec3f(
-			WorldToPosition(int(CellSize) * (c.x + 1)),
-			WorldToPosition(int(CellSize) * (c.y + 1)),
-			WorldToPosition(int(CellSize) * (c.z + 1)));
-	}
+		static inline void WorldToPositionCenter(const Ci& cc_world, float& x, float& y, float& z) {
+			Base::WorldToPositionCenter(cc_world.x, cc_world.y, cc_world.z, x, y, z);
+		}
 
-	inline void WorldToPositionCenter(const Ci& cc_world, Vec3f& position) {
-		position(0) = WorldToPosition(cc_world.x) + 0.5f;
-		position(1) = WorldToPosition(cc_world.y) + 0.5f;
-		position(2) = WorldToPosition(cc_world.z) + 0.5f;
-	}
+		static inline void PositionToWorld(float px, float py, float pz, int& wx, int& wy, int&wz) {
+			// FIXME why??
+			Base::PositionToWorld(px, py, pz, wx, wy, wz);
+		}
 
-	inline float WorldToPositionCenter(int x) {
-		return WorldToPosition(x) + 0.5f;
-	}
+		static inline Ci PositionToWorld(float x, float y, float z) {
+			int wx, wy, wz;
+			Base::PositionToWorld(x, y, z, wx, wy, wz);
+			return Ci(wx, wy, wz);
+		}
 
-	inline Vec3f WorldToPositionCenter(int x, int y, int z) {
-		return Vec3f(
-			WorldToPosition(x) + 0.5f,
-			WorldToPosition(y) + 0.5f,
-			WorldToPosition(z) + 0.5f
-		);
-	}
+		static inline Ci PositionToWorld(const Vec3f& p) {
+			return PositionToWorld(p[0], p[1], p[2]);
+		}
 
-	inline Vec3f WorldToPositionCenter(const Ci& cc_world) {
-		return WorldToPositionCenter(cc_world.x, cc_world.y, cc_world.z);
-	}
+		static inline Ci PositionToWorld(const Vec3f& p, Vec3f& rest) {
+			int wx, wy, wz;
+			Base::PositionToWorld(p[0], p[1], p[2], wx, wy, wz, rest[0], rest[1], rest[2]);
+			return Ci(wx, wy, wz);
+		}
 
-	inline int PositionToInt(float p) {
-		return (p < 0) ? int(p) - 1 : int(p); // must round down!
-	}
+		static inline Vec3f SideNormal(const CoordI& cw, int side) {
+			float nx, ny, nz;
+			Base::GetSideNormal(cw, side, nx, ny, nz);
+			return Vec3f(nx, ny, nz);
+		}
 
-	inline int PositionToInt(float p, float& rest) {
-		int pi = PositionToInt(p);
-		rest = p - float(pi);
-		return pi;
-	}
+		static inline Vec3f CellCorner(const CoordI& c, unsigned int vertex_id) {
+			int dx, dy, dz;
+			Base::GetVertexPositionOffsets(vertex_id, dx, dy, dz);
+			return WorldToPosition(
+					int(Base::CellSize) * (c.x + dx),
+					int(Base::CellSize) * (c.y + dy),
+					int(Base::CellSize) * (c.z + dz));
+		}
 
-	inline Ci PositionToInt(float x, float y, float z) {
-		return Ci(
-			PositionToInt(x),
-			PositionToInt(y),
-			PositionToInt(z)
-		);
-	}
+	};
 
-	inline Ci PositionToInt(const Vec3f& position) {
-		return Ci(
-			PositionToInt(position(0)),
-			PositionToInt(position(1)),
-			PositionToInt(position(2))
-		);
-	}
+	struct PlanarProperties
+	: public BaseProperties
+	{
+	private:
+		static inline unsigned int WorldToLocal(int w) {
+			// solve w = a * n + b for b > 0 with n=CellSize and a an integer
+			return w & CellSizeMask;
+	//		if(w >= 0) {
+	//			return (unsigned int)(w) & CellSizeMask;
+	//		} else {
+	//			return CellSize - (1 + ((unsigned int)(-w - 1) & CellSizeMask));
+	//		}
+		}
 
-	inline Ci PositionToInt(const Vec3f& position, Vec3f& rest) {
-		return Ci(
-			PositionToInt(position(0), rest[0]),
-			PositionToInt(position(1), rest[1]),
-			PositionToInt(position(2), rest[2])
-		);
-	}
+		static inline int WorldToCell(int w) {
+			if(w >= 0) {
+				return int((unsigned int)(w) >> CellSizeShift);
+			} else {
+				return -int((1 + ((unsigned int)(-w - 1) >> CellSizeShift)));
+			}
+	//		if(w >= 0) {
+	//			return w >> CellSizeShift;
+	//		}
+	//		else {
+	//			return -((-w) >> CellSizeShift) - 1;
+	//		}
+		}
 
-	inline void PositionToInt(const Vec3f& position, Ci& cc_world) {
-		cc_world.x = PositionToInt(position(0));
-		cc_world.y = PositionToInt(position(1));
-		cc_world.z = PositionToInt(position(2));
-	}
+		static inline void WorldToCellLocal(int w, int& c_cell, unsigned int& c_local) {
+			if(w >= 0) {
+				unsigned int uw = (unsigned int)(w);
+				c_cell = int(uw >> CellSizeShift);
+				c_local = uw & CellSizeMask;
+			} else {
+				unsigned int uw = (unsigned int)(-w - 1);
+				c_cell =  -int((1 + (uw >> CellSizeShift)));
+				c_local = CellSize - (1 + (uw & CellSizeMask));
+			}
+	//		c_local = w & CellSizeMask;
+	//		if(w >= 0) {
+	//			c_cell = w >> CellSizeShift;
+	//		}
+	//		else {
+	//			c_cell = -((-w) >> CellSizeShift) - 1;
+	//		}
+		}
+
+		static inline int CellLocalToWorld(int cell, unsigned int local) {
+			 return int(CellSize) * cell + (int)local;
+		}
+
+		static inline int PositionToWorld(float p) {
+			return (p < 0) ? int(p) - 1 : int(p); // must round down!
+		}
+
+		static inline int PositionToWorld(float p, float& rest) {
+			int pi = PositionToWorld(p);
+			rest = p - float(pi);
+			return pi;
+		}
+
+		static inline float WorldToPosition(int w) {
+			return float(w);
+		}
+
+		static inline float WorldToPositionCenter(int x) {
+			return WorldToPosition(x) + 0.5f;
+		}
+
+	public:
+		static inline void WorldToLocal(int wx, int wy, int wz, unsigned int& lx, unsigned int& ly, unsigned int& lz) {
+			lx = WorldToLocal(wx);
+			ly = WorldToLocal(wy);
+			lz = WorldToLocal(wz);
+		}
+
+		static inline void WorldToCell(int wx, int wy, int wz, int& cx, int& cy, int& cz) {
+			cx = WorldToCell(wx);
+			cy = WorldToCell(wy);
+			cz = WorldToCell(wz);
+		}
+
+		static inline void CellLocalToWorld(int cx, int cy, int cz, unsigned int lx, unsigned int ly, unsigned int lz, int& wx, int& wy, int& wz) {
+			wx = CellLocalToWorld(cx, lx);
+			wy = CellLocalToWorld(cy, ly);
+			wz = CellLocalToWorld(cz, lz);
+		}
+
+		static inline void WorldToPosition(int vx, int vy, int vz, float& x, float& y, float& z) {
+			x = WorldToPosition(vx);
+			y = WorldToPosition(vy);
+			z = WorldToPosition(vz);
+		}
+
+		static inline void WorldToPositionCenter(int vx, int vy, int vz, float& x, float& y, float& z) {
+			x = WorldToPositionCenter(vx);
+			y = WorldToPositionCenter(vy);
+			z = WorldToPositionCenter(vz);
+		}
+
+		static inline void PositionToWorld(float px, float py, float pz, int& wx, int& wy, int&wz) {
+			wx = PositionToWorld(px);
+			wy = PositionToWorld(py);
+			wz = PositionToWorld(pz);
+		}
+
+		static inline void PositionToWorld(float px, float py, float pz, int& wx, int& wy, int&wz, float& rx, float& ry, float& rz) {
+			wx = PositionToWorld(px, rx);
+			wy = PositionToWorld(py, ry);
+			wz = PositionToWorld(pz, rz);
+		}
+
+		static inline void GetSideNormal(const CoordI&, int side, float& nx, float& ny, float& nz) {
+			float cNormalData[6][3] = {
+				{0, 0, -1}, // 0
+				{-1, 0, 0}, // 1
+				{0, +1, 0}, // 2
+				{+1, 0, 0}, // 3
+				{0, -1, 0}, // 4
+				{0, 0, +1}  // 5
+			};
+			nx = cNormalData[side][0];
+			ny = cNormalData[side][1];
+			nz = cNormalData[side][2];
+		}
+
+	};
+
+	struct ConeProperties
+	: public BaseProperties
+	{
+
+	};
+
+//	struct SphereProperties
+//	: public BaseProperties
+//	{
+//
+//	};
 
 }
 
-namespace Geometry
-{
-	const float normals[6][3] = {
-		{0, 0, -1}, // 0
-		{-1, 0, 0}, // 1
-		{0, +1, 0}, // 2
-		{+1, 0, 0}, // 3
-		{0, -1, 0}, // 4
-		{0, 0, +1}  // 5
-	};
-
-	const int Tangential[6][3] = {
-		{1, 0, 2},
-		{2, 1, 0},
-		{2, 0, 1},
-		{1, 2, 0},
-		{0, 2, 1},
-		{0, 1, 2}
-	};
-
-	inline int SideIndexX(int sign) {
-		return (sign < 0) ? 1 : 3;
-	}
-
-	inline int SideIndexY(int sign) {
-		return (sign < 0) ? 4 : 2;
-	}
-
-	inline int SideIndexZ(int sign) {
-		return (sign < 0) ? 0 : 5;
-	}
-
-	inline int TopSide() {
-		return 5;
-	}
-
-	inline void SideNormal(int side, float& nx, float& ny, float& nz) {
-		nx = normals[side][0];
-		ny = normals[side][1];
-		nz = normals[side][2];
-	}
-
-	inline Vec3f SideNormal(int side) {
-		return Vec3f(normals[side][0], normals[side][1], normals[side][2]);
-	}
-
-	const int VertexPositionOffset[8][3] = {
-		// FIXME there is a repetition of this in VertexIndexOffset!
-		{0,0,0}, // 0
-		{0,1,0}, // 1
-		{1,1,0}, // 2
-		{1,0,0}, // 3
-		{0,0,1}, // 4
-		{0,1,1}, // 5
-		{1,1,1}, // 6
-		{1,0,1}  // 7
-	};
-
-	inline Vec3f CellCorner(const CoordI& c, unsigned int i) {
-		assert(i < 8);
-		return Vec3f(float(int(Common::CellSize) * (c.x + VertexPositionOffset[i][0])),
-					 float(int(Common::CellSize) * (c.y + VertexPositionOffset[i][1])),
-					 float(int(Common::CellSize) * (c.z + VertexPositionOffset[i][2]))
-		);
-	}
-
-	const int SideVertexIndices[6][4] = {
-		{0,3,2,1}, // z- bottom
-		{0,1,5,4}, // x-
-		{1,2,6,5}, // y+
-		{2,3,7,6}, // x+
-		{3,0,4,7}, // y-
-		{4,5,6,7}  // z+ top
-	};
-
-	const int VertexIndexOffset[8] = {
-		// FIXME this is a repetition of VertexPositionOffset!
-		VERTEX_2_INDEX(0,0,0),
-		VERTEX_2_INDEX(0,1,0),
-		VERTEX_2_INDEX(1,1,0),
-		VERTEX_2_INDEX(1,0,0),
-		VERTEX_2_INDEX(0,0,1),
-		VERTEX_2_INDEX(0,1,1),
-		VERTEX_2_INDEX(1,1,1),
-		VERTEX_2_INDEX(1,0,1)
-	};
-
-	inline int SideVertexIndexOffset(unsigned int sideIndex, unsigned int vertexIndex) {
-		return VertexIndexOffset[SideVertexIndices[sideIndex][vertexIndex]];
-	}
-
-	const int SideNeighbourDirection[6][3] = {
-		{0,0,-1},
-		{-1,0,0},
-		{0,+1,0},
-		{+1,0,0},
-		{0,-1,0},
-		{0,0,+1},
-	};
-
-
-	inline CoordI GetSideNeighbour(const CoordI& cc_world, int side) {
-		return CoordI(
-			cc_world.x + SideNeighbourDirection[side][0],
-			cc_world.y + SideNeighbourDirection[side][1],
-			cc_world.z + SideNeighbourDirection[side][2]
-		);
-	}
-
-	inline void GetVertexPosition(const CoordI& cc_world, int side, int vertex, float& px, float& py, float& pz) {
-		px = Common::WorldToPosition(cc_world.x + VertexPositionOffset[SideVertexIndices[side][vertex]][0]);
-		py = Common::WorldToPosition(cc_world.y + VertexPositionOffset[SideVertexIndices[side][vertex]][1]);
-		pz = Common::WorldToPosition(cc_world.z + VertexPositionOffset[SideVertexIndices[side][vertex]][2]);
-	}
-}
+typedef CandyCubes::DerivedProperties<CandyCubes::PlanarProperties> Properties;
 
 namespace Exceptions
 {
 	struct InvalidCell {};
 }
+

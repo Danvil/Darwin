@@ -44,9 +44,8 @@ namespace Candy
 		}
 
 		float GetHeight(const Vec3f& position) {
-			int cx = Common::PositionToInt(position[0]);
-			int cy = Common::PositionToInt(position[1]);
-			return float(height_lookup_.GetGroundZ(cx, cy, position[2]));
+			CoordI c_world = Properties::PositionToWorld(position);
+			return float(height_lookup_.GetGroundZ(c_world.x, c_world.y, position[2]));
 		}
 
 	private:

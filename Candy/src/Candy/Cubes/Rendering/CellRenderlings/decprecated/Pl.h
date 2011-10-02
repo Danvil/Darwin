@@ -35,7 +35,7 @@ namespace CellRenderlings
 			static void Add(std::vector<PlVertex>* vertices, const CoordI& cc_world, const Cube& cube, int side) {
 				for(int i = 0; i < 4; i++) {
 					PlVertex v;
-					Geometry::GetVertexPosition(cc_world, side, i, v.px, v.py, v.pz);
+					Properties::GetVertexPosition(cc_world, side, i, v.px, v.py, v.pz);
 					const CubeSideLightData& light = cube.data().lighting[side];
 					v.ambient = light.ambient;
 					v.scenery_r = light.scenery.x;

@@ -9,7 +9,7 @@ namespace Appearance
 {
 	CANDY_API void Load(const std::string& asset_dir);
 
-	inline int CubeTypeToTextureIndex(CubeType type) {
+	inline unsigned int CubeTypeToTextureIndex(CubeType type) {
 		switch(type) {
 //		case CubeTypes::Grass: return 0;
 		case CubeTypes::Mud: return 1;

@@ -72,12 +72,12 @@ void CubesRenderling::NotifyInvalidate(Cell* cell)
 
 bool CubesRenderling::IsVisible(const Ci& c_cell)
 {
-	const float cRadius = float(Common::CellSize);
-	if(IDrawable::sCamera->DistanceToEye(Common::CellMid(c_cell)) < cRadius) {
+	const float cRadius = float(Properties::CellSize);
+	if(IDrawable::sCamera->DistanceToEye(Properties::CellMid(c_cell)) < cRadius) {
 		return true;
 	}
 	for(int i=0; i<8; i++) {
-		Vec3f p = Geometry::CellCorner(c_cell, i);
+		Vec3f p = Properties::CellCorner(c_cell, i);
 		if(IDrawable::sCamera->IsVisibleByCamera(p)) {
 			return true;
 		}

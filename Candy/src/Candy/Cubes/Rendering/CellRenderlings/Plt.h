@@ -45,23 +45,22 @@ namespace CellRenderlings
 				const unsigned int N = 1;
 				const float D = 1.0f / float(N) / 4.0f;
 
-				int tex_index = Appearance::CubeTypeToTextureIndex(type);
-				int tex_u = tex_index & 3;
-				int tex_v = 3 - tex_index / 4;
+				unsigned int tex_index = Appearance::CubeTypeToTextureIndex(type);
+				unsigned int tex_u = tex_index & 3;
+				unsigned int tex_v = 3 - tex_index / 4;
 
 				int ccw[3] = { cc_world.x, cc_world.y, cc_world.z };
 
-				int t1 = Geometry::Tangential[side][0];
-				int t2 = Geometry::Tangential[side][1];
-				int t3 = Geometry::Tangential[side][2];
+				unsigned int t1, t2, t3;
+				Properties::GetTangential(side, t1, t2, t3);
 
-				int vert = Geometry::SideVertexIndices[side][vertex];
+				unsigned int vert = Properties::GetSideVertexData(side, vertex);
 
-				int du = Geometry::VertexPositionOffset[vert][t1];
-				int dv = Geometry::VertexPositionOffset[vert][t2];
+				unsigned int du = Properties::GetVertexPositionOffset(vert, t1);
+				unsigned int dv = Properties::GetVertexPositionOffset(vert, t2);
 
-				int ubase = (ccw[t1] + ccw[t3]) % N;
-				int vbase = (ccw[t2] + ccw[t3]) % N;
+				unsigned int ubase = (unsigned int)((ccw[t1] + ccw[t3]) % N);
+				unsigned int vbase = (unsigned int)((ccw[t2] + ccw[t3]) % N);
 
 				u = D * float(tex_u + ubase + du);
 				v = D * float(tex_v + vbase + dv);
@@ -80,7 +79,8 @@ namespace CellRenderlings
 				const CubeSideLightData& light = data->lighting;
 				for(int i = 0; i < 4; i++) {
 					Vertex v;
-					Geometry::GetVertexPosition(cc_world, side, i, v.px, v.py, v.pz);
+					CoordI vertex_coord = Properties::GetVertexCoord(cc_world, side, i);
+					Properties::WorldToPosition(vertex_coord, v.px, v.py, v.pz);
 
 //					// randomly resizes cubes for a more natural look
 //					float dx = 0.257f * Perlin::NoiseMPScl(v.px+0.23f, v.py, v.pz, 10.0f);

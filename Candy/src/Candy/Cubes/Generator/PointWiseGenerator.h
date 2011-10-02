@@ -36,8 +36,8 @@ public:
 //	}
 
 	void Generate(Cell* cell) {
-		CoordI cw_start = Common::FirstInCell(cell->coordinate());
-		CoordI cw_end = cw_start + CoordI(Common::CellSize, Common::CellSize, Common::CellSize);
+		CoordI cw_start = Properties::CellToWorld(cell->coordinate());
+		CoordI cw_end = cw_start + CoordI(Properties::CellSize, Properties::CellSize, Properties::CellSize);
 		CoordI p;
 		unsigned int index = 0;
 		for(p.z=cw_start.z; p.z<cw_end.z; p.z++) {

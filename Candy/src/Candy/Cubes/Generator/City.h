@@ -20,7 +20,7 @@ namespace Generators
 			const unsigned int lamp_h = 3;
 			const unsigned int house = 8;
 			const unsigned int house_h = 6;
-			CoordU cl = Common::WorldToLocal(cw);
+			CoordU cl = Properties::WorldToLocal(cw);
 			// ground
 			if(cw.z < 0) {
 				return CubeTypes::Mud;

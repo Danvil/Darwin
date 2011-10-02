@@ -16,9 +16,8 @@ namespace Generators
 	{
 		CubeType operator()(const CoordI& cw) {
 			const double cScale = 0.03;
-			float px = Common::WorldToPositionCenter(cw.x);
-			float py = Common::WorldToPositionCenter(cw.y);
-			float pz = Common::WorldToPositionCenter(cw.z);
+			float px, py, pz;
+			Properties::WorldToPositionCenter(cw, px, py, pz);
 			double n = Perlin::NoiseMP(cScale * px, cScale * py, cScale * pz);
 			if(n > 0) {
 				return CubeTypes::Mud;
