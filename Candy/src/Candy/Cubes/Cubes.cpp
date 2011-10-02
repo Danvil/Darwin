@@ -99,6 +99,20 @@ bool Cubes::Pick(const Vec3f& a, const Vec3f& u, float max_distance)
 	return Collision::CubesRayCubeWalk(this, a, u, max_distance, dist);
 }
 
+namespace Impl
+{
+	inline void vitalize_cube_no_lighting(Cubes*, const Cell::BorderSideIterator& it) {
+		CubeSideData* x = it.data();
+		x->object_color = Appearance::CubeBaseColor(it.type());
+	}
+
+	inline void vitalize_cube_with_lighting(Cubes* cubes, const Cell::BorderSideIterator& it) {
+		vitalize_cube_no_lighting(cubes, it);
+		// use fast direct lighting algorithm to compute lighting
+		Hexa::Lighting::DirectLighting::ComputeCube(cubes, it);
+	}
+}
+
 void Cubes::VitalizeCubeData(Cell* cell)
 {
 	if(cell->IsFullyEmpty()) {
@@ -140,14 +154,14 @@ void Cubes::VitalizeCubeData(Cell* cell)
 				*(jt.data()) = *(old_side_data->Get(id));
 			}
 			else {
-				VitalizeCube(jt);
+				Impl::vitalize_cube_with_lighting(this, jt);
 			}
 		}
 	}
 	else {
 		// set cube side base color
 		for(Cell::BorderSideIterator jt=cell->IterateBorderSides(); jt; ++jt) {
-			VitalizeCube(jt);
+			Impl::vitalize_cube_no_lighting(this, jt);
 		}
 	}
 	// delete old
@@ -161,12 +175,14 @@ void Cubes::VitalizeCubeData(Cell* cell)
 	}
 }
 
-void Cubes::VitalizeCube(const Cell::BorderSideIterator& it)
+void Cubes::VitalizeCube(const Cell::BorderSideIterator& it, bool compute_lighting)
 {
-	CubeSideData* x = it.data();
-	x->object_color = Appearance::CubeBaseColor(it.type());
-	// use fast direct lighting algorithm to compute lighting
-	Hexa::Lighting::DirectLighting::ComputeCube(this, it);
+	if(compute_lighting) {
+		Impl::vitalize_cube_with_lighting(this, it);
+	}
+	else {
+		Impl::vitalize_cube_no_lighting(this, it);
+	}
 }
 
 unsigned int Cubes::CountBorderCubes(const Ci& c_cell) const

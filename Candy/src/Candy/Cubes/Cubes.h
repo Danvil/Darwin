@@ -161,7 +161,11 @@ public:
 	/** Adds CubeData for border cubes and deletes cube data for interior cubes */
 	void VitalizeCubeData(Cell* cell);
 
-	void VitalizeCube(const Cell::BorderSideIterator& it);
+	/** Resets cube data
+	 * @param it BorderSideIterator pointing to the cube
+	 * @param compute_lighting specifies if lighting should be computed immediately
+	 */
+	void VitalizeCube(const Cell::BorderSideIterator& it, bool compute_lighting);
 
 	/** Counts the number of border cubes for a cell */
 	unsigned int CountBorderCubes(const Ci& c_cell) const;
