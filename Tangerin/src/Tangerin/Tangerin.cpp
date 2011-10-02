@@ -26,13 +26,9 @@
 void GenerateWorld(Ptr(Cubes) cubes)
 {
 #ifdef NDEBUG
-	const int cCellRange = 16;
-	const int cCellRangeZMin = -4;
-	const int cCellRangeZMax = +4;
-#elif PROFILE
-	const int cCellRange = 1;
-	const int cCellRangeZMin = -1;
-	const int cCellRangeZMax = +1;
+	const int cCellRange = 4;
+	const int cCellRangeZMin = -2;
+	const int cCellRangeZMax = +2;
 #else
 	const int cCellRange = 2;
 	const int cCellRangeZMin = -1;
