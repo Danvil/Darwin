@@ -513,12 +513,13 @@ namespace CandyCubes
 	: public BaseProperties
 	{
 		/** Number of cells around the cone perimeter */
-		static const int cPerimeterCellCount = 16;
-		static const int cPerimeterCubeCount = cPerimeterCellCount * CellSize;
-		static const float cRadius = 40.7416201033f; //1.0f / (2.0f * std::tan(3.14159265359f / float(cPerimeterCellCount * CellSize)));
+//		static const int cPerimeterCellCount = 16;
+//		static const float cRadius = 40.7416201033f; //1.0f / (2.0f * std::tan(3.14159265359f / float(cPerimeterCellCount * CellSize)));
 
-//		static const int cPerimeterCellCount = 64;
-//		static const float cRadius = 162.974150399f; //1.0f / (2.0f * std::tan(3.14159265359f / float(cPerimeterCellCount * CellSize)));
+		static const int cPerimeterCellCount = 64;
+		static const float cRadius = 162.974150399f; //1.0f / (2.0f * std::tan(3.14159265359f / float(cPerimeterCellCount * CellSize)));
+
+		static const int cPerimeterCubeCount = cPerimeterCellCount * CellSize;
 
 	private:
 		static inline unsigned int WrappedWorld(int w) {
@@ -583,7 +584,7 @@ namespace CandyCubes
 		}
 
 		static inline void WorldToPosition(int vx, int vy, int vz, float& x, float& y, float& z) {
-			float phi = PerimeterAngle(x);
+			float phi = PerimeterAngle(vx);
 			float r = cRadius + float(vz);
 			x = r * std::sin(phi);
 			y = float(vy);
@@ -591,7 +592,7 @@ namespace CandyCubes
 		}
 
 		static inline void WorldToPositionCenter(int vx, int vy, int vz, float& x, float& y, float& z) {
-			float phi = PerimeterAngle(x);
+			float phi = PerimeterAngle(vx);
 			float r = cRadius + float(vz) + 0.5f;
 			x = r * std::sin(phi);
 			y = float(vy) + 0.5f;

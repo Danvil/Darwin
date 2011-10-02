@@ -40,7 +40,7 @@ void GenerateWorld(Ptr(Cubes) cubes)
 //	WorldSize ws(cCellRange, cCellRangeZMin, cCellRangeZMax);
 	WorldSize ws;
 	ws.x1 = 0;
-	ws.x2 = 8;
+	ws.x2 = 64;
 	ws.y1 = -4;
 	ws.y2 = +4;
 	ws.z1 = -1;

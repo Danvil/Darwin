@@ -41,6 +41,9 @@ namespace Lighting
 		Vec3f pos = Properties::WorldToPositionCenter(cw);
 		const bool cRandomSamples = false;
 		Vec3f n = Properties::SideNormal(cw, sideIndex);
+
+		return n.dot(Appearance::SunPosition);
+
 		if(cRandomSamples) {
 			const unsigned int cSamples = 5;
 			const float cCenterWeight = 0.4f;
