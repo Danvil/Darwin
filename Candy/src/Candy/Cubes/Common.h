@@ -547,6 +547,7 @@ namespace CandyCubes
 		}
 
 		static const float c2Pi = 6.28318530718f;
+		static const float cPi = 3.14159265359f;
 
 		static inline float PerimeterAngle(int x) {
 			unsigned int w = WrappedWorld(x);
@@ -555,7 +556,7 @@ namespace CandyCubes
 		}
 
 		static unsigned int PerimeterAngleToCube(float phi, float& rest) {
-			assert(0 <= phi && phi < c2Pi);
+			assert(0 <= phi && phi <= c2Pi);
 			float w = phi / c2Pi * float(cPerimeterCubeCount);
 			float wi_floored = std::floor(w);
 			rest = w - wi_floored;
@@ -601,6 +602,9 @@ namespace CandyCubes
 			// convert (px,pz) to polar coordinates
 			float r = std::sqrt(px*px + pz*pz);
 			float phi = std::atan2(px, pz);
+			if(phi < 0) {
+				phi += c2Pi;
+			}
 			float w_rest;
 			wx = int(PerimeterAngleToCube(phi, w_rest));
 			wy = int(std::floor(py));
@@ -611,6 +615,9 @@ namespace CandyCubes
 			// convert (px,pz) to polar coordinates
 			float r = std::sqrt(px*px + pz*pz);
 			float phi = std::atan2(px, pz);
+			if(phi < 0) {
+				phi += c2Pi;
+			}
 			wx = int(PerimeterAngleToCube(phi, rx));
 			float wy_floored = std::floor(py);
 			wy = int(wy_floored);
