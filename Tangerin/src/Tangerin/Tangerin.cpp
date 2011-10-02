@@ -29,8 +29,12 @@ void GenerateWorld(Ptr(Cubes) cubes)
 	const int cCellRange = 16;
 	const int cCellRangeZMin = -4;
 	const int cCellRangeZMax = +4;
-#else
+#elif PROFILE
 	const int cCellRange = 1;
+	const int cCellRangeZMin = -1;
+	const int cCellRangeZMax = +1;
+#else
+	const int cCellRange = 2;
 	const int cCellRangeZMin = -1;
 	const int cCellRangeZMax = +1;
 #endif
