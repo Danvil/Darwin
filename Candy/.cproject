@@ -93,7 +93,8 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="src/Candy|src/Candy/Cubes/Background.cpp|src/Candy/Cubes/Rendering/CellRenderlings/Pnc.cpp|src/Candy/Cubes/Rendering/CellRenderlings/Pl.cpp|src/Cubes/Background.cpp|src/Cubes/Rendering/CellRenderlings/Pnc.cpp|src/Cubes/Rendering/CellRenderlings/Pl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry excluding="Cubes/Rendering/CellRenderlings/decprecated|Cubes/Rendering/CellRenderlings/Pl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Candy"/>
+						<entry excluding="Cubes|Cubes/Rendering/CellRenderlings/decprecated|Cubes/Rendering/CellRenderlings/Pl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Candy"/>
+						<entry excluding="Rendering/CellRenderlings/decprecated" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Candy/Cubes"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -190,8 +191,9 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
+						<entry excluding="Cubes|Cubes/Rendering/CellRenderlings/decprecated|Cubes/Rendering/CellRenderlings/Pl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Candy"/>
 						<entry excluding="src/Candy|src/Candy/Cubes/Background.cpp|src/Candy/Cubes/Rendering/CellRenderlings/Pnc.cpp|src/Candy/Cubes/Rendering/CellRenderlings/Pl.cpp|src/Cubes/Background.cpp|src/Cubes/Rendering/CellRenderlings/Pnc.cpp|src/Cubes/Rendering/CellRenderlings/Pl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry excluding="Cubes/Rendering/CellRenderlings/decprecated|Cubes/Rendering/CellRenderlings/Pl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Candy"/>
+						<entry excluding="Rendering/CellRenderlings/decprecated" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Candy/Cubes"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -220,7 +222,7 @@
 					<folderInfo id="cdt.managedbuild.config.gnu.mingw.so.debug.1313571298." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.base.1225397090" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.base">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.target.gnu.platform.base.413663979" name="Debug Platform" osList="linux,hpux,aix,qnx" superClass="cdt.managedbuild.target.gnu.platform.base"/>
-							<builder buildPath="${workspace_loc:/Candy/LinuxDebug}" id="cdt.managedbuild.target.gnu.builder.base.1349770540" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="-2" superClass="cdt.managedbuild.target.gnu.builder.base"/>
+							<builder buildPath="${workspace_loc:/Candy/LinuxDebug}" id="cdt.managedbuild.target.gnu.builder.base.1349770540" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="4" superClass="cdt.managedbuild.target.gnu.builder.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.353123655" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.1038799989" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
 								<option id="gnu.cpp.compiler.option.include.paths.1311687658" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
@@ -273,7 +275,8 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src/Candy/Cubes/Rendering/CellRenderlings/decprecated|src/Candy/Cubes/Rendering/CellRenderlings/Pl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="src/Candy/Cubes|src/Candy/Cubes/Rendering/CellRenderlings/decprecated|src/Candy/Cubes/Rendering/CellRenderlings/Pl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="Rendering/CellRenderlings/decprecated" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Candy/Cubes"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -302,7 +305,7 @@
 					<folderInfo id="cdt.managedbuild.config.gnu.mingw.so.release.2064549419." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.base.2045543780" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.base">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.target.gnu.platform.base.711223863" name="Debug Platform" osList="linux,hpux,aix,qnx" superClass="cdt.managedbuild.target.gnu.platform.base"/>
-							<builder buildPath="${workspace_loc:/Candy/LinuxRelease}" id="cdt.managedbuild.target.gnu.builder.base.980653566" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="-2" superClass="cdt.managedbuild.target.gnu.builder.base"/>
+							<builder buildPath="${workspace_loc:/Candy/LinuxRelease}" id="cdt.managedbuild.target.gnu.builder.base.980653566" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="4" superClass="cdt.managedbuild.target.gnu.builder.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1708018281" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.697100189" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
 								<option id="gnu.cpp.compiler.option.include.paths.948750077" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
@@ -356,7 +359,8 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src/Candy/Cubes/Rendering/CellRenderlings/decprecated|src/Candy/Cubes/Rendering/CellRenderlings/Pl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="src/Candy/Cubes|src/Candy/Cubes/Rendering/CellRenderlings/decprecated|src/Candy/Cubes/Rendering/CellRenderlings/Pl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="Rendering/CellRenderlings/decprecated" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Candy/Cubes"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -385,7 +389,7 @@
 					<folderInfo id="cdt.managedbuild.config.gnu.mingw.so.release.2064549419.376453395." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.base.549916490" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.base">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.target.gnu.platform.base.2102261812" name="Debug Platform" osList="linux,hpux,aix,qnx" superClass="cdt.managedbuild.target.gnu.platform.base"/>
-							<builder buildPath="${workspace_loc:/Candy/LinuxRelease}" id="cdt.managedbuild.target.gnu.builder.base.1472568688" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="-2" superClass="cdt.managedbuild.target.gnu.builder.base"/>
+							<builder buildPath="${workspace_loc:/Candy/LinuxRelease}" id="cdt.managedbuild.target.gnu.builder.base.1472568688" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="4" superClass="cdt.managedbuild.target.gnu.builder.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1409960821" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.1792909272" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
 								<option id="gnu.cpp.compiler.option.include.paths.985114887" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
@@ -441,7 +445,8 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src/Candy/Cubes/Rendering/CellRenderlings/decprecated|src/Candy/Cubes/Rendering/CellRenderlings/Pl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="src/Candy/Cubes|src/Candy/Cubes/Rendering/CellRenderlings/decprecated|src/Candy/Cubes/Rendering/CellRenderlings/Pl.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="Rendering/CellRenderlings/decprecated" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Candy/Cubes"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -451,12 +456,22 @@
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="Candy.cdt.managedbuild.target.gnu.mingw.so.233329031" name="Shared Library" projectType="cdt.managedbuild.target.gnu.mingw.so"/>
 	</storageModule>
+	<storageModule moduleId="refreshScope" versionNumber="1">
+		<resource resourceType="PROJECT" workspacePath="/Candy"/>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.so.debug.665603052;cdt.managedbuild.config.gnu.mingw.so.debug.665603052.;cdt.managedbuild.tool.gnu.cpp.compiler.mingw.so.debug.1149051574;cdt.managedbuild.tool.gnu.cpp.compiler.input.2000669470">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
 		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.so.release.2064549419.376453395;cdt.managedbuild.config.gnu.mingw.so.release.2064549419.376453395.;cdt.managedbuild.tool.gnu.cpp.compiler.base.1792909272;cdt.managedbuild.tool.gnu.cpp.compiler.input.13808054">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.so.debug.665603052;cdt.managedbuild.config.gnu.mingw.so.debug.665603052.;cdt.managedbuild.tool.gnu.c.compiler.mingw.so.debug.48454373;cdt.managedbuild.tool.gnu.c.compiler.input.2011339322">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.so.release.2064549419.376453395;cdt.managedbuild.config.gnu.mingw.so.release.2064549419.376453395.;cdt.managedbuild.tool.gnu.c.compiler.base.1448384849;cdt.managedbuild.tool.gnu.c.compiler.input.1323967875">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.so.release.592598641;cdt.managedbuild.config.gnu.mingw.so.release.592598641.;cdt.managedbuild.tool.gnu.cpp.compiler.mingw.so.release.1825819901;cdt.managedbuild.tool.gnu.cpp.compiler.input.1282785629">
@@ -466,8 +481,4 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
 		</scannerConfigBuildInfo>
 	</storageModule>
-	<storageModule moduleId="refreshScope" versionNumber="1">
-		<resource resourceType="PROJECT" workspacePath="/Candy"/>
-	</storageModule>
-	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>
