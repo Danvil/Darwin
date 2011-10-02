@@ -1,0 +1,21 @@
+
+--- --- CANDY TODO --- ---
+
+
+--- CUBES TODO ---
+
+* water
+* save (additionally) cube data such that it can be copied and replaced
+* use photon mapping for GI (save photons in cubes) 
+* user defined cube type and appearance properties (with a template?)
+* transparent cubes for GI
+* better lighting randomness / remove artifacts
+* Cube size should be variable (at least n or 2^n cubes per meter)
+* add option to switch between infinite world and fixed size world
+  - auto cell generation
+  - cell storage
+* put all code into the namespace 'Cubes'
+* create easy to use interface class
+* use shared pointers instead of C pointers
+
+ 

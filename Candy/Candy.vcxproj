@@ -1,0 +1,176 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Candy\Animation.h" />
+    <ClInclude Include="src\Candy\CoordinateCross.h" />
+    <ClInclude Include="src\Candy\GlutHook.h" />
+    <ClInclude Include="src\Candy\Group.h" />
+    <ClInclude Include="src\Candy\IDrawable.h" />
+    <ClInclude Include="src\Candy\IEngine.h" />
+    <ClInclude Include="src\Candy\Mesh.h" />
+    <ClInclude Include="src\Candy\Node.h" />
+    <ClInclude Include="src\Candy\OpenGL.h" />
+    <ClInclude Include="src\Candy\PtnVisual.h" />
+    <ClInclude Include="src\Candy\Resources.h" />
+    <ClInclude Include="src\Candy\Resources\MeshFactory.h" />
+    <ClInclude Include="src\Candy\Resources\Resource.h" />
+    <ClInclude Include="src\Candy\Resources\ResourceInfo.h" />
+    <ClInclude Include="src\Candy\Resources\ResourcePool.h" />
+    <ClInclude Include="src\Candy\Resources\ShaderProgram.h" />
+    <ClInclude Include="src\Candy\Resources\Texture.h" />
+    <ClInclude Include="src\Candy\Scene.h" />
+    <ClInclude Include="src\Candy\Shader.h" />
+    <ClInclude Include="src\Candy\Tests\Crate.h" />
+    <ClInclude Include="src\Candy\Tests\Fractal.h" />
+    <ClInclude Include="src\Candy\Uniform.h" />
+    <ClInclude Include="src\Candy\View.h" />
+    <ClInclude Include="src\slgui\common.h" />
+    <ClInclude Include="src\SLGUI\Layout.h" />
+    <ClInclude Include="src\slgui\manager.h" />
+    <ClInclude Include="src\slgui\object.h" />
+    <ClInclude Include="src\SLGUI\Painter.h" />
+    <ClInclude Include="src\slgui\scheme.h" />
+    <ClInclude Include="src\slgui\widget.h" />
+    <ClInclude Include="src\SLGUI\Widgets\Button.h" />
+    <ClInclude Include="src\SLGUI\Widgets\Frame.h" />
+    <ClInclude Include="src\SLGUI\Widgets\KeyValueList.h" />
+    <ClInclude Include="src\SLGUI\Widgets\Label.h" />
+    <ClInclude Include="src\SLGUI\Widgets\ListBox.h" />
+    <ClInclude Include="src\SLGUI\Widgets\TextBox.h" />
+    <ClInclude Include="src\SLGUI\Widgets\Window.h" />
+    <ClInclude Include="src\Tools\Benchmark.h" />
+    <ClInclude Include="src\Tools\Containers.h" />
+    <ClInclude Include="src\tools\coord.h" />
+    <ClInclude Include="src\Tools\Coord2.h" />
+    <ClInclude Include="src\Tools\FunctionCache.h" />
+    <ClInclude Include="src\Tools\Image.h" />
+    <ClInclude Include="src\tools\image3ub.h" />
+    <ClInclude Include="src\tools\linalg.h" />
+    <ClInclude Include="src\Tools\Math.h" />
+    <ClInclude Include="src\Tools\MoreStd.h" />
+    <ClInclude Include="src\tools\perlin.h" />
+    <ClInclude Include="src\Tools\Plot.h" />
+    <ClInclude Include="src\tools\ptr.h" />
+    <ClInclude Include="src\tools\random.h" />
+    <ClInclude Include="src\tools\timer.h" />
+    <ClInclude Include="src\Tools\ToString.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Candy\Animation.cpp" />
+    <ClCompile Include="src\Candy\CoordinateCross.cpp" />
+    <ClCompile Include="src\Candy\GlutHook.cpp" />
+    <ClCompile Include="src\Candy\Group.cpp" />
+    <ClCompile Include="src\Candy\Mesh.cpp" />
+    <ClCompile Include="src\Candy\Node.cpp" />
+    <ClCompile Include="src\Candy\PtnVisual.cpp" />
+    <ClCompile Include="src\Candy\Resources.cpp" />
+    <ClCompile Include="src\Candy\Resources\MeshFactory.cpp" />
+    <ClCompile Include="src\Candy\Resources\ResourceInfo.cpp" />
+    <ClCompile Include="src\Candy\Resources\ResourcePool.cpp" />
+    <ClCompile Include="src\Candy\Resources\ShaderProgram.cpp" />
+    <ClCompile Include="src\Candy\Resources\Texture.cpp" />
+    <ClCompile Include="src\Candy\Scene.cpp" />
+    <ClCompile Include="src\Candy\Shader.cpp" />
+    <ClCompile Include="src\Candy\Tests\Crate.cpp" />
+    <ClCompile Include="src\Candy\Tests\Fractal.cpp" />
+    <ClCompile Include="src\Candy\Uniform.cpp" />
+    <ClCompile Include="src\Candy\View.cpp" />
+    <ClCompile Include="src\SLGUI\Layout.cpp" />
+    <ClCompile Include="src\SLGUI\Manager.cpp" />
+    <ClCompile Include="src\SLGUI\Object.cpp" />
+    <ClCompile Include="src\SLGUI\Painter.cpp" />
+    <ClCompile Include="src\SLGUI\Scheme.cpp" />
+    <ClCompile Include="src\SLGUI\Widget.cpp" />
+    <ClCompile Include="src\SLGUI\Widgets\Button.cpp" />
+    <ClCompile Include="src\SLGUI\Widgets\Frame.cpp" />
+    <ClCompile Include="src\SLGUI\Widgets\KeyValueList.cpp" />
+    <ClCompile Include="src\SLGUI\Widgets\Label.cpp" />
+    <ClCompile Include="src\SLGUI\Widgets\ListBox.cpp" />
+    <ClCompile Include="src\SLGUI\Widgets\TextBox.cpp" />
+    <ClCompile Include="src\SLGUI\Widgets\Window.cpp" />
+    <ClCompile Include="src\Tools\Image.cpp" />
+    <ClCompile Include="src\Tools\LinAlg.cpp" />
+    <ClCompile Include="src\Tools\Perlin.cpp" />
+    <ClCompile Include="src\Tools\Plot.cpp" />
+    <ClCompile Include="src\Tools\Random.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7066F2B6-C4A9-416E-83C1-C27AF207B99A}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Candy</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>EIGEN_DONT_VECTORIZE;EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)\ticpp;$(ProjectDir)\src;$(ProjectDir)\..\..\Dependencies\glew\include;$(ProjectDir)\..\..\Dependencies\DevIL\include;$(ProjectDir)\..\..\Dependencies\boost\include;$(ProjectDir)\..\..\Dependencies\freeglut\include;C:\Dev\boost_1_46_1;C:\Dev\eigen-eigen-65ee2328342f;C:\Dev\ftgl-2.1.3~rc5\src;C:\Dev\freetype-2.4.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>EIGEN_DONT_VECTORIZE;EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)\ticpp;$(ProjectDir)\src;$(ProjectDir)\..\..\Dependencies\glew\include;$(ProjectDir)\..\..\Dependencies\DevIL\include;$(ProjectDir)\..\..\Dependencies\boost\include;$(ProjectDir)\..\..\Dependencies\freeglut\include;C:\Dev\boost_1_46_1;C:\Dev\eigen-eigen-65ee2328342f;C:\Dev\ftgl-2.1.3~rc5\src;C:\Dev\freetype-2.4.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
+    </Lib>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
