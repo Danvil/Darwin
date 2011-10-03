@@ -498,6 +498,10 @@ namespace CandyCubes
 			wz = PositionToWorld(pz, rz);
 		}
 
+		static inline Vec3f PositionWithHeight(const Vec3f& p, float h) {
+			return Vec3f(p[0], p[1], h);
+		}
+
 		static void GetSideNormal(const CoordI&, int side, float& nx, float& ny, float& nz) {
 			float cNormalData[6][3] = {
 				{0, 0, -1}, // 0
@@ -639,6 +643,12 @@ namespace CandyCubes
 			float wz_floored = std::floor(r - cRadius);
 			wz = int(wz_floored);
 			rz = pz - wz_floored;
+		}
+
+		static inline Vec3f PositionWithHeight(const Vec3f& p, float h) {
+			float r = std::sqrt(p[0]*p[0] + p[2]*p[2]);
+			float scl = (cRadius + h) / r;
+			return Vec3f(scl*p[0], p[1], scl*p[2]);
 		}
 
 		static inline void GetSideNormal(const CoordI& cw, int side, float& nx, float& ny, float& nz) {
@@ -855,6 +865,17 @@ namespace CandyCubes
 			float wz_floored = std::floor(r - cRadius);
 			wz = int(wz_floored);
 			rz = pz - wz_floored;
+		}
+
+		static float GetGroundHeightOverNull(const Vec3f& p) {
+			float r = std::sqrt(p[0]*p[0] + p[1]*p[1] + p[2]*p[2]);
+			return r - cRadius;
+		}
+
+		static Vec3f PositionWithHeight(const Vec3f& p, float h) {
+			float r = std::sqrt(p[0]*p[0] + p[1]*p[1] + p[2]*p[2]);
+			float scl = (cRadius + h) / r;
+			return Vec3f(scl*p[0], scl*p[1], scl*p[2]);
 		}
 
 		static void GetSideNormal(const CoordI& c_world, int side, float& nx, float& ny, float& nz) {
