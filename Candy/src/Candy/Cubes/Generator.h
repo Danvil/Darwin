@@ -38,6 +38,7 @@ namespace Generators {
 	Ptr(Generator) FactorTerra();
 	Ptr(Generator) FactorPerlin3D();
 	Ptr(Generator) FactorCity();
+	Ptr(Generator) FactorSphericalTerra();
 }
 
 #endif /* GENERATOR_H_ */

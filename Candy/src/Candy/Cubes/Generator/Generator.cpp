@@ -14,6 +14,7 @@
 #include "Terra.h"
 #include "Perlin3D.h"
 #include "City.h"
+#include "SphericalTerra.h"
 
 namespace Generators
 {
@@ -32,11 +33,12 @@ namespace Generators
 		return Ptr(G)(new G(Gen(a)));\
 	}
 
-FACTOR_HELPER_C1(CornellBox,unsigned int)
+	FACTOR_HELPER_C1(CornellBox,unsigned int)
 	FACTOR_HELPER(PerlinHills)
 	FACTOR_HELPER(HillsAndFly)
 	FACTOR_HELPER(Terra)
 	FACTOR_HELPER(Perlin3D)
 	FACTOR_HELPER(City)
+	FACTOR_HELPER(SphericalTerra)
 
 }
