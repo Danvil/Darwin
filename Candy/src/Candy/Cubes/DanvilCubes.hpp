@@ -39,19 +39,19 @@ namespace Candy
 			return cubes_;
 		}
 
-		int GetHeight(int cx, int cy, float z) {
+		int GetHeight(int cx, int cy, float z) const {
 			return height_lookup_.GetGroundZ(cx, cy, z);
 		}
 
-		int GetHeight(const Vec3f& position) {
+		int GetHeight(const Vec3f& position) const {
 			CoordI c_world = Properties::PositionToWorld(position);
-			return height_lookup_.GetGroundZ(c_world.x, c_world.y, position[2]);
+			float z = Properties::GetGroundHeightOverNull(position);
+			return GetHeight(c_world.x, c_world.y, z);
 		}
 
 		Vec3f GetGroundPoint(const Vec3f& position) const {
-			CoordI c_world = Properties::PositionToWorld(position);
-			c_world.z = height_lookup_.GetGroundZ(c_world.x, c_world.y, position[2]);
-			return Properties::WorldToPosition(c_world);
+			int z_soll = GetHeight(position);
+			return Properties::PositionWithHeight(position, float(z_soll));
 		}
 
 		Vec3f GetNormal(const Vec3f& position) const {
