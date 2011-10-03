@@ -25,6 +25,23 @@ void Camera::SetView(const Eigen::Affine3f& m)
 	view_matrix_inv_ = view_.inverse().matrix();
 }
 
+void Camera::CorrectUp(const Eigen::Vector3f& up_new)
+{
+	Vec3f backwards_old = - GetForwardDirection();
+	Vec3f side_old = GetSidewardsDirection();
+	Vec3f up_old = GetUpDirection();
+	Vec3f backwards_new = side_old.cross(up_new);
+	Vec3f side_new = up_new.cross(backwards_new);
+	Eigen::Matrix3f rot;
+	rot.col(0) = side_new;
+	rot.col(1) = up_new;
+	rot.col(2) = - backwards_new;
+	Eigen::Affine3f v;
+	v.linear() = rot;
+	v.translation() = GetPosition();
+	SetView(v);
+}
+
 bool Camera::IsVisibleByCamera(const Vec3f& pos)
 {
 	Mat4f u = projection_matrix_ * view_matrix_inv_;
