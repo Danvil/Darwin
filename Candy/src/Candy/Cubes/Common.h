@@ -512,6 +512,10 @@ namespace CandyCubes
 			nz = cNormalData[side][2];
 		}
 
+		static Vec3f TopSideNormal(const Vec3f& p) {
+			return Vec3f(0, 0, 1);
+		}
+
 		static Vec3f CubeSidePoint(const CoordI&, unsigned int side_index, float h, float u, float v) {
 			return BaseProperties::CubeSidePointBase(side_index, h, u, v);
 		}
@@ -657,6 +661,10 @@ namespace CandyCubes
 			ny = ny_0;
 			nz = - sp * nx_0 + cp * nz_0;
 			// FIXME optimize!
+		}
+
+		static Vec3f TopSideNormal(const Vec3f& p) {
+			return Vec3f(p[0], 0, p[2]).normalized();
 		}
 
 		static inline Vec3f CubeSidePoint(const CoordI& c_world, unsigned int side_index, float h, float u, float v) {
@@ -867,6 +875,10 @@ namespace CandyCubes
 			nx = n[0];
 			ny = n[1];
 			nz = n[2];
+		}
+
+		static Vec3f TopSideNormal(const Vec3f& p) {
+			return p.normalized();
 		}
 
 		static Vec3f CubeSidePoint(const CoordI& c_world, unsigned int side_index, float h, float u, float v) {
