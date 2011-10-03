@@ -66,10 +66,12 @@ void Player::Tick(float dt)
 //		std::cout << eye_height_ << std::endl;
 		// position over ground
 		Vec3f p = scene_->GetCamera()->GetPosition();
-		p.z() -= eye_height_old;
-		float h = cubes_->GetHeight(p);
-		p.z() = h + eye_height_;
+		Vec3f n = cubes_->GetNormal(p);
+		p -= eye_height_old * n;
+		p = cubes_->GetGroundPoint(p);
+		p += eye_height_ * n;
 		scene_->GetCamera()->SetPosition(p);
+		scene_->GetCamera()->CorrectUp(n);
 	}
 }
 
@@ -96,15 +98,19 @@ void Player::OnKeyPressed(Candy::KeyboardModifiers mod, int key)
 	float sidewards_amount = speed * float(sidewards);
 	Eigen::Affine3f view = scene_->GetCamera()->GetView();
 	Vec3f forward_dir = scene_->GetCamera()->GetForwardDirection();
+	Vec3f p = scene_->GetCamera()->GetPosition();
+	Vec3f n = cubes_->GetNormal(p);
 	if(!flying_) {
-		forward_dir.z() = 0.0f;
+		float u = n.dot(forward_dir);
+		forward_dir -= u * n;
 	}
 	if(forward_dir.norm() > 0.0f) {
 		view.translation() += forward_amount * forward_dir.normalized();
 	}
 	Vec3f sidewards_dir = scene_->GetCamera()->GetSidewardsDirection();
 	if(!flying_) {
-		sidewards_dir.z() = 0.0f;
+		float u = n.dot(sidewards_dir);
+		sidewards_dir -= u * n;
 	}
 	if(sidewards_dir.norm() > 0.0f) {
 		view.translation() += sidewards_amount * sidewards_dir.normalized();
