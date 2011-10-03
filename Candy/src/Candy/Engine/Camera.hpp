@@ -59,6 +59,17 @@ public:
 		return view_.linear().col(1);
 	}
 
+	void CorrectUp(const Eigen::Vector3f& up_new) {
+		Vec3f backwards_old = - GetForwardDirection();
+		Vec3f side_old = GetSidewardsDirection();
+		Vec3f up_old = GetUpDirection();
+		Vec3f backwards_new = side_old.cross(up_new);
+		Vec3f side_new = up_new.cross(backwards_new);
+		view_.linear().col(0) = side_new;
+		view_.linear().col(1) = up_new;
+		view_.linear().col(2) = - backwards_new;
+	}
+
 	const Eigen::Matrix4f& GetProjectionMatrix() const {
 		return projection_matrix_;
 	}
