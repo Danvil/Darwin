@@ -34,15 +34,16 @@ void GenerateWorld(Ptr(Cubes) cubes)
 	const int cCellRangeZMin = -1;
 	const int cCellRangeZMax = +1;
 #endif
-	Ptr(Generator) gen = Generators::FactorPerlin3D();
+//	Ptr(Generator) gen = Generators::FactorPerlin3D();
 //	Ptr(Generator) gen = Generators::FactorHillsAndFly();
+	Ptr(Generator) gen = Generators::FactorPerlinHills();
 //	Ptr(Generator) gen = Generators::FactorTerra();
 //	WorldSize ws(cCellRange, cCellRangeZMin, cCellRangeZMax);
 	WorldSize ws;
 	ws.x1 = 0;
 	ws.x2 = 64;
-	ws.y1 = -4;
-	ws.y2 = +4;
+	ws.y1 = -12;
+	ws.y2 = +12;
 	ws.z1 = -1;
 	ws.z2 = +1;
 	gen->Generate(cubes.get(), ws);
