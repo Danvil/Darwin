@@ -37,7 +37,7 @@ public:
 		chunks_[Index(x, y)] = ComputeHeightLevels(cubes, x, y);
 	}
 
-	int GetGroundZ(int x, int y, float z);
+	int GetGroundZ(int x, int y, float z) const;
 
 private:
 	std::vector<int> ComputeHeightLevels(const Ptr(Cubes)& cubes, int x, int y);

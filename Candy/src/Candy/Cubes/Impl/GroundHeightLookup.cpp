@@ -33,7 +33,7 @@ void GroundHeightLookup::Build(const Ptr(Cubes)& cubes, Cell* cell)
 	}
 }
 
-int GroundHeightLookup::GetGroundZ(int x, int y, float z)
+int GroundHeightLookup::GetGroundZ(int x, int y, float z) const
 {
 	std::map<Index,std::vector<int> >::const_iterator it=chunks_.find(Index(x,y));
 	if(it == chunks_.end()) {
