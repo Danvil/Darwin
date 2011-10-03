@@ -174,7 +174,7 @@ namespace Impl
 /** A container which holds an element of type T for each 3D location */
 template<typename T>
 struct CellContainerType {
-	typedef Candy::Cubes::Impl::Array3<T,64> Result;
+	typedef Candy::Cubes::Impl::Array3<T,128> Result;
 };
 
 /**
