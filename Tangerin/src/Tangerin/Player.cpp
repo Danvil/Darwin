@@ -72,6 +72,9 @@ void Player::Tick(float dt)
 		p += eye_height_ * n;
 		scene_->GetCamera()->SetPosition(p);
 		scene_->GetCamera()->CorrectUp(n);
+//		std::cout << "Position: " << p << std::endl;
+//		std::cout << "Normal: " << n << std::endl;
+//		std::cout << "Camera View: " << scene_->GetCamera()->GetViewMatrix() << std::endl;
 	}
 }
 

@@ -34,6 +34,7 @@ void GenerateWorld(Ptr(Cubes) cubes)
 	const int cCellRangeZMin = -1;
 	const int cCellRangeZMax = +1;
 #endif
+//	Ptr(Generator) gen = Generators::FactorZeroHeight();
 //	Ptr(Generator) gen = Generators::FactorPerlin3D();
 //	Ptr(Generator) gen = Generators::FactorHillsAndFly();
 //	Ptr(Generator) gen = Generators::FactorPerlinHills();
