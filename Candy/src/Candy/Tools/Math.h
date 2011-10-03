@@ -6,6 +6,34 @@
 namespace Math
 {
 	template<typename K>
+	inline K Pi() {
+		return K(3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679);
+	}
+
+	inline float PiF() {
+		return Pi<float>();
+	}
+
+	template<typename K>
+	inline K TwoPi() {
+		return K(2) * Pi<K>();
+	}
+
+	inline float TwoPiF() {
+		return TwoPi<float>();
+	}
+
+	template<typename K>
+	inline K RadToDeg(K rad) {
+		return rad / Pi<K>() * K(180);
+	}
+
+	template<typename K>
+	inline K DegToRad(K deg) {
+		return deg / K(180) * Pi<K>();
+	}
+
+	template<typename K>
 	inline K Clamp(K x, K a, K b) {
 		return (x < a ? a : (x > b ? b : x));
 	}

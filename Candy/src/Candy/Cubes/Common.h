@@ -733,23 +733,23 @@ namespace CandyCubes
 			 return int(CellSize) * cell + int(local);
 		}
 
-		static const float c2Pi = 6.28318530718f;
-
-		static inline float PerimeterAngleX(int x) {
+		template<typename K>
+		static inline K PerimeterAngleX(int x) {
 			unsigned int w = WrappedWorldX(x);
-			float phi = float(w) / float(cPerimeterCubeCount) * c2Pi;
+			K phi = K(w) / K(cPerimeterCubeCount) * Math::TwoPi<K>();
 			return phi;
 		}
 
+		template<typename K>
 		static inline float PerimeterAngleY(int y) {
 			int w = WrappedWorldY(y);
-			float phi = float(w) / float(cPerimeterCubeCount) * c2Pi;
+			K phi = K(w) / K(cPerimeterCubeCount) * Math::TwoPi<K>();
 			return phi;
 		}
 
 		static inline unsigned int PerimeterAngleToCubeX(float phi, float& rest) {
-			assert(0 <= phi && phi <= c2Pi);
-			float w = phi / c2Pi * float(cPerimeterCubeCount);
+			assert(0 <= phi && phi <= Math::TwoPiF());
+			float w = phi / Math::TwoPiF() * float(cPerimeterCubeCount);
 			float wi_floored = std::floor(w);
 			rest = w - wi_floored;
 			return (unsigned int)(wi_floored);
@@ -757,8 +757,8 @@ namespace CandyCubes
 
 		static inline int PerimeterAngleToCubeY(float phi, float& rest) {
 			//static const float cPi = 3.14159265359f;
-			assert(-3.14159265359f <= phi && phi <= +3.14159265359f);
-			float w = phi / c2Pi * float(cPerimeterCubeCount);
+			assert(-Math::PiF() <= phi && phi <= +Math::PiF());
+			float w = phi / Math::TwoPiF() * float(cPerimeterCubeCount);
 			float wi_floored = std::floor(w);
 			rest = w - wi_floored;
 			return int(wi_floored);
@@ -783,9 +783,28 @@ namespace CandyCubes
 			wz = CellLocalToWorld(cz, lz);
 		}
 
+		template<typename K>
+		static void WorldToAngles(int vx, int vy, int vz, K& lon_rad, K& lat_rad) {
+			lon_rad = PerimeterAngleX<K>(vx);
+			lat_rad = PerimeterAngleY<K>(vy);
+		}
+
+		template<typename K>
+		static void WorldToAngles(const CoordI& c_world, K& lon_rad, K& lat_rad) {
+			WorldToAngles<K>(c_world.x, c_world.y, c_world.z, lat_rad, lon_rad);
+		}
+
+		template<typename K>
+		static void WorldToAnglesDegrees(const CoordI& c_world, K& lon_deg, K& lat_deg) {
+			K lon_rad, lat_rad;
+			WorldToAngles<K>(c_world.x, c_world.y, c_world.z, lon_rad, lat_rad);
+			lon_deg = Math::RadToDeg(lon_rad);
+			lat_deg = Math::RadToDeg(lat_rad);
+		}
+
 		static void WorldToPosition(int vx, int vy, int vz, float& x, float& y, float& z) {
-			float phix = PerimeterAngleX(vx);
-			float phiy = PerimeterAngleY(vy);
+			float phix = PerimeterAngleX<float>(vx);
+			float phiy = PerimeterAngleY<float>(vy);
 			float r = cRadius + float(vz);
 			x = r * std::cos(phiy) * std::sin(phix);
 			y = r * std::sin(phiy);
@@ -793,8 +812,8 @@ namespace CandyCubes
 		}
 
 		static void WorldToPositionCenter(int vx, int vy, int vz, float& x, float& y, float& z) {
-			float phix = PerimeterAngleX(vx) + 0.5f / float(cPerimeterCubeCount) * c2Pi;
-			float phiy = PerimeterAngleX(vy) + 0.5f / float(cPerimeterCubeCount) * c2Pi;
+			float phix = PerimeterAngleX<float>(vx) + 0.5f / float(cPerimeterCubeCount) * Math::TwoPiF();
+			float phiy = PerimeterAngleY<float>(vy) + 0.5f / float(cPerimeterCubeCount) * Math::TwoPiF();
 			float r = cRadius + float(vz) + 0.5f;
 			x = r * std::cos(phiy) * std::sin(phix);
 			y = r * std::sin(phiy);
@@ -806,7 +825,7 @@ namespace CandyCubes
 			float r = std::sqrt(px*px + py*py + pz*pz);
 			float phix = std::atan2(px, pz);
 			if(phix < 0) {
-				phix += c2Pi;
+				phix += Math::TwoPiF();
 			}
 			float phiy = std::asin(py / r);
 			float w_rest;
@@ -820,7 +839,7 @@ namespace CandyCubes
 			float r = std::sqrt(px*px + py*py + pz*pz);
 			float phix = std::atan2(px, pz);
 			if(phix < 0) {
-				phix += c2Pi;
+				phix += Math::TwoPiF();
 			}
 			float phiy = std::asin(py / r);
 			wx = int(PerimeterAngleToCubeX(phix, rx));
@@ -840,10 +859,10 @@ namespace CandyCubes
 				{0, 0, +1}  // 5
 			};
 			Vec3f n0(cNormalData[side][0], cNormalData[side][1], cNormalData[side][2]);
-			float phix = PerimeterAngleX(c_world.x);
-			float phiy = PerimeterAngleY(c_world.y);
-			Eigen::Affine3f tx(Eigen::AngleAxisf(phix, Eigen::Vector3f(0, 1, 0)));
-			Eigen::Affine3f ty(Eigen::AngleAxisf(phiy, Eigen::Vector3f(1, 0, 0)));
+			float lon, lat;
+			WorldToAngles(c_world, lon, lat);
+			Eigen::Affine3f tx(Eigen::AngleAxisf(lon, Eigen::Vector3f(0, 1, 0)));
+			Eigen::Affine3f ty(Eigen::AngleAxisf(lat, Eigen::Vector3f(1, 0, 0)));
 			Vec3f n = ty * tx * n0;
 			nx = n[0];
 			ny = n[1];
@@ -852,10 +871,10 @@ namespace CandyCubes
 
 		static Vec3f CubeSidePoint(const CoordI& c_world, unsigned int side_index, float h, float u, float v) {
 			Vec3f a = BaseProperties::CubeSidePointBase(side_index, h, u, v);
-			float phix = PerimeterAngleX(c_world.x);
-			float phiy = PerimeterAngleY(c_world.y);
-			Eigen::Affine3f tx(Eigen::AngleAxisf(phix, Eigen::Vector3f(0, 1, 0)));
-			Eigen::Affine3f ty(Eigen::AngleAxisf(phiy, Eigen::Vector3f(1, 0, 0)));
+			float lon, lat;
+			WorldToAngles(c_world, lon, lat);
+			Eigen::Affine3f tx(Eigen::AngleAxisf(lon, Eigen::Vector3f(0, 1, 0)));
+			Eigen::Affine3f ty(Eigen::AngleAxisf(lat, Eigen::Vector3f(1, 0, 0)));
 			return ty * tx * a;
 		}
 
