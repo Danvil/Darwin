@@ -39,6 +39,7 @@ namespace Generators {
 	Ptr(Generator) FactorPerlin3D();
 	Ptr(Generator) FactorCity();
 	Ptr(Generator) FactorSphericalTerra();
+	Ptr(Generator) FactorZeroHeight();
 }
 
 #endif /* GENERATOR_H_ */

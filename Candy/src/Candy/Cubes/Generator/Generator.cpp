@@ -15,6 +15,7 @@
 #include "Perlin3D.h"
 #include "City.h"
 #include "SphericalTerra.h"
+#include "ZeroHeight.h"
 
 namespace Generators
 {
@@ -40,5 +41,6 @@ namespace Generators
 	FACTOR_HELPER(Perlin3D)
 	FACTOR_HELPER(City)
 	FACTOR_HELPER(SphericalTerra)
+	FACTOR_HELPER(ZeroHeight)
 
 }
