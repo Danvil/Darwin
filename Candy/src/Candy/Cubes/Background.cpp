@@ -79,16 +79,17 @@ void Background::PrintStatus()
 }
 
 template<typename Op>
-size_t Execute(const std::vector<Cell*> cells, size_t max_count, bool use_threading, Op op)
+size_t Execute(const std::vector<Cell*>& cells, size_t max_count, bool use_threading, Op op)
 {
 	size_t count = std::min(max_count, cells.size());
 	if(count == 0) {
 		return 0;
 	}
-	if(use_threading) {
+	if(use_threading && count > 1) {
 		std::vector<boost::thread*> threads(count);
 		for(size_t i=0; i<count; i++) {
-			threads[i] = new boost::thread([&]() { op(cells[i]); });
+			Cell* cell = cells[i];
+			threads[i] = new boost::thread([&]() { op(cell); });
 		}
 		for(size_t i=0; i<count; i++) {
 			threads[i]->join();
@@ -105,6 +106,9 @@ size_t Execute(const std::vector<Cell*> cells, size_t max_count, bool use_thread
 
 void Background::Run()
 {
+	const unsigned int cMaxCount = 12;
+	const bool cUseThreading = true;
+
 	double TotalTime = 0.0;
 	double TotalCount = 0.0;
 	Danvil::Timer timer;
@@ -132,7 +136,7 @@ void Background::Run()
 			std::vector<Cell*> cells = cubes_->GetCellsIf([](Cell* cell) { return cell->NeedsCreation(); });
 			// FIXME sort by visibility
 			// create
-			size_t n = Execute(cells, 12, false, [&](Cell* cell) {
+			size_t n = Execute(cells, cMaxCount, cUseThreading, [&](Cell* cell) {
 						cubes_->CreateCell(cell, generator_.get());
 			});
 			if(n > 0) {
@@ -146,7 +150,7 @@ void Background::Run()
 			std::vector<Cell*> cells = cubes_->GetCellsIf([](Cell* cell) { return cell->NeedsVitalization(); });
 			// FIXME sort by visibility
 			// vitalize
-			size_t n = Execute(cells, 12, false, [&](Cell* cell) {
+			size_t n = Execute(cells, cMaxCount, cUseThreading, [&](Cell* cell) {
 					cubes_->VitalizeCubeData(cell);
 					// we also need to reset lighting for neighbouring cells!
 					const int R = 2;
