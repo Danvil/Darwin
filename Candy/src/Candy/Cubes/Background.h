@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Candy_Dll.h"
+#include "Generator.h"
 #include "Lighting.hpp"
 #include <Candy/Cubes/Rendering/CubesRenderling.h>
 #include <boost/thread.hpp>
@@ -11,7 +12,7 @@ struct Cell;
 class CANDY_API Background
 {
 public:
-	Background(Ptr(Cubes) cubes, Ptr(CubesRenderling) osgman);
+	Background(Ptr(Cubes) cubes, Ptr(CubesRenderling) osgman, Ptr(Generator) generator);
 	~Background();
 
 	void Start();
@@ -27,6 +28,7 @@ private:
 	
 	Ptr(Cubes) cubes_;
 	Ptr(CubesRenderling) osgman_;
+	Ptr(Generator) generator_;
 	Ptr(Hexa::GlobalIlluminator) gi_basic_;
 	Ptr(Hexa::GlobalIlluminator) gi_;
 

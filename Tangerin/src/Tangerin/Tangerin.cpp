@@ -23,7 +23,7 @@
 #include <iostream>
 #include <ctime>
 
-void GenerateWorld(Ptr(Cubes) cubes)
+Ptr(Generator) CreateWorldGenerator(WorldSize& ws)
 {
 #ifdef NDEBUG
 	const int cCellRange = 8;
@@ -41,14 +41,13 @@ void GenerateWorld(Ptr(Cubes) cubes)
 	Ptr(Generator) gen = Generators::FactorSphericalTerra();
 //	Ptr(Generator) gen = Generators::FactorTerra();
 //	WorldSize ws(cCellRange, cCellRangeZMin, cCellRangeZMax);
-	WorldSize ws;
 	ws.x1 = 0;
 	ws.x2 = 64;
 	ws.y1 = -16;
 	ws.y2 = +16;
 	ws.z1 = -1;
 	ws.z2 = +1;
-	gen->Generate(cubes.get(), ws);
+	return gen;
 }
 
 #include <Candy/SLGUI/Manager.h>
@@ -90,8 +89,13 @@ TangerinMain::TangerinMain(const std::string& asset_path)
 	//scene_->Add(new Candy::Crate());
 	//scene_->Add(Candy::Fractal::ConstructSierpinskiCubes(4));
 
-	cubes_.reset(new Candy::DanvilCubes());
+	WorldSize ws;
+	Ptr(Generator) generator = CreateWorldGenerator(ws);
+
+	cubes_.reset(new Candy::DanvilCubes(generator));
 	scene_->Add(cubes_);
+
+	generator->PrepareGeneration(cubes_->GetCubes().get(), ws);
 
 //	cubes_.reset(new Cubes());
 //	man_.reset(new CubesRenderling(cubes_.get()));
@@ -99,7 +103,6 @@ TangerinMain::TangerinMain(const std::string& asset_path)
 //	cubes_->OnChangeCell = boost::bind(&CubesRenderling::NotifyInvalidate, man_, _1);
 //	scene_->Add(man_);
 
-	GenerateWorld(cubes_->GetCubes());
 
 //	sphere_renderer_.reset(new Candy::Cubes::Rendering::SphereRenderer());
 //	scene_->Add(sphere_renderer_);

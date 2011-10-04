@@ -19,6 +19,7 @@ namespace Candy { namespace Cubes { namespace Physics { class PhysicsWorld; }}}
 namespace Candy { namespace Cubes { namespace Rendering { class SphereRenderer; }}}
 class CubesRenderling;
 class Background;
+class Generator;
 
 namespace Candy
 {
@@ -27,7 +28,7 @@ namespace Candy
 	: public Candy::IDrawable
 	{
 	public:
-		DanvilCubes();
+		DanvilCubes(Ptr(::Generator) generator);
 
 		virtual ~DanvilCubes();
 

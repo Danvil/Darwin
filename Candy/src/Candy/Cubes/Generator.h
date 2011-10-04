@@ -29,6 +29,8 @@ public:
 
 	virtual void Generate(Cubes* cubes, const WorldSize& ws) = 0;
 
+	virtual void PrepareGeneration(Cubes* cubes, const WorldSize& ws) = 0;
+
 };
 
 namespace Generators {

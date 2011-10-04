@@ -17,7 +17,7 @@
 namespace Candy
 {
 
-DanvilCubes::DanvilCubes()
+DanvilCubes::DanvilCubes(Ptr(::Generator) generator)
 {
 	cubes_.reset(new ::Cubes());
 	man_.reset(new CubesRenderling(cubes_.get()));
@@ -31,7 +31,7 @@ DanvilCubes::DanvilCubes()
 
 	cubes_physics_.reset(new Candy::Cubes::Physics::PhysicsWorld(cubes_, sphere_renderer_));
 
-	background_ = new Background(cubes_, man_);
+	background_ = new Background(cubes_, man_, generator);
 	background_->Start();
 }
 

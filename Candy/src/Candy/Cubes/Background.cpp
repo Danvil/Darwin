@@ -19,8 +19,8 @@ const unsigned int cMaxComputationTime = 120000;
 #define SLEEP_TIME 20
 
 
-Background::Background(Ptr(Cubes) cubes, Ptr(CubesRenderling) osgman)
-: cubes_(cubes), osgman_(osgman)
+Background::Background(Ptr(Cubes) cubes, Ptr(CubesRenderling) osgman, Ptr(Generator) generator)
+: cubes_(cubes), osgman_(osgman), generator_(generator)
 {
 	_running = false;
 	gi_basic_.reset(new Hexa::Lighting::DirectLighting());
@@ -77,6 +77,32 @@ void Background::PrintStatus()
 	double num_samples_mean = double(num_samples) / double(num_cells);
 	std::cout << "Lighting samples: Min=" << num_samples_min << " / Mean=" << num_samples_mean << " / Max=" << num_samples_max << std::endl;
 }
+
+template<typename Op>
+size_t Execute(const std::vector<Cell*> cells, size_t max_count, bool use_threading, Op op)
+{
+	size_t count = std::min(max_count, cells.size());
+	if(count == 0) {
+		return 0;
+	}
+	if(use_threading) {
+		std::vector<boost::thread*> threads(count);
+		for(size_t i=0; i<count; i++) {
+			threads[i] = new boost::thread([&]() { op(cells[i]); });
+		}
+		for(size_t i=0; i<count; i++) {
+			threads[i]->join();
+			delete threads[i];
+		}
+	}
+	else {
+		for(size_t i=0; i<count; i++) {
+			op(cells[i]);
+		}
+	}
+	return count;
+}
+
 void Background::Run()
 {
 	double TotalTime = 0.0;
@@ -100,14 +126,27 @@ void Background::Run()
 		// recompute ground test
 		//world_->RebuildGroundTest();
 
-		// recompute border for dirty cells
+		// create cells
 		{
-			std::vector<Cell*> cells = cubes_->GetCells();
-			size_t vit_count = 0;
-			for(std::vector<Cell*>::const_iterator it=cells.begin(); it!=cells.end() && _running; it++) {
-				Cell* cell = *it;
-				// update cube data if necessary
-				if(cell->NeedsVitalization()) {
+			// pick cells which need recreation
+			std::vector<Cell*> cells = cubes_->GetCellsIf([](Cell* cell) { return cell->NeedsCreation(); });
+			// FIXME sort by visibility
+			// create
+			size_t n = Execute(cells, 12, false, [&](Cell* cell) {
+						cubes_->CreateCell(cell, generator_.get());
+			});
+			if(n > 0) {
+				std::cout << "Created " << n << " cells" << std::endl;
+			}
+		}
+
+		// vitalize dirty cells
+		{
+			// pick cells which need vitalization
+			std::vector<Cell*> cells = cubes_->GetCellsIf([](Cell* cell) { return cell->NeedsVitalization(); });
+			// FIXME sort by visibility
+			// vitalize
+			size_t n = Execute(cells, 12, false, [&](Cell* cell) {
 					cubes_->VitalizeCubeData(cell);
 					// we also need to reset lighting for neighbouring cells!
 					const int R = 2;
@@ -124,11 +163,9 @@ void Background::Run()
 							}
 						}
 					}
-					vit_count++;
-				}
-			}
-			if(vit_count > 0) {
-				std::cout << "Vitalized " << vit_count << " cells" << std::endl;
+			});
+			if(n > 0) {
+				std::cout << "Vitalized " << n << " cells" << std::endl;
 			}
 		}
 

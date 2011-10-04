@@ -18,6 +18,8 @@
 //	#define PRINT_NOTES
 //#endif
 
+class Generator;
+
 class CANDY_API Cubes
 {
 public:
@@ -158,6 +160,8 @@ public:
 
 	bool Pick(const Vec3f& a, const Vec3f& u, float max_distance);
 
+	void CreateCell(Cell* cell, Generator* generator);
+
 	/** Adds CubeData for border cubes and deletes cube data for interior cubes */
 	void VitalizeCubeData(Cell* cell);
 
@@ -257,6 +261,15 @@ public:
 
 	/** Gets a list with all cells */
 	std::vector<Cell*> GetCells() const;
+
+	template<typename Op>
+	std::vector<Cell*> GetCellsIf(Op op) const {
+		std::vector<Cell*> cells_all = GetCells();
+		std::vector<Cell*> cells(cells_all.size());
+		auto it_end = std::copy_if(cells_all.begin(), cells_all.end(), cells.begin(), op);
+		cells.resize(it_end - cells.begin());
+		return cells;
+	}
 
 	bool ExistsCell(const CoordI& cc_cell) const {
 		return cells_.valid(cc_cell);

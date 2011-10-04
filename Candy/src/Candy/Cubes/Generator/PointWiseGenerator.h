@@ -61,6 +61,16 @@ public:
 		}
 	}
 
+	void PrepareGeneration(Cubes* cubes, const WorldSize& ws) {
+		for(int x=ws.x1; x<ws.x2; x++) {
+			for(int y=ws.y1; y<ws.y2; y++) {
+				for(int z=ws.z1; z<ws.z2; z++) {
+					cubes->GetCell(CoordI(x,y,z)); // adds the cell if it does not exist
+				}
+			}
+		}
+	}
+
 private:
 	G gen_;
 

@@ -198,6 +198,7 @@ public:
 		: _coordinate(c)
 	{
 		data_ = 0;
+		is_created_ = false;
 		is_dirty_ = false;
 		_lighting_samples = 0;
 		border_sides_ = new LinearKeyValueContainer();
@@ -324,8 +325,12 @@ public:
 		_lighting_samples += samples;
 	}
 
+	bool NeedsCreation() const {
+		return !is_created_;
+	}
+
 	bool NeedsVitalization() const {
-		return is_dirty_;
+		return is_created_ && is_dirty_;
 	}
 
 	CubeIterator IterateCubes() {
@@ -361,6 +366,7 @@ private:
 private:
 	Ci _coordinate;
 	CubeInteriorData* data_;
+	bool is_created_;
 	bool is_dirty_;
 	unsigned int _lighting_samples;
 

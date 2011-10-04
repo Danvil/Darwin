@@ -2,6 +2,7 @@
 #include "Collision/CubesRay.h"
 #include "Impl/DirectLighting.h"
 #include "Appearance.h"
+#include "Generator.h"
 #include <list>
 #include <cassert>
 
@@ -111,6 +112,12 @@ namespace Impl
 		// use fast direct lighting algorithm to compute lighting
 		Hexa::Lighting::DirectLighting::ComputeCube(cubes, it);
 	}
+}
+
+void Cubes::CreateCell(Cell* cell, Generator* generator)
+{
+	generator->Generate(cell);
+	cell->is_created_ = true;
 }
 
 void Cubes::VitalizeCubeData(Cell* cell)
