@@ -1,10 +1,10 @@
 #include "CubesRenderling.h"
-#include "CellRenderlingFactory.h"
+#include "CellRenderling.h"
 
 
 CellRenderling::CellRenderling(Cubes* cubes, Cell* cell)
 {
-	underlying = CellRenderlingFactory::FactorPLT(cubes, cell);
+	underlying = new CandyCubes::Rendering::CellRenderling(cubes, cell);
 }
 
 CellRenderling::~CellRenderling()

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../../Candy_Dll.h"
-#include "../Cubes.h"
 #include "CellRenderlingInterface.h"
+#include <Candy/Candy_Dll.h>
+#include <Candy/Cubes/Cubes.h>
 #include <Candy/Engine/IDrawable.h>
 #include <map>
 #include <boost/thread.hpp>

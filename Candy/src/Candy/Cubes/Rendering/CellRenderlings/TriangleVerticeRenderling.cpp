@@ -1,2 +1,0 @@
-#include "TriangleVerticeRenderling.h"
-
