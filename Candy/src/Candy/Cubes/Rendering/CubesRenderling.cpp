@@ -1,34 +1,8 @@
 #include "CubesRenderling.h"
 #include "CellRenderling.h"
 
-
-CellRenderling::CellRenderling(Cubes* cubes, Cell* cell)
-{
-	underlying = new CandyCubes::Rendering::CellRenderling(cubes, cell);
-}
-
-CellRenderling::~CellRenderling()
-{
-}
-
-void CellRenderling::Render()
-{
-	underlying->Render();
-}
-
-void CellRenderling::Invalidate()
-{
-	underlying->Invalidate();
-}
-
-void CellRenderling::UpdateMesh()
-{
-	underlying->UpdateMesh();
-}
-
-
 CubesRenderling::CubesRenderling(Cubes* cubes)
-: _cubes(cubes)
+: cubes_(cubes)
 {
 }
 
@@ -39,7 +13,7 @@ CubesRenderling::~CubesRenderling()
 void CubesRenderling::Render()
 {
 	guard_.lock();
-	for(CellRenderlingContainer::const_iterator it=_cell_renderlings.begin(); it!=_cell_renderlings.end(); ++it) {
+	for(CellRenderlingContainer::const_iterator it=cell_renderlings_.begin(); it!=cell_renderlings_.end(); ++it) {
 		if(IsVisible(it->first)) {
 			it->second->Render();
 		}
@@ -50,7 +24,7 @@ void CubesRenderling::Render()
 void CubesRenderling::UpdateMeshAll()
 {
 	guard_.lock();
-	for(CellRenderlingContainer::const_iterator it=_cell_renderlings.begin(); it!=_cell_renderlings.end(); ++it) {
+	for(CellRenderlingContainer::const_iterator it=cell_renderlings_.begin(); it!=cell_renderlings_.end(); ++it) {
 		it->second->UpdateMesh();
 	}
 	guard_.unlock();
@@ -59,14 +33,14 @@ void CubesRenderling::UpdateMeshAll()
 void CubesRenderling::NotifyAddCell(Cell* cell)
 {
 	guard_.lock();
-	_cell_renderlings[cell->coordinate()] = new CellRenderling(_cubes, cell);
+	cell_renderlings_[cell->coordinate()] = new CandyCubes::Rendering::CellRenderling(cubes_, cell);
 	guard_.unlock();
 }
 
 void CubesRenderling::NotifyInvalidate(Cell* cell)
 {
 	guard_.lock();
-	_cell_renderlings[cell->coordinate()]->Invalidate();
+	cell_renderlings_[cell->coordinate()]->Invalidate();
 	guard_.unlock();
 }
 

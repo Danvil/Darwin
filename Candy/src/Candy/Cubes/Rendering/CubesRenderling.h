@@ -7,25 +7,6 @@
 #include <map>
 #include <boost/thread.hpp>
 
-class CANDY_API CellRenderling
-: public Candy::IDrawable
-{
-public:
-	CellRenderling(Cubes* cubes, Cell* cell);
-
-	~CellRenderling();
-
-	void Render();
-
-	void Invalidate();
-
-	void UpdateMesh();
-
-private:
-	CellRenderlingInterface* underlying;
-
-};
-
 class CANDY_API CubesRenderling
 : public Candy::IDrawable
 {
@@ -46,9 +27,9 @@ private:
 	static bool IsVisible(const Ci& c_cell);
 
 private:
-	Cubes* _cubes;
-	typedef std::map<CoordI, CellRenderling*> CellRenderlingContainer;
-	CellRenderlingContainer _cell_renderlings;
+	Cubes* cubes_;
+	typedef std::map<CoordI, CellRenderlingInterface*> CellRenderlingContainer;
+	CellRenderlingContainer cell_renderlings_;
 	boost::mutex guard_;
 };
 
