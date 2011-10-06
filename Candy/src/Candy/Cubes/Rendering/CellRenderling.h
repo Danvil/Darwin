@@ -66,10 +66,6 @@ namespace CandyCubes
 		public:
 			void Render();
 
-			void Invalidate() {
-				_is_dirty = true;
-			}
-
 			void UpdateMesh();
 
 			void TransferMesh();

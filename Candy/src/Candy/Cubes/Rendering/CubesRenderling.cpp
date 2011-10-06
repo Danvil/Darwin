@@ -37,13 +37,6 @@ void CubesRenderling::NotifyAddCell(Cell* cell)
 	guard_.unlock();
 }
 
-void CubesRenderling::NotifyInvalidate(Cell* cell)
-{
-	guard_.lock();
-	cell_renderlings_[cell->coordinate()]->Invalidate();
-	guard_.unlock();
-}
-
 bool CubesRenderling::IsVisible(const Ci& c_cell)
 {
 	const float cRadius = float(Properties::CellSize);

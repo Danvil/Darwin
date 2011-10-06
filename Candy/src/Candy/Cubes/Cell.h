@@ -199,7 +199,8 @@ public:
 	{
 		data_ = 0;
 		is_created_ = false;
-		is_dirty_ = false;
+		flag_content_dirty_ = false;
+		flag_appearance_dirty_ = false;
 		_lighting_samples = 0;
 		border_sides_ = new LinearKeyValueContainer();
 	}
@@ -286,7 +287,7 @@ public:
 			SetAllImpl(CubeInteriorData::CreateEmpty());
 		}
 		data_[index] = x;
-		is_dirty_ = true;
+		SetContentDirtyFlag();
 	}
 
 	void Set(const CoordU& local, CubeType type) {
@@ -306,7 +307,7 @@ public:
 			AllocateImpl();
 		}
 		SetAllImpl(x);
-		is_dirty_ = true;
+		SetContentDirtyFlag();
 	}
 
 	const CubeInteriorData* Begin() const {
@@ -329,8 +330,28 @@ public:
 		return !is_created_;
 	}
 
-	bool NeedsVitalization() const {
-		return is_created_ && is_dirty_;
+	bool IsContentChanged() const {
+		return is_created_ && flag_content_dirty_;
+	}
+
+	bool IsAppearanceChanged() const {
+		return is_created_ && flag_appearance_dirty_;
+	}
+
+	void SetContentDirtyFlag() {
+		flag_content_dirty_ = true;
+	}
+
+	void SetAppearanceDirtyFlag() {
+		flag_appearance_dirty_ = true;
+	}
+
+	void ClearContentDirtyFlag() {
+		flag_content_dirty_ = false;
+	}
+
+	void ClearAppearanceDirtyFlag() {
+		flag_appearance_dirty_ = false;
 	}
 
 	CubeIterator IterateCubes() {
@@ -367,7 +388,8 @@ private:
 	Ci _coordinate;
 	CubeInteriorData* data_;
 	bool is_created_;
-	bool is_dirty_;
+	bool flag_content_dirty_;
+	bool flag_appearance_dirty_;
 	unsigned int _lighting_samples;
 
 	LinearKeyValueContainer* border_sides_;

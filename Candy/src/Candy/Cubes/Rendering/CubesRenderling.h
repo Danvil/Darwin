@@ -13,15 +13,13 @@ class CANDY_API CubesRenderling
 public:
 	CubesRenderling(Cubes* cubes);
 
-	~CubesRenderling();
+	virtual ~CubesRenderling();
 
 	void Render();
 
 	void UpdateMeshAll();
 
 	void NotifyAddCell(Cell* cell);
-
-	void NotifyInvalidate(Cell* cell);
 
 private:
 	static bool IsVisible(const Ci& c_cell);

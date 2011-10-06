@@ -2,6 +2,7 @@
 #include <Candy/Engine/Resources/ResourcePool.h>
 #include <Candy/Engine/IDrawable.h>
 #include <Candy/Engine/OpenGL.h>
+#include <boost/interprocess/sync/scoped_lock.hpp>
 
 using namespace std;
 
@@ -162,22 +163,17 @@ namespace CandyCubes
 
 		void CellRenderling::UpdateMesh()
 		{
-			if(_is_dirty) {
-				// do not compute mesh for dirty meshes
-				if(_cell->NeedsVitalization()) {
-					return;
-				}
-				_is_dirty = false;
+			if(_cell->IsAppearanceChanged()) {
 				if(_cell->HasBorder()) {
-					_mutex.lock();
+					boost::interprocess::scoped_lock<boost::mutex> guard(_mutex);
 					PrepareUpdateMesh();
 					_cubes->CreateMeshData<Vertex, AddSideVertex, Candy::MeshData<Vertex> >(_cell, _mesh_data);
 					FinishUpdateMesh();
-					_mutex.unlock();
 				} else {
 					_mesh_data.indices()->clear();
 					_mesh_data.vertices()->clear();
 				}
+				_cell->ClearAppearanceDirtyFlag();
 				_needs_transfer = true;
 			}
 		}
@@ -185,10 +181,9 @@ namespace CandyCubes
 		void CellRenderling::TransferMesh()
 		{
 			if(_needs_transfer) {
-				_needs_transfer = false;
-				_mutex.lock();
+				boost::interprocess::scoped_lock<boost::mutex> guard(_mutex);
 				_mesh.UpdateMesh(_mesh_data);
-				_mutex.unlock();
+				_needs_transfer = false;
 			}
 		}
 

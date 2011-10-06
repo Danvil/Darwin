@@ -111,7 +111,7 @@ namespace Lighting
 		std::for_each(all_cells.begin(), all_cells.end(), [&](Cell* cell) {
 			if(cell->CountLightingSamples() == 0
 					&& cell->HasBorder()
-					&& !cell->NeedsVitalization()
+					&& !cell->IsContentChanged()
 			) {
 				cells.push_back(cell);
 			}
@@ -149,7 +149,7 @@ namespace Lighting
 		for(Cell::BorderSideIterator it=cell->IterateBorderSides(); it; ++it) {
 			ComputeCube(cubes, it);
 		}
-		cubes->OnChangeCell(cell, false);
+		cell->SetAppearanceDirtyFlag();
 	}
 
 	void DirectLighting::ComputeCube(Cubes* cubes, const Cell::BorderSideIterator& it)

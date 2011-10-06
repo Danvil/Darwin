@@ -87,7 +87,7 @@ void PhysicsWorld::StaticThreadMain()
 		// convert all cubes which do not have another cube beneath into moving blocks
 		std::vector<Cell*> cells = cubes_->GetCells();
 		std::for_each(cells.begin(), cells.end(), [&](Cell* cell) {
-			if(!cell->NeedsVitalization() && !cell->IsFullyEmpty()) {
+			if(!cell->IsContentChanged() && !cell->IsFullyEmpty()) {
 				cell->ApplyToAllCubes([&](CoordI cube_world_coordinate, CubeInteriorData* cube_data) {
 					CubeType type = cube_data->GetType();
 					if(IsSolid(type)) {

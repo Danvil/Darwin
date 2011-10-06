@@ -9,8 +9,6 @@ public:
 
 	virtual void Render() = 0;
 
-	virtual void Invalidate() = 0;
-
 	virtual void UpdateMesh() = 0;
 
 	virtual Cell* GetCell() const = 0;

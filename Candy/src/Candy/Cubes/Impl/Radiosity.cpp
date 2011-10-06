@@ -61,7 +61,7 @@ namespace Hexa
 					light.scenery.z() = col_b;
 					light.scenery_with_object = cit.data()->object_color.cwiseProduct(light.scenery);
 				}
-				cubes->OnChangeCell(*it, false);
+				(*it)->SetAppearanceDirtyFlag();
 			}
 		}
 
@@ -415,7 +415,7 @@ namespace Hexa
 					light.scenery.z() = col_b + albedo_b_(i) * ambient_b_;
 					light.scenery_with_object = cit.data()->object_color.cwiseProduct(light.scenery);
 				}
-				cubes->OnChangeCell(*it, false);
+				(*it)->SetAppearanceDirtyFlag();
 			}
 		}
 

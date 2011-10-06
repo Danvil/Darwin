@@ -243,7 +243,7 @@ public:
 
 	bool IsBorderSide(const CoordI& cc_world, int side) {
 		CubeType ct = SideNeighbourType(cc_world, side);
-		return ::IsEmptyOrNonExistent(ct);
+		return ::IsEmpty(ct) || (!::IsExisting(ct) && (side == Properties::TopSide() || side == Properties::BottomSide()));
 	}
 
 	/** True if the cube is not empty and at least one of its neighbours is empty */

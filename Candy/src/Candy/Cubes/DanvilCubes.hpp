@@ -62,8 +62,6 @@ namespace Candy
 	private:
 		void OnAddCell(Cell* cell);
 
-		void OnUpdateCell(Cell* cell, bool first);
-
 		void OnUpdateCube(Cell* cell, const CoordI& cw);
 
 	private:

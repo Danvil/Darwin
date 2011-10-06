@@ -152,6 +152,10 @@ namespace CandyCubes
 			return 5;
 		}
 
+		static inline int BottomSide() {
+			return 0;
+		}
+
 		static inline unsigned int GetVertexPositionOffset(unsigned int vertex_id, unsigned int i) {
 			const int cVertexPositionOffsetData[8][3] = {
 				// FIXME there is a repetition of this in VertexIndexOffset!

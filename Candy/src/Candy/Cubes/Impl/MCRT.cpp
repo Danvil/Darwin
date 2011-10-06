@@ -131,7 +131,7 @@ namespace Lighting
 		// compute light samples
 		ComputeLighting(cubes, cell, sample_count);
 		// notify that cell data has changed
-		cubes->OnChangeCell(cell, false);
+		cell->SetAppearanceDirtyFlag();
 		// log
 	//	std::cout << "Lighting for " << cell->coordinate() << " has " << cell->CountLightingSamples() << " added " << sample_count << std::endl;
 	}
@@ -147,7 +147,7 @@ namespace Lighting
 		std::for_each(all_cells.begin(), all_cells.end(), [&](Cell* cell) {
 			if(cell->CountLightingSamples() > 0 // FIXME HACK!
 					&& cell->HasBorder()
-					&& !cell->NeedsVitalization()
+					&& !cell->IsContentChanged()
 			) {
 				cells.push_back(cell);
 			}

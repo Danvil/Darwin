@@ -149,12 +149,13 @@ void Cubes::VitalizeCubeData(Cell* cell)
 	}
 	// save old lighting
 	LinearKeyValueContainer* old_side_data = cell->border_sides_;
+	bool had_border = cell->HasBorder();
 	// change border side data container
 	cell->border_sides_ = new LinearKeyValueContainer();
 	cell->border_sides_->Add(border_sides_list.begin(), border_sides_list.end());
 	// copy from old data if there was some
-	bool first_vitalize = (old_side_data != 0);
-	if(first_vitalize) {
+	if(had_border) {
+		// copy side data from old and compute lighting directly for new
 		for(Cell::BorderSideIterator jt=cell->IterateBorderSides(); jt; ++jt) {
 			BorderSideId id = jt.id();
 			if(old_side_data->HasKey(id)) {
@@ -166,7 +167,7 @@ void Cubes::VitalizeCubeData(Cell* cell)
 		}
 	}
 	else {
-		// set cube side base color
+		// only set basic side data - no lighting
 		for(Cell::BorderSideIterator jt=cell->IterateBorderSides(); jt; ++jt) {
 			Impl::vitalize_cube_no_lighting(this, jt);
 		}
@@ -176,10 +177,8 @@ void Cubes::VitalizeCubeData(Cell* cell)
 	// reset light samples
 	cell->_lighting_samples = 0;
 	// notify that cell data has changed
-	cell->is_dirty_ = false;
-	if(OnChangeCell) {
-		OnChangeCell(cell, first_vitalize);
-	}
+	cell->ClearContentDirtyFlag();
+	cell->SetAppearanceDirtyFlag();
 }
 
 void Cubes::VitalizeCube(const Cell::BorderSideIterator& it, bool compute_lighting)

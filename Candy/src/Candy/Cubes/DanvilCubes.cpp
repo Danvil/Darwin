@@ -22,7 +22,6 @@ DanvilCubes::DanvilCubes(Ptr(::Generator) generator)
 	cubes_.reset(new ::Cubes());
 	man_.reset(new CubesRenderling(cubes_.get()));
 	cubes_->OnAddCell = boost::bind(&DanvilCubes::OnAddCell, this, _1);
-	cubes_->OnChangeCell = boost::bind(&DanvilCubes::OnUpdateCell, this, _1, _2);
 	cubes_->OnChangeCube = boost::bind(&DanvilCubes::OnUpdateCube, this, _1, _2);
 
 	height_lookup_.SetHeightRange(128);
@@ -47,17 +46,8 @@ void DanvilCubes::OnAddCell(Cell* cell)
 	height_lookup_.Build(cubes_, cell);
 }
 
-void DanvilCubes::OnUpdateCell(Cell* cell, bool first)
-{
-	man_->NotifyInvalidate(cell);
-	if(first) {
-		height_lookup_.Build(cubes_, cell);
-	}
-}
-
 void DanvilCubes::OnUpdateCube(Cell* cell, const CoordI& cw)
 {
-	man_->NotifyInvalidate(cell);
 	height_lookup_.Build(cubes_, cw.x, cw.y);
 }
 

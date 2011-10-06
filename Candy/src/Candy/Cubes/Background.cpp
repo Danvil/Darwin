@@ -16,7 +16,7 @@
 const unsigned int cMaxComputationTime = 120000;
 //#define ENABLE_PRINT_MEASUREMENTS_FILE
 #define ENABLE_PRINT_BENCHMARK
-#define SLEEP_TIME 20
+#define SLEEP_TIME 1
 
 
 Background::Background(Ptr(Cubes) cubes, Ptr(CubesRenderling) osgman, Ptr(Generator) generator)
@@ -106,8 +106,8 @@ size_t Execute(const std::vector<Cell*>& cells, size_t max_count, bool use_threa
 
 void Background::Run()
 {
-	const unsigned int cMaxCount = 12;
-	const bool cUseThreading = true;
+	const unsigned int cMaxCount = 4;
+	const bool cUseThreading = false;
 
 	double TotalTime = 0.0;
 	double TotalCount = 0.0;
@@ -130,6 +130,8 @@ void Background::Run()
 		// recompute ground test
 		//world_->RebuildGroundTest();
 
+//		bool can_do_lighting = true;
+
 		// create cells
 		{
 			// pick cells which need recreation
@@ -142,12 +144,15 @@ void Background::Run()
 			if(n > 0) {
 				std::cout << "Created " << n << " cells" << std::endl;
 			}
+//			if(cells.size() > n) {
+//				can_do_lighting = false;
+//			}
 		}
 
 		// vitalize dirty cells
 		{
 			// pick cells which need vitalization
-			std::vector<Cell*> cells = cubes_->GetCellsIf([](Cell* cell) { return cell->NeedsVitalization(); });
+			std::vector<Cell*> cells = cubes_->GetCellsIf([](Cell* cell) { return cell->IsContentChanged(); });
 			// FIXME sort by visibility
 			// vitalize
 			size_t n = Execute(cells, cMaxCount, cUseThreading, [&](Cell* cell) {
@@ -171,41 +176,48 @@ void Background::Run()
 			if(n > 0) {
 				std::cout << "Vitalized " << n << " cells" << std::endl;
 			}
+//			if(cells.size() > n) {
+//				can_do_lighting = false;
+//			}
 		}
 
-		timer.start();
-		uint64_t this_count = 0;
-		if(gi_basic_) {
-			this_count += gi_basic_->Iterate(cubes_);
-		}
-		if(gi_) {
-			this_count += gi_->Iterate(cubes_);
-		}
-		timer.stop();
-		double this_time = timer.getElapsedTimeInMilliSec();
+		// lighting
+//		if(can_do_lighting)
+		{
+			timer.start();
+			uint64_t this_count = 0;
+			if(gi_basic_) {
+				this_count += gi_basic_->Iterate(cubes_);
+			}
+			if(gi_) {
+				this_count += gi_->Iterate(cubes_);
+			}
+			timer.stop();
+			double this_time = timer.getElapsedTimeInMilliSec();
 
 #ifdef ENABLE_PRINT_MEASUREMENTS_FILE
 			fs << this_count << "\t" << this_time << std::endl;
 #endif
-		TotalTime += this_time;
-		TotalCount += double(this_count);
+			TotalTime += this_time;
+			TotalCount += double(this_count);
 
+			// print status message
+#ifdef ENABLE_PRINT_BENCHMARK
+			if(print_timer.elapsed() > 5.0) {
+				print_timer.restart();
+				PrintStatus();
+				double sps = TotalCount / TotalTime * 1000.0;
+				std::cout << "Lighting computation performance: " << int(sps) << " samples/s; " << "count=" << TotalCount << "; time=" << TotalTime << std::endl;
+				//TotalTime = 0;
+				//TotalCount = 0;
+			}
+#endif
+		}
+
+		// recreate mesh data if necessary
 		{
-			// recreate mesh data if necessary
 			osgman_->UpdateMeshAll();
 		}
-
-		// print status message
-#ifdef ENABLE_PRINT_BENCHMARK
-		if(print_timer.elapsed() > 5.0) {
-			print_timer.restart();
-			PrintStatus();
-			double sps = TotalCount / TotalTime * 1000.0;
-			std::cout << "Lighting computation performance: " << int(sps) << " samples/s; " << "count=" << TotalCount << "; time=" << TotalTime << std::endl;
-			//TotalTime = 0;
-			//TotalCount = 0;
-		}
-#endif
 
 #ifdef ENABLE_QUIT_AFTER_MAXTIME
 		double elapsed = timer_all.getElapsedTimeInMilliSec();
