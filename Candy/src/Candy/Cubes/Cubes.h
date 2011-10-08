@@ -159,6 +159,40 @@ public:
 		});
 	}
 
+	/** Applies operator to all cells which have a common face with the given cell */
+	template<typename Op>
+	void ApplyToFaceNeighboursCells(Cell* cell, Op op) {
+		CoordI deltas[6] = {
+				CoordI(-1,0,0), CoordI(+1,0,0),
+				CoordI(0,-1,0), CoordI(0,+1,0),
+				CoordI(0,0,-1), CoordI(0,0,+1)
+		};
+		for(size_t i=0; i<6; i++) {
+			CoordI c_neighbour = cell->coordinate() + deltas[i];
+			Cell* cell_neighbour = GetCell(c_neighbour);
+			op(cell_neighbour);
+		}
+	}
+
+	/** Applies operator to all cells in a box
+	 * All cells in a box with side length of (2*R + 1) cell lengths around the given
+	 * cell are taken.
+	 */
+	template<typename Op>
+	void ApplyToNeighbourCells(Cell* cell, unsigned int R, Op op) {
+		for(int dz=-int(R); dz<=+int(R); dz++) {
+			for(int dy=-int(R); dy<=+int(R); dy++) {
+				for(int dx=-int(R); dx<=+int(R); dx++) {
+					CoordI c_neighbour = cell->coordinate() + CoordI(dx, dy, dz);
+					Cell* cell_neighbour = GetCell(c_neighbour);
+					if(cell_neighbour != cell) {
+						op(cell_neighbour);
+					}
+				}
+			}
+		}
+	}
+
 	/** Computes intersection between a ray and all cubes */
 	bool Pick(const Vec3f& a, const Vec3f& u, Ci& cube, float& min_distance, int& side);
 
