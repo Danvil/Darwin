@@ -117,26 +117,36 @@ void Background::Run()
 		timer.start();
 		{
 			// pick cells which need vitalization
-			std::vector<Cell*> cells = cubes_->GetCellsIf([](Cell* cell) { return cell->IsContentChanged(); });
+			std::vector<Cell*> cells = cubes_->GetCellsIf([&](Cell* cell) {
+				// only cells which need it
+				if(!cell->IsContentChanged()) {
+					return false;
+				}
+				// check that all face neighbours are created
+				bool all_neighbours_created = true;
+				cubes_->ApplyToFaceNeighboursCells(cell, [&](Cell* face_neighbour) {
+					all_neighbours_created &= (face_neighbour == 0 || face_neighbour->IsCreated());
+				});
+				return all_neighbours_created;
+			});
 			// FIXME sort by visibility
 			// vitalize
 			n_vitalized += CandyCubes::ExecuteInThreads(cells, cMaxCount, cMaxThreads, [&](Cell* cell) {
 					cubes_->VitalizeCubeData(cell);
 					// we also need to reset lighting for neighbouring cells!
-					const int R = 2;
-					for(int dz=-R; dz<=+R; dz++) {
-						for(int dy=-R; dy<=+R; dy++) {
-							for(int dx=-R; dx<=+R; dx++) {
-								// removed samples vary from distance
-								float d = std::sqrt(float(dx * dx + dy * dy + dz * dz));
-								float samples_p = 0.0f + d * 0.25f;
-								Cell* neigbour_cell = cubes_->GetCell(cell->coordinate() + Ci(dx, dy, dz));
-								if(neigbour_cell) {
-									neigbour_cell->_lighting_samples = std::max(0u, (unsigned int)(samples_p * (float)(neigbour_cell->_lighting_samples)));
-								}
-							}
+					cubes_->ApplyToNeighbourCells(cell, 2, [&](Cell* neigbour_cell) {
+						if(neigbour_cell == 0) {
+							return;
 						}
-					}
+						CoordI d = neigbour_cell->coordinate() - cell->coordinate();
+						int dx = d.x;
+						int dy = d.y;
+						int dz = d.z;
+						// removed samples vary from distance
+						float distance = std::sqrt(float(dx * dx + dy * dy + dz * dz));
+						float samples_p = 0.0f + distance * 0.25f;
+						neigbour_cell->_lighting_samples = std::max(0u, (unsigned int)(samples_p * (float)(neigbour_cell->_lighting_samples)));
+					});
 			});
 		}
 		timer.stop();
