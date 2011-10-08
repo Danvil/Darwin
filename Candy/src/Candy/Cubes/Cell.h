@@ -327,6 +327,10 @@ public:
 		_lighting_samples += samples;
 	}
 
+	bool IsCreated() const {
+		return is_created_;
+	}
+
 	bool NeedsCreation() const {
 		return !is_created_;
 	}
