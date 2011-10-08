@@ -114,7 +114,7 @@ namespace Lighting
 //		std::cout << "Cells which need lighting " << cells.size() << std::endl;
 //		std::sort(cells.begin(), cells.end(), CellByEyeDistance());
 
-		CandyCubes::ExecuteInThreads(cells, 4, 1, [&](Cell* cell) {
+		CandyCubes::ExecuteInThreads(cells, 8, 1, [&](Cell* cell) {
 			ComputeCell(cubes.get(), cell);
 			this_count += cell->BorderSideCount() * 1;
 		});
