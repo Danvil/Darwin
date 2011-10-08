@@ -84,8 +84,6 @@ void Background::Run()
 	const unsigned int cMaxCount = 4;
 	const unsigned int cMaxThreads = 1;
 
-	double TotalTime = 0.0;
-	double TotalCount = 0.0;
 	Danvil::Timer timer;
 
 	boost::timer print_timer;
@@ -197,10 +195,10 @@ void Background::Run()
 			double mean_height = double(time_height) / double(n_height);
 //			double mean_lighting = double(time_lighting) / double(n_lighting);
 			std::cout
-					<< "Created: " << n_created << " (" << mean_created << " ms)\t"
-					<< "Vitalized: " << n_vitalized << " (" << mean_vitalized << " ms)\t"
-					<< "Height: " << n_height << " (" << mean_height << " ms)\t"
-					<< "Lighting: " << n_lighting << " (" << fps_lighting << " samples/ms)" << std::endl;
+					<< "Created: " << n_created << " (" << time_created << " ms)\t"
+					<< "Vitalized: " << n_vitalized << " (" << time_vitalized << " ms)\t"
+					<< "Height: " << n_height << " (" << time_height << " ms)\t"
+					<< "Lighting: " << n_lighting << " (" << time_lighting << " ms - " << fps_lighting << " samples/ms)" << std::endl;
 //					<< "Vitalized: " << n_vitalized << "\tHeight: " << n_height << std::endl;
 //			std::cout << "Lighting computation performance: " << int(sps) << " samples/s; " << "count=" << n_lighting << "; time=" << time_lighting << std::endl;
 			n_created = n_vitalized = n_height = n_lighting = 0;
