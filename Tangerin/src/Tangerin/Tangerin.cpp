@@ -43,8 +43,8 @@ Ptr(Generator) CreateWorldGenerator(WorldSize& ws)
 //	WorldSize ws(cCellRange, cCellRangeZMin, cCellRangeZMax);
 	ws.x1 = 0;
 	ws.x2 = 64;
-	ws.y1 = -16;
-	ws.y2 = +16;
+	ws.y1 = -15;
+	ws.y2 = +15;
 	ws.z1 = -1;
 	ws.z2 = +1;
 	return gen;
