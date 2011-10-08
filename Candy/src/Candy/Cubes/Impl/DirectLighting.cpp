@@ -2,6 +2,7 @@
 #include "LightingHelpers.hpp"
 #include "../Appearance.h"
 #include "../Cubes.h"
+#include "ExecuteInThreads.hpp"
 #include <cassert>
 
 namespace Hexa
@@ -79,8 +80,6 @@ namespace Lighting
 		return sum / float(PatternCubeSidePointCount);
 	}
 
-	const unsigned int cThreadCount = 1;
-
 //	struct CellByEyeDistance {
 //		bool operator()(Cell* a, Cell* b) {
 //			// lighting is not computed for cells which needs vitalization
@@ -115,27 +114,11 @@ namespace Lighting
 //		std::cout << "Cells which need lighting " << cells.size() << std::endl;
 //		std::sort(cells.begin(), cells.end(), CellByEyeDistance());
 
-		if(cells.size() > 0) {
+		CandyCubes::ExecuteInThreads(cells, 4, 1, [&](Cell* cell) {
+			ComputeCell(cubes.get(), cell);
+			this_count += cell->BorderSideCount() * 1;
+		});
 
-			size_t thread_count = std::min((size_t)cThreadCount, cells.size());
-
-			if(thread_count == 1) {
-				size_t i = Random::Uniform(cells.size() - 1);
-				Cell* cell = cells[i];
-				ComputeCell(cubes.get(), cell);
-				this_count += cell->BorderSideCount();
-			} else {
-				std::vector<boost::thread*> threads;
-				for(size_t i=0; i<thread_count; i++) {
-					threads.push_back(new boost::thread(&ComputeCell, cubes.get(), cells[i]));
-					this_count += cells[i]->BorderSideCount() * 1;
-				}
-				for(size_t i=0; i<thread_count; i++) {
-					threads[i]->join();
-					delete threads[i];
-				}
-			}
-		}
 		return this_count;
 	}
 

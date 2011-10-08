@@ -5,6 +5,7 @@
 #include "Impl/MCRT.h"
 #include "Impl/Radiosity.hpp"
 #include "Impl/GroundHeightLookup.h"
+#include "Impl/ExecuteInThreads.hpp"
 #include <Candy/Tools/Timer.h>
 #include <iostream>
 #undef min
@@ -78,36 +79,10 @@ void Background::PrintStatus()
 	std::cout << "Lighting samples: Min=" << num_samples_min << " / Mean=" << num_samples_mean << " / Max=" << num_samples_max << std::endl;
 }
 
-template<typename Op>
-size_t Execute(const std::vector<Cell*>& cells, size_t max_count, bool use_threading, Op op)
-{
-	size_t count = std::min(max_count, cells.size());
-	if(count == 0) {
-		return 0;
-	}
-	if(use_threading && count > 1) {
-		std::vector<boost::thread*> threads(count);
-		for(size_t i=0; i<count; i++) {
-			Cell* cell = cells[i];
-			threads[i] = new boost::thread([&]() { op(cell); });
-		}
-		for(size_t i=0; i<count; i++) {
-			threads[i]->join();
-			delete threads[i];
-		}
-	}
-	else {
-		for(size_t i=0; i<count; i++) {
-			op(cells[i]);
-		}
-	}
-	return count;
-}
-
 void Background::Run()
 {
 	const unsigned int cMaxCount = 4;
-	const bool cUseThreading = false;
+	const unsigned int cMaxThreads = 1;
 
 	double TotalTime = 0.0;
 	double TotalCount = 0.0;
@@ -133,7 +108,7 @@ void Background::Run()
 			std::vector<Cell*> cells = cubes_->GetCellsIf([](Cell* cell) { return cell->NeedsCreation(); });
 			// FIXME sort by visibility
 			// create
-			n_created += Execute(cells, cMaxCount, cUseThreading, [&](Cell* cell) {
+			n_created += CandyCubes::ExecuteInThreads(cells, cMaxCount, cMaxThreads, [&](Cell* cell) {
 						cubes_->CreateCell(cell, generator_.get());
 			});
 		}
@@ -147,7 +122,7 @@ void Background::Run()
 			std::vector<Cell*> cells = cubes_->GetCellsIf([](Cell* cell) { return cell->IsContentChanged(); });
 			// FIXME sort by visibility
 			// vitalize
-			n_vitalized += Execute(cells, cMaxCount, cUseThreading, [&](Cell* cell) {
+			n_vitalized += CandyCubes::ExecuteInThreads(cells, cMaxCount, cMaxThreads, [&](Cell* cell) {
 					cubes_->VitalizeCubeData(cell);
 					// we also need to reset lighting for neighbouring cells!
 					const int R = 2;
@@ -192,7 +167,8 @@ void Background::Run()
 			std::for_each(cells.begin(), cells.end(), [&](Cell* cell) {
 				cell_coordinates.insert(cell->coordinate());
 			});
-			std::for_each(cell_coordinates.begin(), cell_coordinates.end(), [&](const CoordI& c_cell) {
+			std::vector<CoordI> cell_coordinates_v(cell_coordinates.begin(), cell_coordinates.end());
+			CandyCubes::ExecuteInThreads(cell_coordinates_v, cMaxCount, cMaxThreads, [&](const CoordI& c_cell) {
 				height_lookup_->Build(cubes_, c_cell);
 			});
 			std::for_each(cells.begin(), cells.end(), [&](Cell* cell) {
