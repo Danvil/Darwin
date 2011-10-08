@@ -4,23 +4,23 @@
 #include "Impl/DirectLighting.h"
 #include "Impl/MCRT.h"
 #include "Impl/Radiosity.hpp"
+#include "Impl/GroundHeightLookup.h"
 #include <Candy/Tools/Timer.h>
 #include <iostream>
 #undef min
 #undef max
+#include <set>
 #include <algorithm>
 #include <fstream>
 #include <boost/timer.hpp>
 
 //#define ENABLE_QUIT_AFTER_MAXTIME
-const unsigned int cMaxComputationTime = 120000;
-//#define ENABLE_PRINT_MEASUREMENTS_FILE
-#define ENABLE_PRINT_BENCHMARK
+//const unsigned int cMaxComputationTime = 120000;
 #define SLEEP_TIME 1
 
 
-Background::Background(Ptr(Cubes) cubes, Ptr(CubesRenderling) osgman, Ptr(Generator) generator)
-: cubes_(cubes), osgman_(osgman), generator_(generator)
+Background::Background(Ptr(Cubes) cubes, Ptr(CubesRenderling) osgman, Ptr(GroundHeightLookup) height, Ptr(Generator) generator)
+: cubes_(cubes), osgman_(osgman), height_lookup_(height), generator_(generator)
 {
 	_running = false;
 	gi_basic_.reset(new Hexa::Lighting::DirectLighting());
@@ -120,42 +120,34 @@ void Background::Run()
 	timer_all.start();
 #endif
 
-#ifdef ENABLE_PRINT_MEASUREMENTS_FILE
-	std::ofstream fs("measurements.txt");
-#endif
+	size_t n_created=0, n_vitalized=0, n_height=0, n_lighting=0;
+	double time_created=0, time_vitalized=0, time_height=0, time_lighting=0;
 
 	// the monster background loop
 	while(_running)
 	{
-		// recompute ground test
-		//world_->RebuildGroundTest();
-
-//		bool can_do_lighting = true;
-
 		// create cells
+		timer.start();
 		{
 			// pick cells which need recreation
 			std::vector<Cell*> cells = cubes_->GetCellsIf([](Cell* cell) { return cell->NeedsCreation(); });
 			// FIXME sort by visibility
 			// create
-			size_t n = Execute(cells, cMaxCount, cUseThreading, [&](Cell* cell) {
+			n_created += Execute(cells, cMaxCount, cUseThreading, [&](Cell* cell) {
 						cubes_->CreateCell(cell, generator_.get());
 			});
-			if(n > 0) {
-				std::cout << "Created " << n << " cells" << std::endl;
-			}
-//			if(cells.size() > n) {
-//				can_do_lighting = false;
-//			}
 		}
+		timer.stop();
+		time_created += timer.getElapsedTimeInMilliSec();
 
 		// vitalize dirty cells
+		timer.start();
 		{
 			// pick cells which need vitalization
 			std::vector<Cell*> cells = cubes_->GetCellsIf([](Cell* cell) { return cell->IsContentChanged(); });
 			// FIXME sort by visibility
 			// vitalize
-			size_t n = Execute(cells, cMaxCount, cUseThreading, [&](Cell* cell) {
+			n_vitalized += Execute(cells, cMaxCount, cUseThreading, [&](Cell* cell) {
 					cubes_->VitalizeCubeData(cell);
 					// we also need to reset lighting for neighbouring cells!
 					const int R = 2;
@@ -165,58 +157,78 @@ void Background::Run()
 								// removed samples vary from distance
 								float d = std::sqrt(float(dx * dx + dy * dy + dz * dz));
 								float samples_p = 0.0f + d * 0.25f;
-								Cell* neigbour_cell;
-								if(cubes_->TryGetCell(cell->coordinate() + Ci(dx, dy, dz), &neigbour_cell)) {
+								Cell* neigbour_cell = cubes_->GetCell(cell->coordinate() + Ci(dx, dy, dz));
+								if(neigbour_cell) {
 									neigbour_cell->_lighting_samples = std::max(0u, (unsigned int)(samples_p * (float)(neigbour_cell->_lighting_samples)));
 								}
 							}
 						}
 					}
 			});
-			if(n > 0) {
-				std::cout << "Vitalized " << n << " cells" << std::endl;
-			}
-//			if(cells.size() > n) {
-//				can_do_lighting = false;
-//			}
 		}
+		timer.stop();
+		time_vitalized += timer.getElapsedTimeInMilliSec();
 
 		// lighting
-//		if(can_do_lighting)
+		timer.start();
 		{
-			timer.start();
-			uint64_t this_count = 0;
 			if(gi_basic_) {
-				this_count += gi_basic_->Iterate(cubes_);
+				n_lighting += gi_basic_->Iterate(cubes_);
 			}
 			if(gi_) {
-				this_count += gi_->Iterate(cubes_);
+				n_lighting += gi_->Iterate(cubes_);
 			}
-			timer.stop();
-			double this_time = timer.getElapsedTimeInMilliSec();
-
-#ifdef ENABLE_PRINT_MEASUREMENTS_FILE
-			fs << this_count << "\t" << this_time << std::endl;
-#endif
-			TotalTime += this_time;
-			TotalCount += double(this_count);
-
-			// print status message
-#ifdef ENABLE_PRINT_BENCHMARK
-			if(print_timer.elapsed() > 5.0) {
-				print_timer.restart();
-				PrintStatus();
-				double sps = TotalCount / TotalTime * 1000.0;
-				std::cout << "Lighting computation performance: " << int(sps) << " samples/s; " << "count=" << TotalCount << "; time=" << TotalTime << std::endl;
-				//TotalTime = 0;
-				//TotalCount = 0;
-			}
-#endif
 		}
+		timer.stop();
+		time_lighting += timer.getElapsedTimeInMilliSec();
+
+		// recompute ground test
+		timer.start();
+		{
+			// pick cells which need height update
+			std::vector<Cell*> cells = cubes_->GetCellsIf([](Cell* cell) { return cell->IsHeightDirty(); });
+			// get (unique) coordinates
+			std::set<CoordI> cell_coordinates;
+			std::for_each(cells.begin(), cells.end(), [&](Cell* cell) {
+				cell_coordinates.insert(cell->coordinate());
+			});
+			std::for_each(cell_coordinates.begin(), cell_coordinates.end(), [&](const CoordI& c_cell) {
+				height_lookup_->Build(cubes_, c_cell);
+			});
+			std::for_each(cells.begin(), cells.end(), [&](Cell* cell) {
+				cell->ClearHeightDirtyFlag();
+			});
+			n_height += cell_coordinates.size();
+		}
+		timer.stop();
+		time_height += timer.getElapsedTimeInMilliSec();
 
 		// recreate mesh data if necessary
 		{
 			osgman_->UpdateMeshAll();
+		}
+
+		// print status message
+		if(print_timer.elapsed() > 3.0) {
+			print_timer.restart();
+//			PrintStatus();
+//			double fps_created = double(n_created) / double(time_created);
+//			double fps_vitalized = double(n_vitalized) / double(time_vitalized);
+//			double fps_height = double(n_height) / double(time_height);
+			double fps_lighting = double(n_lighting) / double(time_lighting);
+			double mean_created = double(time_created) / double(n_created);
+			double mean_vitalized = double(time_vitalized) / double(n_vitalized);
+			double mean_height = double(time_height) / double(n_height);
+//			double mean_lighting = double(time_lighting) / double(n_lighting);
+			std::cout
+					<< "Created: " << n_created << " (" << mean_created << " ms)\t"
+					<< "Vitalized: " << n_vitalized << " (" << mean_vitalized << " ms)\t"
+					<< "Height: " << n_height << " (" << mean_height << " ms)\t"
+					<< "Lighting: " << n_lighting << " (" << fps_lighting << " samples/ms)" << std::endl;
+//					<< "Vitalized: " << n_vitalized << "\tHeight: " << n_height << std::endl;
+//			std::cout << "Lighting computation performance: " << int(sps) << " samples/s; " << "count=" << n_lighting << "; time=" << time_lighting << std::endl;
+			n_created = n_vitalized = n_height = n_lighting = 0;
+			time_created = time_vitalized = time_height = time_lighting = 0;
 		}
 
 #ifdef ENABLE_QUIT_AFTER_MAXTIME
@@ -229,9 +241,5 @@ void Background::Run()
 
 		boost::this_thread::sleep(boost::posix_time::milliseconds(SLEEP_TIME));
 	}
-
-#ifdef ENABLE_PRINT_MEASUREMENTS_FILE
-	fs.close();
-#endif
 
 }

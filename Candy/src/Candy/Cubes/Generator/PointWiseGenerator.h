@@ -65,7 +65,12 @@ public:
 		for(int x=ws.x1; x<ws.x2; x++) {
 			for(int y=ws.y1; y<ws.y2; y++) {
 				for(int z=ws.z1; z<ws.z2; z++) {
-					cubes->GetCell(CoordI(x,y,z)); // adds the cell if it does not exist
+					CoordI c_cell(x, y, z);
+					if(!cubes->ExistsCell(c_cell)) {
+						 // adds the cell if it does not exist
+						Cell* cell = new Cell(c_cell);
+						cubes->AddCell(cell);
+					}
 				}
 			}
 		}

@@ -201,6 +201,7 @@ public:
 		is_created_ = false;
 		flag_content_dirty_ = false;
 		flag_appearance_dirty_ = false;
+		flag_height_dirty_ = false;
 		_lighting_samples = 0;
 		border_sides_ = new LinearKeyValueContainer();
 	}
@@ -334,24 +335,33 @@ public:
 		return is_created_ && flag_content_dirty_;
 	}
 
-	bool IsAppearanceChanged() const {
-		return is_created_ && flag_appearance_dirty_;
-	}
-
 	void SetContentDirtyFlag() {
 		flag_content_dirty_ = true;
-	}
-
-	void SetAppearanceDirtyFlag() {
-		flag_appearance_dirty_ = true;
+		flag_height_dirty_ = true;
 	}
 
 	void ClearContentDirtyFlag() {
 		flag_content_dirty_ = false;
 	}
 
+	bool IsAppearanceChanged() const {
+		return is_created_ && flag_appearance_dirty_;
+	}
+
+	void SetAppearanceDirtyFlag() {
+		flag_appearance_dirty_ = true;
+	}
+
 	void ClearAppearanceDirtyFlag() {
 		flag_appearance_dirty_ = false;
+	}
+
+	bool IsHeightDirty() const {
+		return is_created_ && flag_height_dirty_;
+	}
+
+	void ClearHeightDirtyFlag() {
+		flag_height_dirty_ = false;
 	}
 
 	CubeIterator IterateCubes() {
@@ -390,6 +400,7 @@ private:
 	bool is_created_;
 	bool flag_content_dirty_;
 	bool flag_appearance_dirty_;
+	bool flag_height_dirty_;
 	unsigned int _lighting_samples;
 
 	LinearKeyValueContainer* border_sides_;

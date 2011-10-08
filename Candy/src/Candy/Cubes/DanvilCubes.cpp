@@ -24,13 +24,14 @@ DanvilCubes::DanvilCubes(Ptr(::Generator) generator)
 	cubes_->OnAddCell = boost::bind(&DanvilCubes::OnAddCell, this, _1);
 	cubes_->OnChangeCube = boost::bind(&DanvilCubes::OnUpdateCube, this, _1, _2);
 
-	height_lookup_.SetHeightRange(128);
+	height_lookup_.reset(new GroundHeightLookup());
+	height_lookup_->SetHeightRange(128);
 
 	sphere_renderer_.reset(new Candy::Cubes::Rendering::SphereRenderer());
 
 	cubes_physics_.reset(new Candy::Cubes::Physics::PhysicsWorld(cubes_, sphere_renderer_));
 
-	background_ = new Background(cubes_, man_, generator);
+	background_ = new Background(cubes_, man_, height_lookup_, generator);
 	background_->Start();
 }
 
@@ -43,12 +44,10 @@ DanvilCubes::~DanvilCubes()
 void DanvilCubes::OnAddCell(Cell* cell)
 {
 	man_->NotifyAddCell(cell);
-	height_lookup_.Build(cubes_, cell);
 }
 
 void DanvilCubes::OnUpdateCube(Cell* cell, const CoordI& cw)
 {
-	height_lookup_.Build(cubes_, cw.x, cw.y);
 }
 
 void DanvilCubes::Tick(float dt)

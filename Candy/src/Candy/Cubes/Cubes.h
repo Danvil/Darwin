@@ -12,8 +12,8 @@
 #include <boost/thread.hpp>
 #include <map>
 #include <vector>
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 //#ifndef NDEBUG
 //	#define PRINT_NOTES
 //#endif
@@ -28,27 +28,35 @@ public:
 
 	boost::function<void(Cell*)> OnAddCell;
 
-	boost::function<void(Cell*, bool)> OnChangeCell;
-
 	boost::function<void(Cell*, const CoordI&)> OnChangeCube;
 
-	Cell* GetCell(const CoordI& c_cell) const;
-
-	void SetType(const CoordI& cc_world, CubeType type) {
-		CoordI c_cell = Properties::WorldToCell(cc_world);
-		Cell* cell = GetCell(c_cell);
-		// set type in cell
-		CoordU cc_local = Properties::WorldToLocal(cc_world);
-		cell->Set(cc_local, type);
-		if(OnChangeCube) {
-			OnChangeCube(cell, cc_world); // FIXME only call if changed
-		}
+	/** Checks if a cell exists
+	 * @param c_cell coordinate of the cell to get
+	 * @return true if the cell exists, false otherwise
+	 */
+	bool ExistsCell(const CoordI& c_cell) const {
+		return cells_.valid(c_cell);
 	}
+
+	/** Adds a cell
+	 * @param cell cell to add
+	 */
+	void AddCell(Cell* cell);
+
+	/** Gets the cell for a coordinate
+	 * @param c_cell coordinate of the cell to get
+	 * @returns the cell or 0 if it does not exists
+	 */
+	Cell* GetCell(const CoordI& c_cell) const {
+		return cells_[c_cell];
+	}
+
+	void SetType(const CoordI& cc_world, CubeType type);
 
 	CubeType GetType(const CoordI& cc_world) const {
 		CoordI cc_cell = Properties::WorldToCell(cc_world);
-		Cell* cell;
-		if(TryGetCell(cc_cell, &cell)) {
+		Cell* cell = GetCell(cc_cell);
+		if(cell) {
 			// set type in cell
 			CoordU cc_local = Properties::WorldToLocal(cc_world);
 			return cell->At(cc_local);
@@ -60,8 +68,8 @@ public:
 
 	CubeInteriorData* GetData(const CoordI& cc_world) const {
 		CoordI cc_cell = Properties::WorldToCell(cc_world);
-		Cell* cell;
-		if(TryGetCell(cc_cell, &cell)) {
+		Cell* cell = GetCell(cc_cell);
+		if(cell) {
 			// set type in cell
 			CoordU cc_local = Properties::WorldToLocal(cc_world);
 			return cell->AtData(cc_local);
@@ -233,7 +241,6 @@ public:
 //		...
 	}
 
-public:
 	CubeType SideNeighbourType(const CoordI& cc_world, int side) {
 		// get coordinate of neighbour
 		CoordI n = Properties::GetSideNeighbour(cc_world, side);
@@ -271,18 +278,16 @@ public:
 		return cells;
 	}
 
-	bool ExistsCell(const CoordI& cc_cell) const {
-		return cells_.valid(cc_cell);
-	}
-
-	bool TryGetCell(const CoordI& cc_cell, Cell** cell_ptr) const {
-		*cell_ptr = cells_[cc_cell];
-		return *cell_ptr != 0;
-	}
-
 private:
 	bool PickGridWalk(const Vec3f& a, const Vec3f& u, Ci& min_c_world, float& min_distance, int& side);
 	bool PickNear(const Vec3f& a, const Vec3f& u, Ci& min_c_world, float& min_distance, int& side);
+
+//	std::map<CoordI, std::map<unsigned int,CubeType>> add_cell_request_;
+//
+//	void PendingAddCell(const CoordI& c_cell);
+//	void PendingSetType(const CoordI& c_world, CubeType ct);
+//	CubeType PendingGetType(const CoordI& c_world);
+//	void PendingWrite();
 
 private:
 	mutable Grid<Cell*> cells_;

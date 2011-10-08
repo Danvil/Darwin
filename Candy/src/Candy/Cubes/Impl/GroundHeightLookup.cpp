@@ -18,11 +18,12 @@ void GroundHeightLookup::Build(const Ptr(Cubes)& cubes)
 
 void GroundHeightLookup::Build(const Ptr(Cubes)& cubes, Cell* cell)
 {
-	const CoordI wc = Properties::CellToWorld(cell->coordinate());
-//	// check if already built by testing first cube
-//	if(chunks_.find(Index(wcx0, wcy0)) != chunks_.end()) {
-//		return;
-//	}
+	Build(cubes, cell->coordinate());
+}
+
+void GroundHeightLookup::Build(const Ptr(Cubes)& cubes, const CoordI& c_cell)
+{
+	const CoordI wc = Properties::CellToWorld(c_cell);
 	// handle each column
 	for(unsigned int y=0; y<Properties::CellSize; y++) {
 		int wy = wc.y + y;

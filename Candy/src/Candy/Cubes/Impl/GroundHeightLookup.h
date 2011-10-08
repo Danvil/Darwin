@@ -8,6 +8,7 @@
 #ifndef GROUNDHEIGHTLOOKUP_H_
 #define GROUNDHEIGHTLOOKUP_H_
 
+#include <Candy/Tools/Coord.h>
 #include <Candy/Tools/Ptr.h>
 #include <map>
 #include <vector>
@@ -32,6 +33,8 @@ public:
 	void Build(const Ptr(Cubes)& cubes);
 
 	void Build(const Ptr(Cubes)& cubes, Cell* cell);
+
+	void Build(const Ptr(Cubes)& cubes, const CoordI& c_cell);
 
 	void Build(const Ptr(Cubes)& cubes, int x, int y) {
 		chunks_[Index(x, y)] = ComputeHeightLevels(cubes, x, y);

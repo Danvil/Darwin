@@ -6,17 +6,24 @@
 #include <list>
 #include <cassert>
 
-Cell* Cubes::GetCell(const CoordI& c_cell) const {
-	Cell* cell;
-	if(!TryGetCell(c_cell, &cell)) {
-		// create cell
-		cell = new Cell(c_cell);
-		cells_.set(c_cell, cell);
-		if(OnAddCell) {
-			OnAddCell(cell);
-		}
+void Cubes::AddCell(Cell* cell)
+{
+	cells_.set(cell->coordinate(), cell);
+	if(OnAddCell) {
+		OnAddCell(cell);
 	}
-	return cell;
+}
+
+void Cubes::SetType(const CoordI& cc_world, CubeType type)
+{
+	CoordI c_cell = Properties::WorldToCell(cc_world);
+	Cell* cell = GetCell(c_cell);
+	// set type in cell
+	CoordU cc_local = Properties::WorldToLocal(cc_world);
+	cell->Set(cc_local, type);
+	if(OnChangeCube) {
+		OnChangeCube(cell, cc_world); // FIXME only call if changed
+	}
 }
 
 size_t Cubes::CountNonEmptyCells() const
@@ -201,4 +208,39 @@ std::vector<Cell*> Cubes::GetCells() const
 {
 	return cells_.valid_cells();
 }
+
+//void Cubes::PendingAddCell(const CoordI& c_cell)
+//{
+//
+//}
+//
+//void Cubes::PendingSetType(const CoordI& c_world, CubeType ct)
+//{
+//
+//}
+//
+//CubeType Cubes::PendingGetType(const CoordI& c_world)
+//{
+//	CoordI c_cell;
+//	CoordU c_local;
+//	Properties::WorldToCellLocal(c_world, c_cell, c_local);
+//	unsigned int c_local_index = Properties::LocalToIndex(c_local);
+//	// see if cell is pending
+//	auto it = add_cell_request_.find(c_cell);
+//	if(it == add_cell_request_.end()) {
+//		return CubeTypes::NonExistent;
+//	}
+//	// see if cube is changed
+//	auto jt = it->second.find(c_local_index);
+//	if(jt == it->second.end()) {
+//		return CubeTypes::NonExistent;
+//	}
+//	return jt->second;
+//}
+//
+//void Cubes::PendingWrite()
+//{
+//
+//}
+
 

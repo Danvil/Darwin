@@ -23,7 +23,8 @@ namespace Collision
 			bool operator()(int x, int y, int z, float lambda) {
 				Cell* cell;
 				Ci c_cell(x, y, z);
-				if(cubes_->TryGetCell(c_cell, &cell)) {
+				cell = cubes_->GetCell(c_cell);
+				if(cell) {
 					hits_ = CellRay(c_cell, a_, u_, IsSolidTester(cell), cc_world_, distance_, side_);
 					return hits_;
 				} else {
@@ -133,17 +134,20 @@ namespace Collision
 		Ci a_cell = Properties::WorldToCell(a_cube);
 		std::vector<Cell*> cells;
 		cells.reserve(4);
-		Cell* cell;
-		if(cubes->TryGetCell(a_cell, &cell)) {
+		Cell* cell = cubes->GetCell(a_cell);
+		if(cell) {
 			cells.push_back(cell);
 		}
-		if(cubes->TryGetCell(a_cell + Ci(Math::Sign(u.x()), 0, 0), &cell)) {
+		cell = cubes->GetCell(a_cell + Ci(Math::Sign(u.x()), 0, 0));
+		if(cell) {
 			cells.push_back(cell);
 		}
-		if(cubes->TryGetCell(a_cell + Ci(0, Math::Sign(u.y()), 0), &cell)) {
+		cell = cubes->GetCell(a_cell + Ci(0, Math::Sign(u.y()), 0));
+		if(cell) {
 			cells.push_back(cell);
 		}
-		if(cubes->TryGetCell(a_cell + Ci(0, 0, Math::Sign(u.z())), &cell)) {
+		cell = cubes->GetCell(a_cell + Ci(0, 0, Math::Sign(u.z())));
+		if(cell) {
 			cells.push_back(cell);
 		}
 		return Private::PickCells(cells, a, u, min_c_world, min_distance, side);
@@ -169,7 +173,7 @@ namespace Collision
 				Cu c_local;
 				Properties::WorldToCellLocal(p, c_cell, c_local);
 				if(last_cell_ == 0 || last_cell_->coordinate() != c_cell) {
-					cubes_->TryGetCell(c_cell, &last_cell_);
+					last_cell_ = cubes_->GetCell(c_cell);
 				}
 				if(last_cell_ != 0) {
 					hits_ = IsSolid(last_cell_->At(c_local));

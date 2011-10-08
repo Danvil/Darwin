@@ -41,7 +41,7 @@ namespace Candy
 		}
 
 		int GetHeight(int cx, int cy, float z) const {
-			return height_lookup_.GetGroundZ(cx, cy, z);
+			return height_lookup_->GetGroundZ(cx, cy, z);
 		}
 
 		int GetHeight(const Vec3f& position) const {
@@ -75,7 +75,7 @@ namespace Candy
 
 		Background* background_;
 
-		GroundHeightLookup height_lookup_;
+		Ptr(GroundHeightLookup) height_lookup_;
 
 	};
 
