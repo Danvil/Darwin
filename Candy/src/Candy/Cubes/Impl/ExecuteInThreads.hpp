@@ -28,7 +28,7 @@ namespace CandyCubes
 			std::list<boost::thread*> threads;
 			while(threads.size() > 0 || current < count) {
 				// wait for threads
-				std::list<boost::thread*> old_threads;
+				std::list<boost::thread*> old_threads = threads;
 				threads.clear(); // collect new threads here
 				for(auto it=old_threads.begin(); it!=old_threads.end(); ++it) {
 					if((*it)->timed_join(delay)) {
