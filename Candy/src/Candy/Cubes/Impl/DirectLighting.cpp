@@ -36,43 +36,47 @@ namespace Lighting
 		}
 	}
 
-	float ComputeSunLight(Cubes* cubes, const CoordI& cw, int sideIndex)
+	float ComputeSunLightSimple(Cubes* cubes, const CoordI& cw, int sideIndex) {
+		Vec3f n = Properties::SideNormal(cw, sideIndex);
+		return n.dot(Appearance::SunPosition);
+	}
+
+	float ComputeSunLightRandomSamples(Cubes* cubes, const CoordI& cw, int sideIndex)
+	{
+		const unsigned int cSamples = 5;
+		const float cCenterWeight = 0.4f;
+		Vec3f pos = Properties::WorldToPositionCenter(cw);
+		Vec3f n = Properties::SideNormal(cw, sideIndex);
+//		// center
+//		float w_center = ComputeSampleLight(cubes, pos, Appearance::SunPosition, n);
+//		if(cSamples == 1) {
+//			return w_center;
+//		}
+		// create samples from a random side position towards the sun
+		float w_soft = 0.0f;
+		// this creates soft shadows
+		for(unsigned int s=1; s<cSamples; s++) {
+			// cast ray from random position on cube side
+			Vec3f a = pos + RandomCubeSidePoint(cw, sideIndex);
+			w_soft += ComputeSampleLight(cubes, a, Appearance::SunPosition, n);
+		}
+//		return cCenterWeight * w_center + (1.0f - cCenterWeight) * w_soft / float(cSamples - 1);
+		return w_soft / float(cSamples);
+	}
+
+	float ComputeSunLightPatternSamples(Cubes* cubes, const CoordI& cw, int sideIndex)
 	{
 		Vec3f pos = Properties::WorldToPositionCenter(cw);
-		const bool cRandomSamples = false;
 		Vec3f n = Properties::SideNormal(cw, sideIndex);
-
-		return n.dot(Appearance::SunPosition);
-
-		if(cRandomSamples) {
-			const unsigned int cSamples = 5;
-			const float cCenterWeight = 0.4f;
-			// center
-			float w_center = ComputeSampleLight(cubes, pos, Appearance::SunPosition, n);
-			if(cSamples == 1) {
-				return w_center;
-			}
-			// create samples from a random side position towards the sun
-			float w_soft = 0.0f;
-			// this creates soft shadows
-			for(unsigned int s=1; s<cSamples; s++) {
-				// cast ray from random position on cube side
-				Vec3f a = pos + RandomCubeSidePoint(cw, sideIndex);
-				w_soft += ComputeSampleLight(cubes, a, Appearance::SunPosition, n);
-			}
-			return cCenterWeight * w_center + (1.0f - cCenterWeight) * w_soft / float(cSamples - 1);
+		// create samples from cube side towards the sun
+		float sum = 0.0f;
+		// this creates soft shadows
+		for(unsigned int s=0; s<PatternCubeSidePointCount; s++) {
+			// cast ray from random position on cube side
+			Vec3f a = pos + PatternCubeSidePoint(cw, sideIndex, s);
+			sum += ComputeSampleLight(cubes, a, Appearance::SunPosition, n);
 		}
-		else {
-			// create samples from cube side towards the sun
-			float sum = 0.0f;
-			// this creates soft shadows
-			for(unsigned int s=0; s<PatternCubeSidePointCount; s++) {
-				// cast ray from random position on cube side
-				Vec3f a = pos + PatternCubeSidePoint(cw, sideIndex, s);
-				sum += ComputeSampleLight(cubes, a, Appearance::SunPosition, n);
-			}
-			return sum / float(PatternCubeSidePointCount);
-		}
+		return sum / float(PatternCubeSidePointCount);
 	}
 
 	const unsigned int cThreadCount = 1;
@@ -105,16 +109,8 @@ namespace Lighting
 		uint64_t this_count = 0;
 
 		// pick cells with minimal samples and sort
-		std::vector<Cell*> all_cells = cubes->GetCells();
-		std::vector<Cell*> cells;
-		cells.reserve(all_cells.size());
-		std::for_each(all_cells.begin(), all_cells.end(), [&](Cell* cell) {
-			if(cell->CountLightingSamples() == 0
-					&& cell->HasBorder()
-					&& !cell->IsContentChanged()
-			) {
-				cells.push_back(cell);
-			}
+		std::vector<Cell*> cells = cubes->GetCellsIf([](Cell* cell) {
+			return cell->CountLightingSamples() == 0 && cell->HasBorder() && !cell->IsContentChanged();
 		});
 //		std::cout << "Cells which need lighting " << cells.size() << std::endl;
 //		std::sort(cells.begin(), cells.end(), CellByEyeDistance());
@@ -127,7 +123,7 @@ namespace Lighting
 				size_t i = Random::Uniform(cells.size() - 1);
 				Cell* cell = cells[i];
 				ComputeCell(cubes.get(), cell);
-				this_count += double(cell->BorderSideCount());
+				this_count += cell->BorderSideCount();
 			} else {
 				std::vector<boost::thread*> threads;
 				for(size_t i=0; i<thread_count; i++) {
@@ -143,25 +139,25 @@ namespace Lighting
 		return this_count;
 	}
 
+	void ComputeCubeImpl(Cubes* cubes, const CoordI& cw, unsigned int sideIndex, CubeType type, CubeSideData* data)
+	{
+		data->lighting.ambient = ComputeAmbientLight(cubes, cw, sideIndex);
+		data->lighting.sun = ComputeSunLightSimple(cubes, cw, sideIndex);
+		data->lighting.scenery = Appearance::CubeEmitColor(type);
+	}
+
 	void DirectLighting::ComputeCell(Cubes* cubes, Cell* cell)
 	{
-		cell->AddSamples(1);
 		for(Cell::BorderSideIterator it=cell->IterateBorderSides(); it; ++it) {
-			ComputeCube(cubes, it);
+			ComputeCubeImpl(cubes, it.world(), it.side(), it.type(), it.data());
 		}
+		cell->AddSamples(1);
 		cell->SetAppearanceDirtyFlag();
 	}
 
 	void DirectLighting::ComputeCube(Cubes* cubes, const Cell::BorderSideIterator& it)
 	{
-		ComputeCube(cubes, it.world(), it.side(), it.type(), it.data());
-	}
-
-	void DirectLighting::ComputeCube(Cubes* cubes, const CoordI& cw, unsigned int sideIndex, CubeType type, CubeSideData* data)
-	{
-		data->lighting.ambient = ComputeAmbientLight(cubes, cw, sideIndex);
-		data->lighting.sun = ComputeSunLight(cubes, cw, sideIndex);
-		data->lighting.scenery = Appearance::CubeEmitColor(type);
+		ComputeCubeImpl(cubes, it.world(), it.side(), it.type(), it.data());
 	}
 
 }

@@ -20,7 +20,7 @@ namespace Lighting
 		uint64_t Iterate(Ptr(Cubes) cubes);
 		static void ComputeCell(Cubes* cubes, Cell* cell);
 		static void ComputeCube(Cubes* cubes, const Cell::BorderSideIterator& it);
-		static void ComputeCube(Cubes* cubes, const CoordI& cw, unsigned int side, CubeType type, CubeSideData* data);
+//		static void ComputeCube(Cubes* cubes, const CoordI& cw, unsigned int side, CubeType type, CubeSideData* data);
 	};
 
 }}
