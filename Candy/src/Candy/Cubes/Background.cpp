@@ -79,12 +79,52 @@ void Background::PrintStatus()
 	std::cout << "Lighting samples: Min=" << num_samples_min << " / Mean=" << num_samples_mean << " / Max=" << num_samples_max << std::endl;
 }
 
+struct Benchmarker
+{
+	Benchmarker()
+	: count_(0), time_(0.0) {}
+	void start() {
+		timer.start();
+	}
+	void reset() {
+		count_ = 0;
+		time_ = 0.0;
+	}
+	void stop(size_t n) {
+		timer.stop();
+		count_ += n;
+		time_ += timer.getElapsedTimeInSec();
+	}
+	size_t count() const {
+		return count_;
+	}
+	double time() const {
+		return time_;
+	}
+	double time_ms() const {
+		return time_ * 1000.0;
+	}
+	double mean() const {
+		return time_ / double(count_);
+	}
+	double mean_ms() const {
+		return mean() * 1000.0;
+	}
+	double items_per_second() const {
+		return double(count_) / time_;
+	}
+private:
+	Danvil::Timer timer;
+	size_t count_;
+	double time_;
+	size_t total_count_;
+	double total_time_;
+};
+
 void Background::Run()
 {
 	const unsigned int cMaxCount = 4;
 	const unsigned int cMaxThreads = 1;
-
-	Danvil::Timer timer;
 
 	boost::timer print_timer;
 
@@ -93,29 +133,31 @@ void Background::Run()
 	timer_all.start();
 #endif
 
-	size_t n_created=0, n_vitalized=0, n_height=0, n_lighting=0;
-	double time_created=0, time_vitalized=0, time_height=0, time_lighting=0;
+	Benchmarker b_created, b_vitalized, b_height, b_lighting, b_lighting_gi;
+	Benchmarker b_total_created, b_total_vitalized, b_total_height, b_total_lighting, b_total_lighting_gi;
 
 	// the monster background loop
 	while(_running)
 	{
 		// create cells
-		timer.start();
 		{
+			b_created.start();
+			b_total_created.start();
 			// pick cells which need recreation
 			std::vector<Cell*> cells = cubes_->GetCellsIf([](Cell* cell) { return cell->NeedsCreation(); });
 			// FIXME sort by visibility
 			// create
-			n_created += CandyCubes::ExecuteInThreads(cells, cMaxCount, cMaxThreads, [&](Cell* cell) {
+			size_t n_created = CandyCubes::ExecuteInThreads(cells, cMaxCount, cMaxThreads, [&](Cell* cell) {
 						cubes_->CreateCell(cell, generator_.get());
 			});
+			b_created.stop(n_created);
+			b_total_created.stop(n_created);
 		}
-		timer.stop();
-		time_created += timer.getElapsedTimeInMilliSec();
 
 		// vitalize dirty cells
-		timer.start();
 		{
+			b_vitalized.start();
+			b_total_vitalized.start();
 			// pick cells which need vitalization
 			std::vector<Cell*> cells = cubes_->GetCellsIf([&](Cell* cell) {
 				// only cells which need it
@@ -131,7 +173,7 @@ void Background::Run()
 			});
 			// FIXME sort by visibility
 			// vitalize
-			n_vitalized += CandyCubes::ExecuteInThreads(cells, cMaxCount, cMaxThreads, [&](Cell* cell) {
+			size_t n_vitalized = CandyCubes::ExecuteInThreads(cells, cMaxCount, cMaxThreads, [&](Cell* cell) {
 					cubes_->VitalizeCubeData(cell);
 					// we also need to reset lighting for neighbouring cells!
 					cubes_->ApplyToNeighbourCells(cell, 2, [&](Cell* neigbour_cell) {
@@ -148,26 +190,32 @@ void Background::Run()
 						neigbour_cell->_lighting_samples = std::max(0u, (unsigned int)(samples_p * (float)(neigbour_cell->_lighting_samples)));
 					});
 			});
+			b_vitalized.stop(n_vitalized);
+			b_total_vitalized.stop(n_vitalized);
 		}
-		timer.stop();
-		time_vitalized += timer.getElapsedTimeInMilliSec();
 
 		// lighting
-		timer.start();
 		{
 			if(gi_basic_) {
-				n_lighting += gi_basic_->Iterate(cubes_);
+				b_lighting.start();
+				b_total_lighting.start();
+				size_t n_lighting = gi_basic_->Iterate(cubes_);
+				b_lighting.stop(n_lighting);
+				b_total_lighting.stop(n_lighting);
 			}
 			if(gi_) {
-				n_lighting += gi_->Iterate(cubes_);
+				b_lighting_gi.start();
+				b_total_lighting_gi.start();
+				size_t n_lighting_gi = gi_->Iterate(cubes_);
+				b_lighting_gi.stop(n_lighting_gi);
+				b_total_lighting_gi.stop(n_lighting_gi);
 			}
 		}
-		timer.stop();
-		time_lighting += timer.getElapsedTimeInMilliSec();
 
 		// recompute ground test
-		timer.start();
 		{
+			b_height.start();
+			b_total_height.start();
 			// pick cells which need height update
 			std::vector<Cell*> cells = cubes_->GetCellsIf([](Cell* cell) { return cell->IsHeightDirty(); });
 			// get (unique) coordinates
@@ -182,10 +230,10 @@ void Background::Run()
 			std::for_each(cells.begin(), cells.end(), [&](Cell* cell) {
 				cell->ClearHeightDirtyFlag();
 			});
-			n_height += cell_coordinates.size();
+			size_t n_height = cell_coordinates.size();
+			b_height.stop(n_height);
+			b_total_height.stop(n_height);
 		}
-		timer.stop();
-		time_height += timer.getElapsedTimeInMilliSec();
 
 		// recreate mesh data if necessary
 		{
@@ -193,26 +241,20 @@ void Background::Run()
 		}
 
 		// print status message
-		if(print_timer.elapsed() > 3.0) {
+		if(print_timer.elapsed() > 5.0) {
 			print_timer.restart();
-//			PrintStatus();
-//			double fps_created = double(n_created) / double(time_created);
-//			double fps_vitalized = double(n_vitalized) / double(time_vitalized);
-//			double fps_height = double(n_height) / double(time_height);
-			double fps_lighting = double(n_lighting) / double(time_lighting);
-			double mean_created = double(time_created) / double(n_created);
-			double mean_vitalized = double(time_vitalized) / double(n_vitalized);
-			double mean_height = double(time_height) / double(n_height);
-//			double mean_lighting = double(time_lighting) / double(n_lighting);
+			std::cout << std::setprecision(3);
 			std::cout
-					<< "Created: " << n_created << " (" << time_created << " ms)\t"
-					<< "Vitalized: " << n_vitalized << " (" << time_vitalized << " ms)\t"
-					<< "Height: " << n_height << " (" << time_height << " ms)\t"
-					<< "Lighting: " << n_lighting << " (" << time_lighting << " ms - " << fps_lighting << " samples/ms)" << std::endl;
-//					<< "Vitalized: " << n_vitalized << "\tHeight: " << n_height << std::endl;
-//			std::cout << "Lighting computation performance: " << int(sps) << " samples/s; " << "count=" << n_lighting << "; time=" << time_lighting << std::endl;
-			n_created = n_vitalized = n_height = n_lighting = 0;
-			time_created = time_vitalized = time_height = time_lighting = 0;
+					<< "Created: " << b_created.count() << " (" << b_created.time() << " s)\t"
+					<< "Vitalized: " << b_vitalized.count() << " (" << b_vitalized.time() << " s)\t"
+					<< "Height: " << b_height.count() << " (" << b_height.time() << " s)\t"
+					<< "Lighting: " << b_lighting.count() << " (" << b_lighting.items_per_second() << " samples/s)\t"
+					<< "GI: " << b_lighting_gi.count() << " (" << b_lighting_gi.items_per_second() << " samples/s)" << std::endl;
+			b_created.reset();
+			b_vitalized.reset();
+			b_height.reset();
+			b_lighting.reset();
+			b_lighting_gi.reset();
 		}
 
 #ifdef ENABLE_QUIT_AFTER_MAXTIME
@@ -225,5 +267,14 @@ void Background::Run()
 
 		boost::this_thread::sleep(boost::posix_time::milliseconds(SLEEP_TIME));
 	}
+
+	std::cout << "Summarized Benchmark: " << std::endl;
+	std::cout << std::setprecision(3);
+	std::cout
+			<< "Created   count: " << b_total_created.count() << ",\t time: " << b_total_created.time() << " s,\t mean: " << b_total_created.mean_ms() << " ms/cell" << std::endl
+			<< "Vitalized count: " << b_total_vitalized.count() << ",\t time: " << b_total_vitalized.time() << " s,\t mean: " << b_total_vitalized.mean_ms() << " ms/cell" << std::endl
+			<< "Height    count: " << b_total_height.count() << ",\t time: " << b_total_height.time() << " s,\t mean: " << b_total_height.mean_ms() << " ms/cell" << std::endl
+			<< "Lighting  count: " << b_total_lighting.count() << ",\t time: " << b_total_lighting.time() << " s,\t speed: " << b_total_lighting.items_per_second() << " samples/s" << std::endl
+			<< "GI        count: " << b_total_lighting_gi.count() << ",\t time: " << b_total_lighting_gi.time() << " s,\t speed: " << b_total_lighting_gi.items_per_second() << " samples/s" << std::endl;
 
 }
