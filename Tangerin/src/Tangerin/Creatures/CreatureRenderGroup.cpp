@@ -18,20 +18,37 @@
 
 namespace Tangerin {
 
-CreatureRenderGroup::CreatureRenderGroup(const std::string& mesh_fn, bool is_dynamic)
+CreatureRenderGroup::CreatureRenderGroup(const std::string& fn_mesh, const std::string& fn_texture, bool is_dynamic)
 	: is_dynamic_(is_dynamic)
 {
 	// load mesh or mesh animation
-	if(is_dynamic_) {
-		visual_ = Candy::ResourcePool::Singleton->Get(
-			Ptr(Candy::MeshAnimId)(new Candy::MeshAnimId(Candy::MeshPN, mesh_fn)));
-	}
-	else {
-		visual_ = Ptr(Candy::IDrawable)(Candy::ResourcePool::Singleton->Get(
-				Ptr(Candy::MeshId)(new Candy::MeshId(Candy::MeshPN, mesh_fn))),
-				boost::detail::dynamic_cast_tag());
-	}
-	shader_ = Candy::CreatePnShader("Creep.vert", "Creep.frag");
+//	if(is_dynamic_) {
+//		visual_ = Candy::ResourcePool::Singleton->Get(
+//			Ptr(Candy::MeshAnimId)(new Candy::MeshAnimId(Candy::MeshPN, fn_mesh)));
+//	}
+//	else {
+	visual_ = Ptr(Candy::IDrawable)(Candy::ResourcePool::Singleton->Get(
+			Ptr(Candy::MeshId)(new Candy::MeshId(Candy::MeshPTN, fn_mesh))),
+			boost::detail::dynamic_cast_tag());
+	fn_texture_ = fn_texture;
+//	}
+	// callback for applying creep variables to the shader for rendering
+	on_prepare_item_ = boost::bind(&CreatureRenderGroup::PrepareItem, this, _1, _2);
+}
+
+void CreatureRenderGroup::Add(const Ptr(Creature)& a)
+{
+	data_.push_back(a);
+}
+
+void CreatureRenderGroup::Remove(const Ptr(Creature)& a)
+{
+	MoreStd::remove_first(data_, a);
+}
+
+void CreatureRenderGroup::InitializeShader()
+{
+	shader_ = Candy::CreatePnShader("shader/Creature_Textured.vert", "shader/Creature_Textured.frag");
 	// position of sun in the sky
 	u_sun_position_ = new Candy::Uniform3f("uSunPosition");
 	u_sun_position_->Change(Appearance::SunPosition);
@@ -42,34 +59,18 @@ CreatureRenderGroup::CreatureRenderGroup(const std::string& mesh_fn, bool is_dyn
 	// creep color multiplied with sun color multiplied with sun strength
 	u_object_light_sun_ = new Candy::Uniform4f("uObjectLightSun");
 	shader_->AddUniformTick(u_object_light_sun_);
-	// callback for applying creep variables to the shader for rendering
-	OnApply = boost::bind(&CreatureRenderGroup::ApplyToShader, this, _1, _2);
-	OnTest = boost::bind(&CreatureRenderGroup::TestVisibility, this, _1);
+	// texture
+	Ptr(Candy::TextureId) ti(new Candy::TextureId(fn_texture_));
+	shader_->AddTexture("uTexture", Candy::ResourcePool::Singleton->Get(ti));
 }
 
-void CreatureRenderGroup::Add(Creature* a)
+bool CreatureRenderGroup::PrepareItem(size_t i, const Ptr(Candy::ShaderX)& shader)
 {
-	data_.push_back(a);
-}
+	// FIXME check visibility
+	//	Candy::IDrawable::sCamera-> ->u_view_->Change(base);
+	//	return Candy::IDrawable::view->IsVisibleByCamera(at(i)->phy().position());
 
-void CreatureRenderGroup::Remove(Creature* a)
-{
-	MoreStd::remove_first(data_, a);
-}
-
-bool CreatureRenderGroup::TestVisibility(size_t i)
-{
-	return true;
-//	throw 0;
-//	// TODO consider size of creep
-//	Candy::IDrawable::sCamera-> ->u_view_->Change(base);
-//	return Candy::IDrawable::view->IsVisibleByCamera(at(i)->phy().position());
-}
-
-void CreatureRenderGroup::ApplyToShader(size_t i, const Ptr(Candy::ShaderX)& shader)
-{
-	std::cout << i << std::endl;
-	const Creature* c = at(i);
+	Ptr(Creature) c = at(i);
 	// 3D pose
 	Eigen::Affine3f t = Eigen::Translation3f(c->position())
 	 * Eigen::AngleAxisf(c->direction_angle(), Eigen::Vector3f::UnitZ());
@@ -109,6 +110,8 @@ void CreatureRenderGroup::ApplyToShader(size_t i, const Ptr(Candy::ShaderX)& sha
 //		}
 //		dynamic_cast<Candy::Animation*>(visual_.get())->animation_time_ = animation_time;
 //	}
+
+	return true;
 }
 
 }

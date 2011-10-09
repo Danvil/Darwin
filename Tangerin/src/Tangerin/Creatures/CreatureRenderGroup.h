@@ -20,20 +20,24 @@ namespace Tangerin {
 class Creature;
 
 class CreatureRenderGroup
-	: public Candy::Group<Creature*>
+	: public Candy::Group<Ptr(Creature)>
 {
 public:
-	CreatureRenderGroup(const std::string& mesh_fn, bool is_dynamic);
+	CreatureRenderGroup(const std::string& fn_mesh, const std::string& fn_texture, bool is_dynamic);
 
-	void Add(Creature* a);
+	void Add(const Ptr(Creature)&);
 
-	void Remove(Creature* a);
+	void Remove(const Ptr(Creature)&);
 
 	bool TestVisibility(size_t i);
 
-	void ApplyToShader(size_t i, const Ptr(Candy::ShaderX)& shader);
+	bool PrepareItem(size_t i, const Ptr(Candy::ShaderX)& shader);
+
+protected:
+	void InitializeShader();
 
 public:
+	std::string fn_texture_;
 	Candy::Uniform3f* u_sun_position_;
 	Candy::Uniform4f* u_object_light_ambient_;
 	Candy::Uniform4f* u_object_light_sun_;
