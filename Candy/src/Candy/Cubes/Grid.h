@@ -168,6 +168,7 @@ namespace Impl
 			}
 		};
 		typedef std::unordered_map<CoordI,T,hash_CoordI> container;
+		//typedef std::map<CoordI,T> container;
 		typedef MapValueIterator<typename container::iterator> iterator;
 		typedef MapValueIterator<typename container::const_iterator> const_iterator;
 		size_t size() const {
