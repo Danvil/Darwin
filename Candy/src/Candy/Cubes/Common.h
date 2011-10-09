@@ -478,6 +478,11 @@ namespace CandyCubes
 			wz = CellLocalToWorld(cz, lz);
 		}
 
+		template<typename K>
+		static void WorldToAnglesDegrees(const CoordI&, K&, K&) {
+			throw 0;
+		}
+
 		static void WorldToPosition(int vx, int vy, int vz, float& x, float& y, float& z) {
 			x = WorldToPosition(vx);
 			y = WorldToPosition(vy);
@@ -500,6 +505,10 @@ namespace CandyCubes
 			wx = PositionToWorld(px, rx);
 			wy = PositionToWorld(py, ry);
 			wz = PositionToWorld(pz, rz);
+		}
+
+		static float GetGroundHeightOverNull(const Vec3f& p) {
+			return p[2];
 		}
 
 		static inline Vec3f PositionWithHeight(const Vec3f& p, float h) {
@@ -919,7 +928,8 @@ namespace CandyCubes
 
 }
 
-typedef CandyCubes::DerivedProperties<CandyCubes::SphereProperties> Properties;
+//typedef CandyCubes::DerivedProperties<CandyCubes::SphereProperties> Properties;
+typedef CandyCubes::DerivedProperties<CandyCubes::PlanarProperties> Properties;
 
 namespace Exceptions
 {
