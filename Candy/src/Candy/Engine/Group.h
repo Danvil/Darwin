@@ -12,11 +12,9 @@ namespace Candy
 		: public INodeBase
 	{
 	public:
-		typedef boost::function<void(size_t, const Ptr(Candy::ShaderX)&)> ApplyFunc;
-		typedef boost::function<bool(size_t)> TestFunc;
+		typedef boost::function<bool(size_t, const Ptr(Candy::ShaderX)&)> PrepareItemFunc;
 
-		ApplyFunc OnApply;
-		TestFunc OnTest;
+		virtual ~Group() {}
 
 		const T& at(size_t i) const {
 			return data_[i];
@@ -28,12 +26,14 @@ namespace Candy
 
 		void Render()
 		{
+			if(!shader_) {
+				InitializeShader();
+			}
 			shader_->ApplyStart();
 			visual_->RenderStart();
 			IDrawable::sCamera->Push();
 			for(size_t i=0; i<data_.size(); i++) {
-				if(!OnTest || OnTest(i)) {
-					OnApply(i, shader_);
+				if(on_prepare_item_(i, shader_)) {
 					shader_->ApplyTick();
 					visual_->RenderTick();
 				}
@@ -44,8 +44,15 @@ namespace Candy
 		}
 
 	protected:
+		virtual void InitializeShader() = 0;
+
+		PrepareItemFunc on_prepare_item_;
+
 		Ptr(Candy::IDrawable) visual_;
+
 		Ptr(Candy::ShaderX) shader_;
+
 		std::vector<T> data_;
+
 	};
 }
