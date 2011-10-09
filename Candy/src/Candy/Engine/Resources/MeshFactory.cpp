@@ -80,7 +80,12 @@ namespace Candy
 				}
 				else if(tokens[0] == "vt") {
 					// vertex texture coordinates
-					mesh.vt.push_back(Triple(toFloat(tokens[1]), toFloat(tokens[2]), toFloat(tokens[3])));
+					if(tokens.size() == 4) {
+						mesh.vt.push_back(Triple(toFloat(tokens[1]), toFloat(tokens[2]), toFloat(tokens[3])));
+					}
+					else {
+						mesh.vt.push_back(Triple(toFloat(tokens[1]), toFloat(tokens[2]), 0.0f));
+					}
 				}
 				else if(tokens[0] == "vn") {
 					// vertex normal
