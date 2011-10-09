@@ -92,7 +92,20 @@ namespace Random
 		return Vec3f(ra * UniformMPf(), rb * UniformMPf(), rc * UniformMPf());
 	}
 
+	inline Vec3f UniformRandomInDisc(float r, float h=0.0f) {
+		// FIXME improve speed!!!
+		Vec3f x;
+		do {
+			x[0] = r * UniformMPf();
+			x[1] = r * UniformMPf();
+			x[2] = 0.0f;
+		} while(x.squaredNorm() > r*r);
+		x[2] = h;
+		return x;
+	}
+
 	inline Vec3f UniformRandomInSphere(float r) {
+		// FIXME improve speed!!!
 		Vec3f x;
 		do {
 			x = UniformMPVec3f(r);
