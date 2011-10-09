@@ -41,12 +41,22 @@ Ptr(Generator) CreateWorldGenerator(WorldSize& ws)
 	Ptr(Generator) gen = Generators::FactorSphericalTerra();
 //	Ptr(Generator) gen = Generators::FactorTerra();
 //	WorldSize ws(cCellRange, cCellRangeZMin, cCellRangeZMax);
+
 	ws.x1 = 0;
 	ws.x2 = 64;
 	ws.y1 = -15;
 	ws.y2 = +15;
 	ws.z1 = -1;
 	ws.z2 = +1;
+#ifdef PROFILE_ENABLED
+	ws.x1 = 0;
+	ws.x2 = 8;
+	ws.y1 = -4;
+	ws.y2 = +4;
+	ws.z1 = -1;
+	ws.z2 = +1;
+#endif
+
 	return gen;
 }
 
