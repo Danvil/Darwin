@@ -33,7 +33,6 @@ Player::Player(Ptr(Candy::DanvilCubes) cubes, Ptr(Candy::Scene) scene)
 	scene_->GetCamera()->SetView(mv);
 
 	flying_ = false;
-	time_ = 0.0f;
 	has_step_ = false;
 	time_last_step_ = -10.0f;
 	is_walking_ = false;
@@ -42,15 +41,14 @@ Player::Player(Ptr(Candy::DanvilCubes) cubes, Ptr(Candy::Scene) scene)
 	set_cube_ = false;
 }
 
-void Player::Tick(float dt)
+void Player::Tick(float dt, float total)
 {
 	if(!flying_) {
-		time_ += dt;
 		if(has_step_) {
-			time_last_step_ = time_;
+			time_last_step_ = total;
 			has_step_ = false;
 		}
-		float time_since_last_step = time_ - time_last_step_;
+		float time_since_last_step = total - time_last_step_;
 		float dynamic_percentage = 1.0f - std::max(0.0f, std::min(1.0f,
 				(time_since_last_step - cStepDeltaMin) / (cStepDeltaFalloff - cStepDeltaMin)));
 		is_walking_ = (dynamic_percentage > 0);

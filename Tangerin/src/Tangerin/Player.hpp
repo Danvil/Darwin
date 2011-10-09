@@ -11,17 +11,19 @@
 #include <Candy/Engine/IEngine.h>
 #include <Candy/Engine/Scene.h>
 #include <Candy/Tools/LinAlg.h>
+#include <Candy/Tools/Ticker.hpp>
 
 namespace Candy { class DanvilCubes; }
 
 namespace Tangerin
 {
 	class Player
+	: public ITickable
 	{
 	public:
 		Player(Ptr(Candy::DanvilCubes) cubes, Ptr(Candy::Scene) scene);
 
-		void Tick(float dt);
+		void Tick(float dt, float total);
 
 		void OnKeyPressed(Candy::KeyboardModifiers mod, int key);
 
@@ -37,7 +39,6 @@ namespace Tangerin
 		Ptr(Candy::DanvilCubes) cubes_;
 		Ptr(Candy::Scene) scene_;
 		bool flying_;
-		float time_;
 		bool has_step_;
 		float time_last_step_;
 		bool is_walking_;
