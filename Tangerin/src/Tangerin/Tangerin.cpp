@@ -27,8 +27,8 @@ Ptr(Generator) CreateWorldGenerator(WorldSize& ws)
 {
 #ifdef NDEBUG
 	const int cCellRange = 8;
-	const int cCellRangeZMin = -1;
-	const int cCellRangeZMax = +1;
+	const int cCellRangeZMin = -2;
+	const int cCellRangeZMax = +2;
 #else
 	const int cCellRange = 2;
 	const int cCellRangeZMin = -1;
@@ -38,16 +38,17 @@ Ptr(Generator) CreateWorldGenerator(WorldSize& ws)
 //	Ptr(Generator) gen = Generators::FactorPerlin3D();
 //	Ptr(Generator) gen = Generators::FactorHillsAndFly();
 //	Ptr(Generator) gen = Generators::FactorPerlinHills();
-	Ptr(Generator) gen = Generators::FactorSphericalTerra();
-//	Ptr(Generator) gen = Generators::FactorTerra();
-//	WorldSize ws(cCellRange, cCellRangeZMin, cCellRangeZMax);
+	Ptr(Generator) gen = Generators::FactorTerra();
+	ws = WorldSize(cCellRange, cCellRangeZMin, cCellRangeZMax);
 
-	ws.x1 = 0;
-	ws.x2 = 64;
-	ws.y1 = -15;
-	ws.y2 = +15;
-	ws.z1 = -1;
-	ws.z2 = +1;
+//	Ptr(Generator) gen = Generators::FactorSphericalTerra();
+//	ws.x1 = 0;
+//	ws.x2 = 64;
+//	ws.y1 = -15;
+//	ws.y2 = +15;
+//	ws.z1 = -1;
+//	ws.z2 = +1;
+
 #ifdef PROFILE_ENABLED
 	ws.x1 = 0;
 	ws.x2 = 8;
