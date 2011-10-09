@@ -84,6 +84,21 @@ public:
 
 	void Apply();
 
+	void Push() {
+		model_view_stack_.push(model_view_stack_.top());
+	}
+
+	void Change(const Eigen::Matrix4f& m) {
+		Eigen::Matrix4f current;
+		if(model_view_stack_.empty()) {
+			current = m;
+		}
+		else {
+			current = model_view_stack_.top() * m;
+		}
+		u_view_->Change(current);
+	}
+
 	void Push(const Eigen::Matrix4f& m) {
 		Eigen::Matrix4f current;
 		if(model_view_stack_.empty()) {
@@ -94,10 +109,6 @@ public:
 		}
 		model_view_stack_.push(current);
 		u_view_->Change(current);
-	}
-
-	void Push() {
-		model_view_stack_.push(model_view_stack_.top());
 	}
 
 	void Pop() {
