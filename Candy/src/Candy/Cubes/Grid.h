@@ -72,8 +72,6 @@ namespace Impl
 	template<typename T, unsigned int D>
 	struct Array3
 	{
-//		typedef SparseIterator<T> iterator_valid;
-//		typedef SparseIterator<const T> const_iterator_valid;
 		typedef T* iterator;
 		typedef const T* const_iterator;
 		Array3() {
@@ -83,22 +81,18 @@ namespace Impl
 			}
 		}
 		size_t size() const {
-			return D*D*D; // FIXME ok?
+			return D*D*D;
 		}
 		iterator begin() {
-//			return iterator(data_, data_+size());
 			return iterator(data_);
 		}
 		iterator end() {
-//			return iterator(data_+size(), data_+size());
 			return iterator(data_ + size());
 		}
 		const_iterator begin() const {
-//			return const_iterator(data_, data_+size());
 			return const_iterator(data_);
 		}
 		const_iterator end() const {
-//			return const_iterator(data_+size(), data_+size());
 			return const_iterator(data_ + size());
 		}
 		const_iterator find(const CoordI& c) const {
@@ -119,24 +113,19 @@ namespace Impl
 //			return iterator((T*)(cit.current()), (T*)(cit.end()));
 			return iterator(cit);
 		}
-		T& operator[](const CoordI& c) {
-			return *(begin() + index(c));
+		void set(const CoordI& c, T v) {
+			*(begin() + index(c)) = v;
 		}
+//		T& operator[](const CoordI& c) {
+//			return *(begin() + index(c));
+//		}
 		const T& operator[](const CoordI& c) const {
 			return *(begin() + index(c));
 		}
-//		const T& access(const_iterator it) const {
-//			return *it;
-//		}
-//		T& access(iterator it) {
-//			return *it;
-//		}
-//		bool has_value(iterator it) const {
-//			return *it != 0;
-//		}
-//		bool has_value(const_iterator it) const {
-//			return *it != 0;
-//		}
+		template<typename It, typename Jt>
+		static bool Equals(const It& a, const Jt& b) {
+			return a == b;
+		}
 	private:
 		static bool valid(const CoordI& c) {
 			return (-int(D/2) <= c.x && c.x < int(D/2))
@@ -151,30 +140,78 @@ namespace Impl
 		T data_[D*D*D];
 	};
 
-	/*template<typename T>
+	template<typename T>
 	class StdMap3
-		: public std::map<CoordI, T>
 	{
 	public:
-		const T& access(const const_iterator& it) const {
-			return it->second;
+		template<typename It>
+		struct MapValueIterator {
+			MapValueIterator() {}
+			template<typename Jt> MapValueIterator(const MapValueIterator<Jt>& a) : it_(a.get()) {}
+			template<typename Jt> MapValueIterator(Jt it) : it_(it) {}
+			template<typename Jt> MapValueIterator& operator=(const MapValueIterator<Jt>& a) { it_ = a.get(); return *this; }
+			typename It::value_type::second_type operator*() { return it_->second; }
+			MapValueIterator& operator++() { ++it_; return *this;	}
+			It get() const { return it_; }
+		private:
+			It it_;
+		};
+		typedef MapValueIterator<typename std::map<CoordI,T>::iterator> iterator;
+		typedef MapValueIterator<typename std::map<CoordI,T>::const_iterator> const_iterator;
+		size_t size() const {
+			return data_.size();
 		}
-		T& access(const iterator& it) {
-			return it->second;
+		iterator begin() {
+			return iterator(data_.begin());
 		}
-		bool has_value(iterator it) const {
-			return it->second != 0;
+		iterator end() {
+			return iterator(data_.end());
 		}
-		bool has_value(const_iterator it) const {
-			return it->second != 0;
+		const_iterator begin() const {
+			return const_iterator(data_.begin());
 		}
-	};*/
+		const_iterator end() const {
+			return const_iterator(data_.end());
+		}
+		const_iterator find(const CoordI& c) const {
+			typename std::map<CoordI, T>::const_iterator it = data_.find(c);
+			if(it == data_.end() || it->second == 0) {
+				return end();
+			}
+			return const_iterator(it);
+		}
+		iterator find(const CoordI& c) {
+			typename std::map<CoordI, T>::iterator it = data_.find(c);
+			if(it == data_.end() || it->second == 0) {
+				return end();
+			}
+			return iterator(it);
+		}
+//		T& operator[](const CoordI& c) {
+//			iterator it = find(c);
+//			return *it;
+//		}
+		void set(const CoordI& c, T v) {
+			data_[c] = v;
+		}
+		T operator[](const CoordI& c) const {
+			const_iterator it = find(c);
+			return *it;
+		}
+		template<typename It, typename Jt>
+		static bool Equals(const MapValueIterator<It>& a, const MapValueIterator<Jt>& b) {
+			return a.get() == b.get();
+		}
+	private:
+		std::map<CoordI, T> data_;
+	};
 }}}
 
 /** A container which holds an element of type T for each 3D location */
 template<typename T>
 struct CellContainerType {
-	typedef Candy::Cubes::Impl::Array3<T,128> Result;
+//	typedef Candy::Cubes::Impl::Array3<T,128> Result;
+	typedef Candy::Cubes::Impl::StdMap3<T> Result;
 };
 
 /**
@@ -188,12 +225,12 @@ public:
 
 	bool valid(const CoordI& c) const {
 		boost::interprocess::scoped_lock<boost::mutex> guard(cells_mutex_);
-		return cells_.find(c) != cells_.end();
+		return !CellContainer::Equals(cells_.find(c), cells_.end());
 	}
 
 	void set(const CoordI& c, T v) {
 		boost::interprocess::scoped_lock<boost::mutex> guard(cells_mutex_);
-		cells_[c] = v;
+		cells_.set(c, v);
 	}
 
 	/**
@@ -203,7 +240,7 @@ public:
 	T get(const CoordI& c) const {
 		boost::interprocess::scoped_lock<boost::mutex> guard(cells_mutex_);
 		typename CellContainer::const_iterator it = cells_.find(c);
-		if(it == cells_.end()) {
+		if(CellContainer::Equals(it, cells_.end())) {
 			return 0;
 		}
 		else {
@@ -220,9 +257,9 @@ public:
 	T get(const CoordI& c, Op creator) {
 		boost::interprocess::scoped_lock<boost::mutex> guard(cells_mutex_);
 		typename CellContainer::const_iterator it = cells_.find(c);
-		if(it == cells_.end()) {
-			T& x = cells_[c];
-			x = creator();
+		if(CellContainer::Equals(it, cells_.end())) {
+			T x = creator();
+			cells_.set(c, x);
 			return x;
 		}
 		else {
@@ -253,7 +290,7 @@ public:
 		boost::interprocess::scoped_lock<boost::mutex> guard(cells_mutex_);
 		cells_valid_.clear();
 		cells_valid_.reserve(cells_.size());
-		for(typename CellContainer::iterator it=cells_.begin(); it!=cells_.end(); ++it) {
+		for(typename CellContainer::iterator it=cells_.begin(); !CellContainer::Equals(it, cells_.end()); ++it) {
 			if(*it) {
 				cells_valid_.push_back(*it);
 			}
