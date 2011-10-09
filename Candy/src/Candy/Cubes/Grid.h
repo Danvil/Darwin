@@ -11,6 +11,8 @@
 #include <boost/utility.hpp>
 #include <boost/thread.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
+#include <map>
+#include <unordered_map>
 #include <algorithm>
 #include <cassert>
 
@@ -156,8 +158,18 @@ namespace Impl
 		private:
 			It it_;
 		};
-		typedef MapValueIterator<typename std::map<CoordI,T>::iterator> iterator;
-		typedef MapValueIterator<typename std::map<CoordI,T>::const_iterator> const_iterator;
+		struct hash_CoordI {
+			size_t operator()(const CoordI& a) const {
+				int iHashCode = 17;
+				iHashCode = 31 * iHashCode + a.x;
+				iHashCode = 31 * iHashCode + a.y;
+				iHashCode = 31 * iHashCode + a.z;
+				return iHashCode;
+			}
+		};
+		typedef std::unordered_map<CoordI,T,hash_CoordI> container;
+		typedef MapValueIterator<typename container::iterator> iterator;
+		typedef MapValueIterator<typename container::const_iterator> const_iterator;
 		size_t size() const {
 			return data_.size();
 		}
@@ -174,14 +186,14 @@ namespace Impl
 			return const_iterator(data_.end());
 		}
 		const_iterator find(const CoordI& c) const {
-			typename std::map<CoordI, T>::const_iterator it = data_.find(c);
+			typename container::const_iterator it = data_.find(c);
 			if(it == data_.end() || it->second == 0) {
 				return end();
 			}
 			return const_iterator(it);
 		}
 		iterator find(const CoordI& c) {
-			typename std::map<CoordI, T>::iterator it = data_.find(c);
+			typename container::iterator it = data_.find(c);
 			if(it == data_.end() || it->second == 0) {
 				return end();
 			}
@@ -203,7 +215,7 @@ namespace Impl
 			return a.get() == b.get();
 		}
 	private:
-		std::map<CoordI, T> data_;
+		container data_;
 	};
 }}}
 
