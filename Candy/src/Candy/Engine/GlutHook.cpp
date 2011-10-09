@@ -2,6 +2,7 @@
 #include <Candy/Tools/Timer.h>
 #include <GL/freeglut.h>
 #include <boost/bind.hpp>
+#include <boost/thread.hpp>
 #include <iostream>
 #include <stdexcept>
 #include <stdio.h>
@@ -105,6 +106,7 @@ void GlutHook_display()
 		Danvil::Timer t;
 		t.start();
 		engine_->Render();
+		boost::this_thread::sleep(boost::posix_time::milliseconds(2));
 		float time =  (float)t.getElapsedTimeInMilliSec();
 		if(time > 1000.0f) {
 			last_time_render_ = time;
