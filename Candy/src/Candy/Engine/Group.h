@@ -12,8 +12,8 @@ namespace Candy
 		: public INodeBase
 	{
 	public:
-		typedef boost::function<void(size_t, const Ptr(Candy::ShaderX)&, const Mat4f& base)> ApplyFunc;
-		typedef boost::function<bool(size_t, const Mat4f& base)> TestFunc;
+		typedef boost::function<void(size_t, const Ptr(Candy::ShaderX)&)> ApplyFunc;
+		typedef boost::function<bool(size_t)> TestFunc;
 
 		ApplyFunc OnApply;
 		TestFunc OnTest;
@@ -26,17 +26,19 @@ namespace Candy
 			return data_[i];
 		}
 
-		void Render(const Mat4f& m)
+		void Render()
 		{
 			shader_->ApplyStart();
 			visual_->RenderStart();
+			IDrawable::sCamera->Push();
 			for(size_t i=0; i<data_.size(); i++) {
-				if(!OnTest || OnTest(i, m)) {
-					OnApply(i, shader_, m);
+				if(!OnTest || OnTest(i)) {
+					OnApply(i, shader_);
 					shader_->ApplyTick();
 					visual_->RenderTick();
 				}
 			}
+			IDrawable::sCamera->Pop();
 			shader_->ApplyStop();
 			visual_->RenderStop();
 		}
