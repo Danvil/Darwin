@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Player.hpp"
+#include "Creatures/Creatures.hpp"
 #include <Candy/Cubes/DanvilCubes.hpp>
 #include <Candy/Engine/IEngine.h>
 #include <Candy/Engine/Scene.h>
@@ -53,6 +54,8 @@ namespace Tangerin
 		std::string asset_path_;
 
 		Ptr(Player) player_;
+
+		Ptr(Creatures) creatures_;
 
 		Ptr(Candy::Scene) scene_;
 

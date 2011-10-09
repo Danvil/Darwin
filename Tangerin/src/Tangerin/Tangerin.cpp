@@ -122,6 +122,9 @@ TangerinMain::TangerinMain(const std::string& asset_path)
 
 	player_.reset(new Player(cubes_, scene_));
 
+	creatures_.reset(new Creatures());
+	scene_->Add(creatures_);
+
 //	background_ = new Background(cubes_, man_);
 //	background_->Start();
 
