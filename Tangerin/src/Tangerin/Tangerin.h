@@ -1,12 +1,13 @@
 #pragma once
 
 #include "Player.hpp"
-#include "Creatures/Creatures.hpp"
+#include "Creatures/CreatureManager.hpp"
 #include <Candy/Cubes/DanvilCubes.hpp>
 #include <Candy/Engine/IEngine.h>
 #include <Candy/Engine/Scene.h>
 #include <Candy/Tools/LinAlg.h>
 #include <Candy/Tools/Ptr.h>
+#include <Candy/Tools/Ticker.hpp>
 
 namespace Candy { class UniformMat4f; }
 namespace Candy { class Uniform4f; }
@@ -55,10 +56,12 @@ namespace Tangerin
 
 		Ptr(Player) player_;
 
-		Ptr(Creatures) creatures_;
+		Ptr(CreatureManager) creatures_;
 
 		Ptr(Candy::Scene) scene_;
 
 		Ptr(Candy::DanvilCubes) cubes_;
+
+		Ticker ticker_;
 	};
 }

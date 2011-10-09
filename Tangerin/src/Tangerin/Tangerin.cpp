@@ -1,4 +1,5 @@
 #include "Tangerin.h"
+#include "Creatures/CreatureSpawner.hpp"
 #include <Candy/Cubes/Cell.h>
 #include <Candy/Cubes/Background.h>
 #include <Candy/Cubes/Appearance.h>
@@ -121,9 +122,14 @@ TangerinMain::TangerinMain(const std::string& asset_path)
 //	cubes_physics_.reset(new Candy::Cubes::Physics::PhysicsWorld(cubes_, sphere_renderer_));
 
 	player_.reset(new Player(cubes_, scene_));
+	ticker_.Add(player_);
 
-	creatures_.reset(new Creatures());
+	creatures_.reset(new CreatureManager(cubes_));
 	scene_->Add(creatures_);
+	ticker_.Add(creatures_);
+
+	Ptr(CreatureSpawner) spawner(new CreatureSpawner(creatures_, Vec3f(0.0f, 0.0f, 0.0f), 0.2f));
+	ticker_.Add(spawner);
 
 //	background_ = new Background(cubes_, man_);
 //	background_->Start();
@@ -165,11 +171,8 @@ void TangerinMain::Render()
 
 void TangerinMain::Update(float dt)
 {
-	if(dt > 0.1) {
-		dt = 0.1f;
-	}
 	cubes_->Tick(dt);
-	player_->Tick(dt);
+	ticker_.Tick(dt);
 }
 
 void TangerinMain::OnKeyPressed(Candy::KeyboardModifiers mod, int key)
