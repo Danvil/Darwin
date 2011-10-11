@@ -16,7 +16,7 @@ namespace Candy
 
 	Ptr(ShaderX) CreatePnShader(const std::string& vert, const std::string& frag);
 
-	Ptr(ShaderX) CreatePtnShader(const std::string& vert, const std::string& frag, const std::string& tex_name);
+	Ptr(ShaderX) CreatePtnShader(const std::string& vert, const std::string& frag, const std::string& tex_name, const std::string& tex_uniform_name="uTexture");
 
 }
 

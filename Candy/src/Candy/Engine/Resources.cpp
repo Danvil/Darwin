@@ -33,7 +33,7 @@ namespace Candy
 		return shader;
 	}
 
-	Ptr(ShaderX) CreatePtnShader(const std::string& vert, const std::string& frag, const std::string& tex_name)
+	Ptr(ShaderX) CreatePtnShader(const std::string& vert, const std::string& frag, const std::string& tex_name, const std::string& tex_uniform_name)
 	{
 		Ptr(ShaderX) shader(new ShaderX());
 
@@ -52,7 +52,7 @@ namespace Candy
 		IDrawable::sCamera->AddCameraShaders(shader);
 
 		Ptr(TextureId) ti(new TextureId(tex_name));
-		shader->AddTexture("uTexture", ResourcePool::Singleton->Get(ti));
+		shader->AddTexture(tex_uniform_name, ResourcePool::Singleton->Get(ti));
 
 		return shader;
 	}
