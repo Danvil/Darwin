@@ -10,6 +10,8 @@
 
 #include "Common.h"
 #include "Impl/GroundHeightLookup.h"
+#include "Cubes.h"
+#include "Cube.h"
 #include <Candy/Engine/IDrawable.h>
 #include <Candy/Tools/Ptr.h>
 
@@ -57,6 +59,20 @@ namespace Candy
 
 		Vec3f GetNormal(const Vec3f& position) const {
 			return Properties::TopSideNormal(position);
+		}
+
+		void GetLightAtPosition(const Vec3f& position, float* light_ambient, float* light_sun) const {
+			CoordI c_world = Properties::PositionToWorld(position);
+			c_world.z = height_lookup_->GetGroundZ(c_world.x, c_world.y, position[2]) - 1;
+			CubeSideData* data = cubes_->GetData(c_world, Properties::TopSide());
+			if(data == 0) {
+				*light_ambient = 0;
+				*light_sun = 0;
+			}
+			else {
+				*light_ambient = data->lighting.ambient;
+				*light_sun = data->lighting.sun;
+			}
 		}
 
 	private:
