@@ -8,31 +8,22 @@
 #ifndef CREATURE_HPP_
 #define CREATURE_HPP_
 
+#include "Entity.hpp"
 #include <Candy/Tools/LinAlg.h>
 
 namespace Tangerin
 {
-	namespace CreatureTypes {
-		enum CreatureType {
-			AutoDrone
-		};
-	}
-	typedef CreatureTypes::CreatureType CreatureType;
-
 	class Creature
+	: public Entity
 	{
 	public:
-		Creature(CreatureType type)
-		: type_(type), height_over_ground_(0.0f), is_alive_(true), health_(100.0f), position_(0.0f, 0.0f, 0.0f), speed_(1.0f), has_target_(false), is_target_reached_recently_(true) {}
+		Creature(EntityType type)
+		: Entity(type), height_over_ground_(0.0f), is_alive_(true), health_(100.0f), position_(0.0f, 0.0f, 0.0f), speed_(1.0f), has_target_(false), is_target_reached_recently_(true) {}
 
-		Creature(CreatureType type, const Vec3f& p)
-		: type_(type), height_over_ground_(0.0f), is_alive_(true), health_(100.0f), position_(p), speed_(1.0f), has_target_(false), is_target_reached_recently_(true) {}
+		Creature(EntityType type, const Vec3f& p)
+		: Entity(type), height_over_ground_(0.0f), is_alive_(true), health_(100.0f), position_(p), speed_(1.0f), has_target_(false), is_target_reached_recently_(true) {}
 
 		virtual ~Creature() {}
-
-		CreatureType type() const {
-			return type_;
-		}
 
 		bool is_alive() const {
 			return is_alive_;
@@ -95,7 +86,6 @@ namespace Tangerin
 		virtual void Tick(float dt, float time);
 
 	protected:
-		CreatureType type_;
 		float height_over_ground_;
 		bool is_alive_;
 		float health_;

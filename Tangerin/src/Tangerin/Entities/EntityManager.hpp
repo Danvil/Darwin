@@ -9,7 +9,7 @@
 #define CREATURES_HPP_
 
 #include "Creature.hpp"
-#include "CreatureRenderGroup.h"
+#include "EntityRenderGroup.h"
 #include <Candy/Tools/Ptr.h>
 #include <Candy/Tools/Ticker.hpp>
 #include <map>
@@ -18,27 +18,35 @@ namespace Candy { class DanvilCubes; }
 
 namespace Tangerin
 {
-	class CreatureManager
+	class EntityManager
 	: public Candy::IDrawable, public ITickable
 	{
 	public:
-		CreatureManager(const Ptr(Candy::DanvilCubes)& cubes);
+		EntityManager(const Ptr(Candy::DanvilCubes)& cubes);
 
-		Ptr(Creature) Add(CreatureType type);
+		Ptr(Entity) Add(EntityType type);
+
+		template<typename T>
+		Ptr(T) Add(EntityType type) {
+			Ptr(Entity) e = Add(type);
+			Ptr(T) p(e, boost::detail::dynamic_cast_tag());
+			BOOST_ASSERT(p);
+			return p;
+		}
 
 		void Render();
 
 		void Tick(float dt, float total);
 
 	private:
-		void Add(const Ptr(Creature)& creature);
+		void Add(const Ptr(Entity)& creature);
 
 	private:
 		Ptr(Candy::DanvilCubes) cubes_;
 
-		std::map<CreatureType, Ptr(CreatureRenderGroup)> render_groups_;
+		std::map<EntityType, Ptr(EntityRenderGroup)> render_groups_;
 
-		std::vector<Ptr(Creature)> creatures_;
+		std::vector<Ptr(Entity)> entities_;
 
 	};
 }

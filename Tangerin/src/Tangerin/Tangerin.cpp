@@ -1,5 +1,5 @@
 #include "Tangerin.h"
-#include "Creatures/CreatureSpawner.hpp"
+#include "Entities/CreatureSpawner.hpp"
 #include <Candy/Cubes/Cell.h>
 #include <Candy/Cubes/Background.h>
 #include <Candy/Cubes/Appearance.h>
@@ -27,9 +27,9 @@
 Ptr(Generator) CreateWorldGenerator(WorldSize& ws)
 {
 #ifdef NDEBUG
-	const int cCellRange = 8;
-	const int cCellRangeZMin = -2;
-	const int cCellRangeZMax = +2;
+	const int cCellRange = 4;
+	const int cCellRangeZMin = -1;
+	const int cCellRangeZMax = +1;
 #else
 	const int cCellRange = 2;
 	const int cCellRangeZMin = -1;
@@ -121,15 +121,15 @@ TangerinMain::TangerinMain(const std::string& asset_path)
 //
 //	cubes_physics_.reset(new Candy::Cubes::Physics::PhysicsWorld(cubes_, sphere_renderer_));
 
-	player_.reset(new Player(cubes_, scene_));
-	ticker_.Add(player_);
+	entities_.reset(new EntityManager(cubes_));
+	scene_->Add(entities_);
+	ticker_.Add(entities_);
 
-	creatures_.reset(new CreatureManager(cubes_));
-	scene_->Add(creatures_);
-	ticker_.Add(creatures_);
-
-	Ptr(CreatureSpawner) spawner(new CreatureSpawner(creatures_, Vec3f(0.0f, 0.0f, 0.0f), 0.2f));
+	Ptr(CreatureSpawner) spawner(new CreatureSpawner(entities_, Vec3f(0.0f, 0.0f, 0.0f), 0.2f));
 	ticker_.Add(spawner);
+
+	player_.reset(new Player(cubes_, entities_, scene_));
+	ticker_.Add(player_);
 
 //	background_ = new Background(cubes_, man_);
 //	background_->Start();

@@ -6,7 +6,7 @@
  */
 
 #include "CreatureSpawner.hpp"
-#include "CreatureManager.hpp"
+#include "EntityManager.hpp"
 #include "Creature.hpp"
 #include <Candy/Tools/Random.h>
 #include <algorithm>
@@ -14,7 +14,7 @@
 namespace Tangerin
 {
 
-CreatureSpawner::CreatureSpawner(Ptr(CreatureManager) manager, const Vec3f& spawn_position, float frequency)
+CreatureSpawner::CreatureSpawner(Ptr(EntityManager) manager, const Vec3f& spawn_position, float frequency)
 : manager_(manager), spawn_position_(spawn_position), spawn_frequency_(frequency)
 {
 }
@@ -31,7 +31,7 @@ void CreatureSpawner::Tick(float dt, float total)
 	}
 	if(Random::Uniformf() > std::exp(- spawn_frequency_ * dt)) {
 		// spawn
-		Ptr(Creature) c = manager_->Add(CreatureTypes::AutoDrone);
+		Ptr(Creature) c = manager_->Add<Creature>(EntityTypes::AutoDrone);
 		spawned_creatures_.push_back(c);
 		// set position
 		c->position() = spawn_position_;

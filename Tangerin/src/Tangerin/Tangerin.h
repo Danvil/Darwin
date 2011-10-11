@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Player.hpp"
-#include "Creatures/CreatureManager.hpp"
+#include "Entities/EntityManager.hpp"
 #include <Candy/Cubes/DanvilCubes.hpp>
 #include <Candy/Engine/IEngine.h>
 #include <Candy/Engine/Scene.h>
@@ -56,7 +56,7 @@ namespace Tangerin
 
 		Ptr(Player) player_;
 
-		Ptr(CreatureManager) creatures_;
+		Ptr(EntityManager) entities_;
 
 		Ptr(Candy::Scene) scene_;
 

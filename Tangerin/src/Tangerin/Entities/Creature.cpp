@@ -23,6 +23,8 @@ void Creature::Tick(float dt, float time)
 		else {
 			position_ += (speed_ / len * dt) * d ;
 		}
+		setPose(position_);
+		setCenterPosition(position_);
 	}
 }
 

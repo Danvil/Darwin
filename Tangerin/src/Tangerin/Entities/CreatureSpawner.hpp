@@ -16,13 +16,13 @@ namespace Tangerin
 {
 
 class Creature;
-class CreatureManager;
+class EntityManager;
 
 class CreatureSpawner
 : public ITickable
 {
 public:
-	CreatureSpawner(Ptr(CreatureManager) manager, const Vec3f& spawn_position, float frequency);
+	CreatureSpawner(Ptr(EntityManager) manager, const Vec3f& spawn_position, float frequency);
 
 	void Tick(float dt, float total);
 
@@ -31,7 +31,7 @@ private:
 
 	float spawn_frequency_;
 
-	Ptr(CreatureManager) manager_;
+	Ptr(EntityManager) manager_;
 
 	std::vector<Ptr(Creature)> spawned_creatures_;
 };

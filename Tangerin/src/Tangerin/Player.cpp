@@ -6,6 +6,8 @@
  */
 
 #include "Player.hpp"
+#include "Entities/EntityManager.hpp"
+#include "Entities/StaticEntity.hpp"
 #include <Candy/Cubes/Cubes.h>
 #include <Candy/Cubes/DanvilCubes.hpp>
 #include <Candy/Tools/Coord.h>
@@ -19,8 +21,8 @@ const float cPlayerEyePhase = 2.0f * 3.1415f / 1.3f;
 const float cStepDeltaMin = 0.35f;
 const float cStepDeltaFalloff = 0.70f;
 
-Player::Player(Ptr(Candy::DanvilCubes) cubes, Ptr(Candy::Scene) scene)
-: cubes_(cubes), scene_(scene)
+Player::Player(Ptr(Candy::DanvilCubes) cubes, Ptr(EntityManager) entity_manager, Ptr(Candy::Scene) scene)
+: cubes_(cubes), entity_manager_(entity_manager), scene_(scene)
 {
 //	Eigen::Affine3f mv = LinAlg::LookAt(
 //			Vec3f(17,33,29),
@@ -38,7 +40,7 @@ Player::Player(Ptr(Candy::DanvilCubes) cubes, Ptr(Candy::Scene) scene)
 	is_walking_ = false;
 	eye_height_time_ = 0.0f;
 	eye_height_ = cPlayerEyeHeight;
-	set_cube_ = false;
+	cube_edit_mode_ = 0;
 }
 
 void Player::Tick(float dt, float total)
@@ -78,11 +80,17 @@ void Player::Tick(float dt, float total)
 
 void Player::OnKeyPressed(Candy::KeyboardModifiers mod, int key)
 {
+	if(key == '0') {
+		cube_edit_mode_ = 0;
+	}
 	if(key == '1') {
-		set_cube_ = false;
+		cube_edit_mode_++;
 	}
 	if(key == '2') {
-		set_cube_ = true;
+		cube_edit_mode_--;
+		if(cube_edit_mode_ < 0) {
+			cube_edit_mode_ = 0;
+		}
 	}
 	if(key == 'f') {
 		flying_ = !flying_;
@@ -141,13 +149,21 @@ void Player::OnMouseReleased(Candy::KeyboardModifiers mod, Candy::MouseButton bu
 		int cube_side;
 		float cube_dist;
 		if(cubes_->GetCubes()->Pick(a, u, cube_cc, cube_dist, cube_side)) {
+			CoordI cw = Properties::GetSideNeighbour(cube_cc, cube_side);
 			// add or delete cube
-			if(set_cube_) {
-				CoordI cw = Properties::GetSideNeighbour(cube_cc, cube_side);
-				cubes_->GetCubes()->SetType(cw, CubeTypes::Stone);
-			}
-			else {
+			switch(cube_edit_mode_) {
+			case 0:
 				cubes_->GetCubes()->SetType(cube_cc, CubeTypes::Empty);
+				break;
+			case 1:
+				cubes_->GetCubes()->SetType(cw, CubeTypes::Stone);
+				break;
+			case 2: {
+				Ptr(StaticEntity) s = entity_manager_->Add<StaticEntity>(EntityTypes::Pipe);
+				s->setCubeCoordinate(cw);
+			} break;
+			default:
+				break;
 			}
 		}
 	}

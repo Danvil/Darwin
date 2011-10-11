@@ -11,7 +11,7 @@
 namespace Tangerin { namespace Creatures {
 
 AutoDrone::AutoDrone()
-: Creature(CreatureTypes::AutoDrone)
+: Creature(EntityTypes::AutoDrone)
 {
 	last_time_reached_ = 0.0f;
 	height_over_ground_ = 1.4f;

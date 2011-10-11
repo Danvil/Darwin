@@ -14,6 +14,7 @@
 #include <Candy/Tools/Ticker.hpp>
 
 namespace Candy { class DanvilCubes; }
+namespace Tangerin { class EntityManager; }
 
 namespace Tangerin
 {
@@ -21,7 +22,7 @@ namespace Tangerin
 	: public ITickable
 	{
 	public:
-		Player(Ptr(Candy::DanvilCubes) cubes, Ptr(Candy::Scene) scene);
+		Player(Ptr(Candy::DanvilCubes) cubes, Ptr(EntityManager) entity_manager, Ptr(Candy::Scene) scene);
 
 		void Tick(float dt, float total);
 
@@ -37,6 +38,7 @@ namespace Tangerin
 
 	private:
 		Ptr(Candy::DanvilCubes) cubes_;
+		Ptr(EntityManager) entity_manager_;
 		Ptr(Candy::Scene) scene_;
 		bool flying_;
 		bool has_step_;
@@ -44,7 +46,7 @@ namespace Tangerin
 		bool is_walking_;
 		float eye_height_time_;
 		float eye_height_;
-		bool set_cube_;
+		int cube_edit_mode_;
 	};
 }
 
