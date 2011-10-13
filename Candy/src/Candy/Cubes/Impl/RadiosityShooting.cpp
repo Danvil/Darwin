@@ -89,7 +89,7 @@ namespace Hexa
 
 		uint64_t RadiosityShooting::ShootLight(Ptr(Cubes) cubes)
 		{
-			const unsigned int cThreadCount = 4;
+			const unsigned int cThreadCount = 1;
 			if(cThreadCount == 1) {
 				if(!ShootLightST(cubes)) {
 					return 0;
@@ -248,15 +248,16 @@ namespace Hexa
 		void RadiosityShooting::Update(const Ptr(Cubes)& cubes)
 		{
 			size_t i=0;
+			float ambient = (ambient_r_ + ambient_g_ + ambient_b_) / 3.0f;
 			for(auto it=cells_.cbegin(); it!=cells_.cend(); ++it) {
 				for(Cell::BorderSideIterator cit=(*it)->IterateBorderSides(); cit; ++cit, i++) {
 					float col_r = B_r_(i);
 					float col_g = B_g_(i);
 					float col_b = B_b_(i);
 					CubeSideLightData& light = cit.data()->lighting;
-					light.scenery.x() = col_r + albedo_r_(i) * ambient_r_;
-					light.scenery.y() = col_g + albedo_g_(i) * ambient_g_;
-					light.scenery.z() = col_b + albedo_b_(i) * ambient_b_;
+					light.scenery.x() = col_r + albedo_r_(i) * ambient;
+					light.scenery.y() = col_g + albedo_g_(i) * ambient;
+					light.scenery.z() = col_b + albedo_b_(i) * ambient;
 					light.scenery_with_object = cit.data()->object_color.cwiseProduct(light.scenery);
 				}
 				(*it)->SetAppearanceDirtyFlag();
