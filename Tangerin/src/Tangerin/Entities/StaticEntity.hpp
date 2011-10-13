@@ -27,7 +27,7 @@ public:
 		return cube_coordinate_;
 	}
 
-	void setCubeCoordinate(const CoordI& cc);
+	virtual void setCubeCoordinate(const CoordI& cc);
 
 	virtual void Tick(float dt, float total);
 

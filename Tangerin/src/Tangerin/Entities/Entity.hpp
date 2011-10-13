@@ -44,10 +44,14 @@ namespace Tangerin
 			return type_;
 		}
 
-//		const std::string& getRenderInfoTag() const {
-//			return render_info_tag_;
-//		}
-//
+		const std::string& getRenderInfoTag() const {
+			return render_info_tag_;
+		}
+
+		void setRenderInfoTag(const std::string& tag) {
+			render_info_tag_ = tag;
+		}
+
 		const Eigen::Affine3f& getPose() const {
 			return pose_;
 		}
@@ -100,7 +104,7 @@ namespace Tangerin
 		/** Entity type */
 		EntityType type_;
 
-//		std::string render_info_tag_;
+		std::string render_info_tag_;
 
 		/** Entity render pose */
 		Eigen::Affine3f pose_;

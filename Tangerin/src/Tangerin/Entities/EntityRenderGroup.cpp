@@ -42,7 +42,11 @@ void EntityRenderGroup::Add(const Ptr(Entity)& a)
 
 void EntityRenderGroup::Remove(const Ptr(Entity)& a)
 {
-	MoreStd::remove_first(data_, a);
+	auto it = std::find(data_.begin(), data_.end(), a);
+	if(it == data_.end()) {
+		std::runtime_error("Entity not found!");
+	}
+	data_.erase(it);
 }
 
 void EntityRenderGroup::InitializeShader()

@@ -50,8 +50,9 @@ void EntityManager::Render()
 
 void EntityManager::Tick(float dt, float total)
 {
-	for(auto it=entities_.begin(); it!=entities_.end(); ++it) {
-		Ptr(Entity) entity = *it;
+	for(const Ptr(Entity)& entity : entities_) {
+//	for(auto it=entities_.begin(); it!=entities_.end(); ++it) {
+//		Ptr(Entity) entity = *it;
 		// update lighting values
 		float light_ambient, light_sun;
 		cubes_->GetLightAtPosition(entity->getCenterPosition(), &light_ambient, &light_sun);
@@ -75,10 +76,12 @@ void EntityManager::RegisterRenderInfo(const EntityRenderInfo& info)
 	}
 	Ptr(EntityRenderInfo) eri = EntityRenderInfoFactory::GetSingleton()->registerInfo(info);
 	render_groups_[eri->tag_] = Ptr(EntityRenderGroup)(new EntityRenderGroup(eri));
+	std::cout << "Registered " << eri->tag_ << std::endl;
 }
 
-void EntityManager::ChangeRenderInfo(const Ptr(Entity)& entity, const std::string& tag_new, const std::string& tag_old)
+void EntityManager::ChangeRenderInfo(const Ptr(Entity)& entity, const std::string& tag_new)
 {
+	const std::string& tag_old = entity->getRenderInfoTag();
 	if(tag_old == tag_new) {
 		return;
 	}
@@ -98,6 +101,18 @@ void EntityManager::ChangeRenderInfo(const Ptr(Entity)& entity, const std::strin
 		}
 		it->second->Add(entity);
 	}
+	entity->setRenderInfoTag(tag_new);
+}
+
+Ptr(Entity) EntityManager::GetEntity(const CoordI& coordinate)
+{
+	for(const Ptr(Entity)& entity : entities_) {
+		Ptr(StaticEntity) se(entity, boost::detail::dynamic_cast_tag());
+		if(se && se->getCubeCoordinate() == coordinate) {
+			return entity;
+		}
+	}
+	return Ptr(Entity)();
 }
 
 }

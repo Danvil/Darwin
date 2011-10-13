@@ -9,6 +9,7 @@
 #define ENTITYSERVERINTERFACE_HPP_
 
 #include "EntityRenderInfo.hpp"
+#include <Candy/Tools/Coord.h>
 #include <string>
 
 namespace Tangerin { class Entity; }
@@ -22,7 +23,9 @@ public:
 
 	virtual void RegisterRenderInfo(const EntityRenderInfo& info) = 0;
 
-	virtual void ChangeRenderInfo(const Ptr(Entity)& entity, const std::string& tag_new, const std::string& tag_old="") = 0;
+	virtual void ChangeRenderInfo(const Ptr(Entity)& entity, const std::string& tag_new) = 0;
+
+	virtual Ptr(Entity) GetEntity(const CoordI& coordinate) = 0;
 
 };
 

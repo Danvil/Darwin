@@ -45,7 +45,9 @@ namespace Tangerin
 
 		void RegisterRenderInfo(const EntityRenderInfo& info);
 
-		void ChangeRenderInfo(const Ptr(Entity)& entity, const std::string& tag_new, const std::string& tag_old="");
+		void ChangeRenderInfo(const Ptr(Entity)& entity, const std::string& tag_new);
+
+		Ptr(Entity) GetEntity(const CoordI& coordinate);
 
 	private:
 		Ptr(Candy::DanvilCubes) cubes_;

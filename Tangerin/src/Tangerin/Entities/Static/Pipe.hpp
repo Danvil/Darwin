@@ -26,6 +26,8 @@ public:
 
 	void Tick(float dt, float total);
 
+	void setCubeCoordinate(const CoordI& cc);
+
 };
 
 }}
