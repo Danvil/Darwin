@@ -62,6 +62,8 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1114382078" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
 								<option id="gnu.cpp.link.option.libs.267886314" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="Candy-Debug"/>
+									<listOptionValue builtIn="false" value="IL"/>
+									<listOptionValue builtIn="false" value="GLEW"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.959109412" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Candy/LinuxDebug}&quot;"/>
@@ -134,6 +136,8 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.1395647705" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release">
 								<option id="gnu.cpp.link.option.libs.517509736" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="Candy"/>
+									<listOptionValue builtIn="false" value="IL"/>
+									<listOptionValue builtIn="false" value="GLEW"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.558375413" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Candy/LinuxRelease}&quot;"/>
@@ -200,6 +204,8 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.1220037395" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release">
 								<option id="gnu.cpp.link.option.libs.1941999586" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="Candy-Profile"/>
+									<listOptionValue builtIn="false" value="IL"/>
+									<listOptionValue builtIn="false" value="GLEW"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.481305671" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Candy/LinuxProfile}&quot;"/>
