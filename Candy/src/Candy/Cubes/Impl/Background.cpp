@@ -1,11 +1,11 @@
 #include "Background.h"
-#include "Cubes.h"
-#include "Rendering/CubesRenderling.h"
-#include "Impl/DirectLighting.h"
-#include "Impl/MCRT.h"
-#include "Impl/Radiosity.hpp"
-#include "Impl/GroundHeightLookup.h"
-#include "Impl/ExecuteInThreads.hpp"
+#include "../Cubes.h"
+#include "../Rendering/CubesRenderling.h"
+#include "DirectLighting.h"
+#include "MCRT.h"
+#include "RadiosityShooting.hpp"
+#include "GroundHeightLookup.h"
+#include "ExecuteInThreads.hpp"
 #include <Candy/Tools/Timer.h>
 #include <iostream>
 #undef min
@@ -23,11 +23,11 @@
 Background::Background(Ptr(Cubes) cubes, Ptr(CubesRenderling) osgman, Ptr(GroundHeightLookup) height, Ptr(Generator) generator)
 : cubes_(cubes), osgman_(osgman), height_lookup_(height), generator_(generator)
 {
+	build_first_ = false;
 	_running = false;
-	gi_basic_.reset(new Hexa::Lighting::DirectLighting());
-	gi_.reset(new Hexa::Lighting::MCRT());
-//	gi_.reset(new Hexa::Lighting::Radiosity());
-//	gi_.reset(new Hexa::Lighting::RadiosityShooting());
+//	gi_basic_.reset(new Hexa::Lighting::DirectLighting());
+//	gi_.reset(new Hexa::Lighting::MCRT());
+	gi_.reset(new Hexa::Lighting::RadiosityShooting());
 }
 
 
@@ -140,6 +140,7 @@ void Background::Run()
 	while(_running)
 	{
 		// create cells
+		size_t n_created = 0;
 		{
 			b_created.start();
 			b_total_created.start();
@@ -147,7 +148,7 @@ void Background::Run()
 			std::vector<Cell*> cells = cubes_->GetCellsIf([](Cell* cell) { return cell->NeedsCreation(); });
 			// FIXME sort by visibility
 			// create
-			size_t n_created = CandyCubes::ExecuteInThreads(cells, cMaxCount, cMaxThreads, [&](Cell* cell) {
+			n_created = CandyCubes::ExecuteInThreads(cells, cMaxCount, cMaxThreads, [&](Cell* cell) {
 						cubes_->CreateCell(cell, generator_.get());
 			});
 			b_created.stop(n_created);
@@ -155,6 +156,7 @@ void Background::Run()
 		}
 
 		// vitalize dirty cells
+		size_t n_vitalized = 0;
 		{
 			b_vitalized.start();
 			b_total_vitalized.start();
@@ -173,7 +175,7 @@ void Background::Run()
 			});
 			// FIXME sort by visibility
 			// vitalize
-			size_t n_vitalized = CandyCubes::ExecuteInThreads(cells, cMaxCount, cMaxThreads, [&](Cell* cell) {
+			n_vitalized = CandyCubes::ExecuteInThreads(cells, cMaxCount, cMaxThreads, [&](Cell* cell) {
 					cubes_->VitalizeCubeData(cell);
 					// we also need to reset lighting for neighbouring cells!
 					cubes_->ApplyToNeighbourCells(cell, 2, [&](Cell* neigbour_cell) {
@@ -203,12 +205,14 @@ void Background::Run()
 				b_lighting.stop(n_lighting);
 				b_total_lighting.stop(n_lighting);
 			}
-			if(gi_) {
-				b_lighting_gi.start();
-				b_total_lighting_gi.start();
-				size_t n_lighting_gi = gi_->Iterate(cubes_);
-				b_lighting_gi.stop(n_lighting_gi);
-				b_total_lighting_gi.stop(n_lighting_gi);
+			if(!build_first_ || (n_created == 0 && n_vitalized == 0)) {
+				if(gi_) {
+					b_lighting_gi.start();
+					b_total_lighting_gi.start();
+					size_t n_lighting_gi = gi_->Iterate(cubes_);
+					b_lighting_gi.stop(n_lighting_gi);
+					b_total_lighting_gi.stop(n_lighting_gi);
+				}
 			}
 		}
 

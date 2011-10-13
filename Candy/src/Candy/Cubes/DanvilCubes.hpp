@@ -12,6 +12,7 @@
 #include "Impl/GroundHeightLookup.h"
 #include "Cubes.h"
 #include "Cube.h"
+#include "Generator.h"
 #include <Candy/Engine/IDrawable.h>
 #include <Candy/Tools/Ptr.h>
 
@@ -21,16 +22,24 @@ namespace Candy { namespace Cubes { namespace Physics { class PhysicsWorld; }}}
 namespace Candy { namespace Cubes { namespace Rendering { class SphereRenderer; }}}
 class CubesRenderling;
 class Background;
-class Generator;
 
 namespace Candy
 {
+
+	struct GenerationProperties
+	{
+		Ptr(::Generator) generator_;
+		WorldSize world_size_;
+		bool build_first_;
+
+		GenerationProperties() : build_first_(false) {}
+	};
 
 	class DanvilCubes
 	: public Candy::IDrawable
 	{
 	public:
-		DanvilCubes(Ptr(::Generator) generator);
+		DanvilCubes(const GenerationProperties& gen);
 
 		virtual ~DanvilCubes();
 

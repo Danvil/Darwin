@@ -7,7 +7,7 @@
 
 #include "DanvilCubes.hpp"
 #include <Candy/Cubes/Cell.h>
-#include <Candy/Cubes/Background.h>
+#include <Candy/Cubes/Impl/Background.h>
 #include <Candy/Cubes/Appearance.h>
 #include <Candy/Cubes/Rendering/CubesRenderling.h>
 #include <Candy/Cubes/Generator.h>
@@ -17,7 +17,7 @@
 namespace Candy
 {
 
-DanvilCubes::DanvilCubes(Ptr(::Generator) generator)
+DanvilCubes::DanvilCubes(const GenerationProperties& gen)
 {
 	cubes_.reset(new ::Cubes());
 	man_.reset(new CubesRenderling(cubes_.get()));
@@ -31,7 +31,11 @@ DanvilCubes::DanvilCubes(Ptr(::Generator) generator)
 
 	cubes_physics_.reset(new Candy::Cubes::Physics::PhysicsWorld(cubes_, sphere_renderer_));
 
-	background_ = new Background(cubes_, man_, height_lookup_, generator);
+	background_ = new Background(cubes_, man_, height_lookup_, gen.generator_);
+	if(gen.build_first_) {
+		background_->enableBuildFirst();
+	}
+	gen.generator_->PrepareGeneration(cubes_.get(), gen.world_size_);
 	background_->Start();
 }
 

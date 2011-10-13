@@ -25,6 +25,9 @@ namespace CubeTypes
 		LightRed = 51,
 		LightGreen = 52,
 		LightBlue = 53,
+		LightYellow = 54,
+		LightCyan = 55,
+		LightMagenta = 56,
 
 		DebugWhite = 130,
 		DebugRed = 131,

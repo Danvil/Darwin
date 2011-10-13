@@ -25,6 +25,9 @@ namespace Appearance
 		case CubeTypes::LightRed: return 12;
 		case CubeTypes::LightGreen: return 13;
 		case CubeTypes::LightBlue: return 14;
+		case CubeTypes::LightYellow: return 9;
+		case CubeTypes::LightCyan: return 10;
+		case CubeTypes::LightMagenta: return 11;
 		case CubeTypes::DebugWhite: return 15;
 		case CubeTypes::DebugRed: return 12;
 		case CubeTypes::DebugGreen: return 13;
@@ -45,10 +48,13 @@ namespace Appearance
 		case CubeTypes::LightRed: return 2;
 		case CubeTypes::LightGreen: return 3;
 		case CubeTypes::LightBlue: return 4;
-		case CubeTypes::Lava: return 5;
-		case CubeTypes::Water: return 6;
-		case CubeTypes::CrystalGood: return 7;
-		case CubeTypes::CrystalEvil: return 8;
+		case CubeTypes::LightYellow: return 5;
+		case CubeTypes::LightCyan: return 6;
+		case CubeTypes::LightMagenta: return 7;
+		case CubeTypes::Lava: return 8;
+		case CubeTypes::Water: return 9;
+		case CubeTypes::CrystalGood: return 10;
+		case CubeTypes::CrystalEvil: return 11;
 		default: return 0;
 		}
 	}
@@ -59,6 +65,9 @@ namespace Appearance
 		Vec3f(5,2,2), // light red
 		Vec3f(2,5,2), // light green
 		Vec3f(2,2,5), // light blue
+		Vec3f(4.0,3.5,1.5), // light yellow
+		Vec3f(1.0,4.5,4.5), // light cyan
+		Vec3f(4.0,1.0,4.0), // light magenta
 		Vec3f(1.5f,1.35f,1.20f), // lava
 		Vec3f(0.05f,0.07f,0.10f), // Water
 		Vec3f(0.75f,0.80f,0.00f), // CrystalGood

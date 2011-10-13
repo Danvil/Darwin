@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Candy_Dll.h"
-#include "Generator.h"
-#include "Lighting.hpp"
+#include "../../Candy_Dll.h"
+#include "../Generator.h"
+#include "../Lighting.hpp"
 #include <Candy/Cubes/Rendering/CubesRenderling.h>
 #include <boost/thread.hpp>
 
@@ -15,6 +15,10 @@ class CANDY_API Background
 public:
 	Background(Ptr(Cubes) cubes, Ptr(CubesRenderling) osgman, Ptr(GroundHeightLookup) height, Ptr(Generator) generator);
 	~Background();
+
+	void enableBuildFirst() {
+		build_first_ = true;
+	}
 
 	void Start();
 
@@ -33,6 +37,8 @@ private:
 	Ptr(Generator) generator_;
 	Ptr(Hexa::GlobalIlluminator) gi_basic_;
 	Ptr(Hexa::GlobalIlluminator) gi_;
+
+	bool build_first_;
 
 	bool _running;
 	boost::thread _thread;

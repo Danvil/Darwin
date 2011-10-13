@@ -284,7 +284,8 @@ public:
 
 	bool IsBorderSide(const CoordI& cc_world, int side) {
 		CubeType ct = SideNeighbourType(cc_world, side);
-		return ::IsEmpty(ct) || (!::IsExisting(ct) && (side == Properties::TopSide() || side == Properties::BottomSide()));
+		//return ::IsEmpty(ct) || (!::IsExisting(ct) && (side == Properties::TopSide() || side == Properties::BottomSide()));
+		return ::IsEmpty(ct);
 	}
 
 	/** True if the cube is not empty and at least one of its neighbours is empty */

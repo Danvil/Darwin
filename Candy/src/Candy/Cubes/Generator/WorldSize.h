@@ -97,6 +97,14 @@ struct WorldSize
 		return int(Properties::CellSize) * y2 - 1;
 	}
 
+	int world_z1() const {
+		return int(Properties::CellSize) * z1;
+	}
+
+	int world_z2() const {
+		return int(Properties::CellSize) * z2 - 1;
+	}
+
 	int cell_count() const {
 		return (x2 - x1)*(y2 - y1)*(z2 - z1);
 	}
