@@ -1,10 +1,11 @@
 #include "Tangerin.h"
 #include "Entities/CreatureSpawner.hpp"
+#include "RoomGenerator.hpp"
 #include <Candy/Cubes/Cell.h>
-#include <Candy/Cubes/Background.h>
 #include <Candy/Cubes/Appearance.h>
 #include <Candy/Cubes/Rendering/CubesRenderling.h>
 #include <Candy/Cubes/Generator.h>
+#include <Candy/Cubes/Generator/PointWiseGenerator.h>
 #include <Candy/Cubes/Impl/Physics.hpp>
 #include <Candy/Cubes/Rendering/SphereRenderer.hpp>
 #include <Candy/Engine/Resources.h>
@@ -23,6 +24,17 @@
 #include <fstream>
 #include <iostream>
 #include <ctime>
+
+Ptr(Generator) CreateRoomGenerator(WorldSize& ws)
+{
+	ws.x1 = 0;
+	ws.x2 = 5;
+	ws.y1 = 0;
+	ws.y2 = 4;
+	ws.z1 = 0;
+	ws.z2 = 3;
+	return Ptr(Generator)(new PointWiseGenerator<RoomGenerator>(RoomGenerator(ws, 16)));
+}
 
 Ptr(Generator) CreateWorldGenerator(WorldSize& ws)
 {
@@ -102,12 +114,16 @@ TangerinMain::TangerinMain(const std::string& asset_path)
 	//scene_->Add(Candy::Fractal::ConstructSierpinskiCubes(4));
 
 	WorldSize ws;
-	Ptr(Generator) generator = CreateWorldGenerator(ws);
+	//Ptr(Generator) generator = CreateWorldGenerator(ws);
+	Ptr(Generator) generator = CreateRoomGenerator(ws);
 
-	cubes_.reset(new Candy::DanvilCubes(generator));
+	Candy::GenerationProperties gen_props;
+	gen_props.generator_ = generator;
+	gen_props.world_size_ = ws;
+	gen_props.build_first_ = true;
+
+	cubes_.reset(new Candy::DanvilCubes(gen_props));
 	scene_->Add(cubes_);
-
-	generator->PrepareGeneration(cubes_->GetCubes().get(), ws);
 
 //	cubes_.reset(new Cubes());
 //	man_.reset(new CubesRenderling(cubes_.get()));
