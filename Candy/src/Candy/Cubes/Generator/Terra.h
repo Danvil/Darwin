@@ -91,7 +91,7 @@ namespace Generators
 			return z < world_bottom_border();
 		}
 
-		static const float cWorldScale = 1.0f;
+		static constexpr float cWorldScale = 1.0f;
 
 		CubeType operator()(const CoordI& cw) {
 			if(is_bottom_border(cw.z)) {

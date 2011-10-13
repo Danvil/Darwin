@@ -70,7 +70,7 @@ namespace CandyCubes
 		static const unsigned int BorderIdMask = (1 << BorderIdBits) - 1;
 
 		/** Size of a cube in the world. Do not change as the code uses 1.0f implicitly! */
-		static const float CubeSize = 1.0f;
+		static constexpr float CubeSize = 1.0f;
 
 //		/** Converts a coordinate to an index */
 //		static inline unsigned int WorldToIndex(const Ci& c) {
@@ -547,7 +547,7 @@ namespace CandyCubes
 //		static const float cRadius = 40.7416201033f; //1.0f / (2.0f * std::tan(3.14159265359f / float(cPerimeterCellCount * CellSize)));
 
 		static const int cPerimeterCellCount = 64;
-		static const float cRadius = 162.974150399f; //1.0f / (2.0f * std::tan(3.14159265359f / float(cPerimeterCellCount * CellSize)));
+		static constexpr float cRadius = 162.974150399f; //1.0f / (2.0f * std::tan(3.14159265359f / float(cPerimeterCellCount * CellSize)));
 
 		static const int cPerimeterCubeCount = cPerimeterCellCount * CellSize;
 
@@ -577,8 +577,8 @@ namespace CandyCubes
 			 return int(CellSize) * cell + int(local);
 		}
 
-		static const float c2Pi = 6.28318530718f;
-		static const float cPi = 3.14159265359f;
+		static constexpr float c2Pi = 6.28318530718f;
+		static constexpr float cPi = 3.14159265359f;
 
 		static inline float PerimeterAngle(int x) {
 			unsigned int w = WrappedWorld(x);
@@ -709,7 +709,7 @@ namespace CandyCubes
 
 		static const unsigned int cPerimeterCellCount = 64;
 		static const unsigned int cHalfPerimeterCellCount = cPerimeterCellCount / 2;
-		static const float cRadius = 162.974150399f; //1.0f / (2.0f * std::tan(3.14159265359f / float(cPerimeterCellCount * CellSize)));
+		static constexpr float cRadius = 162.974150399f; //1.0f / (2.0f * std::tan(3.14159265359f / float(cPerimeterCellCount * CellSize)));
 
 		static const unsigned int cPerimeterCubeCount = cPerimeterCellCount * CellSize;
 		static const unsigned int cHalfPerimeterCubeCount = cHalfPerimeterCellCount * CellSize;
