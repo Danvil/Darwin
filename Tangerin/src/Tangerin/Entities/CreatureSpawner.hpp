@@ -27,11 +27,11 @@ public:
 	void Tick(float dt, float total);
 
 private:
+	Ptr(EntityManager) manager_;
+
 	Vec3f spawn_position_;
 
 	float spawn_frequency_;
-
-	Ptr(EntityManager) manager_;
 
 	std::vector<Ptr(Creature)> spawned_creatures_;
 };

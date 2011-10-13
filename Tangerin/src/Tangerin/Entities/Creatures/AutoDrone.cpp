@@ -10,11 +10,21 @@
 
 namespace Tangerin { namespace Creatures {
 
-AutoDrone::AutoDrone()
-: Creature(EntityTypes::AutoDrone)
+AutoDrone::AutoDrone(const Ptr(EntityServerInterface)& manager)
+: Creature(manager, EntityTypes::AutoDrone)
 {
 	last_time_reached_ = 0.0f;
 	height_over_ground_ = 1.4f;
+}
+
+void AutoDrone::Register()
+{
+	manager_->RegisterRenderInfo(EntityRenderInfo("auto_drone", "creatures/drone.obj", "creatures/drone_bake_gi.png"));
+}
+
+void AutoDrone::Initialize()
+{
+	manager_->ChangeRenderInfo(shared_from_this(), "auto_drone");
 }
 
 void AutoDrone::Tick(float dt, float time)

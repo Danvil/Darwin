@@ -18,7 +18,8 @@ class StaticEntity
 : public Entity
 {
 public:
-	StaticEntity(EntityType type) : Entity(type) {}
+	StaticEntity(const Ptr(EntityServerInterface)& manager, EntityType type)
+	: Entity(manager, type) {}
 
 	virtual ~StaticEntity() {}
 

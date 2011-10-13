@@ -24,45 +24,21 @@ Ptr(Entity) EntityManager::Add(EntityType type)
 	switch(type)
 	{
 	case EntityTypes::AutoDrone:
-		c.reset(new Creatures::AutoDrone());
+		c.reset(new Creatures::AutoDrone(shared_from_this()));
 		break;
 	case EntityTypes::Pipe:
-		c.reset(new Static::Pipe());
+		c.reset(new Static::Pipe(shared_from_this()));
 		break;
 	default:
 		throw std::runtime_error("Unknown entity type!");
 	};
-	Add(c);
+	if(std::find(registered_types_.begin(), registered_types_.end(), type) == registered_types_.end()) {
+		c->Register();
+		registered_types_.push_back(type);
+	}
+	c->Initialize();
+	entities_.push_back(c);
 	return c;
-}
-
-void EntityManager::Add(const Ptr(Entity)& entity)
-{
-	Ptr(EntityRenderGroup) crg;
-	auto it = render_groups_.find(entity->getType());
-	if(it == render_groups_.end()) {
-		std::string fn_mesh, fn_tex_ao="", fn_tex_emit="";
-		switch(entity->getType()) {
-		case EntityTypes::AutoDrone:
-			fn_mesh = "creatures/drone.obj";
-			fn_tex_ao = "creatures/drone_bake_gi.png";
-			break;
-		case EntityTypes::Pipe:
-			fn_mesh = "static/pipe.obj";
-			fn_tex_ao = "static/pipe_tex_bake_ao.png";
-			fn_tex_emit = "static/pipe_tex_bake_emit.png";
-			break;
-		default:
-			throw std::runtime_error("Unknown Entity type!");
-		}
-		crg.reset(new EntityRenderGroup(fn_mesh, fn_tex_ao, fn_tex_emit, false));
-		render_groups_[entity->getType()] = crg;
-	}
-	else {
-		crg = it->second;
-	}
-	crg->Add(entity);
-	entities_.push_back(entity);
 }
 
 void EntityManager::Render()
@@ -90,4 +66,39 @@ void EntityManager::Tick(float dt, float total)
 	}
 }
 
+void EntityManager::RegisterRenderInfo(const EntityRenderInfo& info)
+{
+	if(render_groups_.find(info.tag_) != render_groups_.end()) {
+		// already exists
+		// TODO check for duplicate?
+		return;
+	}
+	Ptr(EntityRenderInfo) eri = EntityRenderInfoFactory::GetSingleton()->registerInfo(info);
+	render_groups_[eri->tag_] = Ptr(EntityRenderGroup)(new EntityRenderGroup(eri));
 }
+
+void EntityManager::ChangeRenderInfo(const Ptr(Entity)& entity, const std::string& tag_new, const std::string& tag_old)
+{
+	if(tag_old == tag_new) {
+		return;
+	}
+	// remove from old group
+	if(tag_old != "") {
+		auto it = render_groups_.find(tag_old);
+		if(it == render_groups_.end()) {
+			throw std::runtime_error("Unknown render info tag '" + tag_old + "'!");
+		}
+		it->second->Remove(entity);
+	}
+	// add to new group
+	if(tag_new != "") {
+		auto it = render_groups_.find(tag_new);
+		if(it == render_groups_.end()) {
+			throw std::runtime_error("Unknown render info tag '" + tag_new + "'!");
+		}
+		it->second->Add(entity);
+	}
+}
+
+}
+

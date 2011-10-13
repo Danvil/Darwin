@@ -16,11 +16,15 @@ class AutoDrone
 : public Creature
 {
 public:
-	AutoDrone();
+	AutoDrone(const Ptr(EntityServerInterface)& manager);
 
 	virtual ~AutoDrone() {}
 
-	virtual void Tick(float dt, float time);
+	void Register();
+
+	void Initialize();
+
+	void Tick(float dt, float time);
 
 private:
 	float last_time_reached_;

@@ -10,8 +10,10 @@
 
 #include "Creature.hpp"
 #include "EntityRenderGroup.h"
+#include "EntityServerInterface.hpp"
 #include <Candy/Tools/Ptr.h>
 #include <Candy/Tools/Ticker.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include <map>
 
 namespace Candy { class DanvilCubes; }
@@ -19,7 +21,10 @@ namespace Candy { class DanvilCubes; }
 namespace Tangerin
 {
 	class EntityManager
-	: public Candy::IDrawable, public ITickable
+	: public Candy::IDrawable,
+	  public ITickable,
+	  public EntityServerInterface,
+	  public boost::enable_shared_from_this<EntityManager>
 	{
 	public:
 		EntityManager(const Ptr(Candy::DanvilCubes)& cubes);
@@ -38,15 +43,18 @@ namespace Tangerin
 
 		void Tick(float dt, float total);
 
-	private:
-		void Add(const Ptr(Entity)& creature);
+		void RegisterRenderInfo(const EntityRenderInfo& info);
+
+		void ChangeRenderInfo(const Ptr(Entity)& entity, const std::string& tag_new, const std::string& tag_old="");
 
 	private:
 		Ptr(Candy::DanvilCubes) cubes_;
 
-		std::map<EntityType, Ptr(EntityRenderGroup)> render_groups_;
+		std::map<std::string, Ptr(EntityRenderGroup)> render_groups_;
 
 		std::vector<Ptr(Entity)> entities_;
+
+		std::vector<EntityType> registered_types_;
 
 	};
 }

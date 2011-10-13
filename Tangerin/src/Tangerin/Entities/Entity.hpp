@@ -8,7 +8,12 @@
 #ifndef ENTITY_HPP_
 #define ENTITY_HPP_
 
+#include "EntityServerInterface.hpp"
 #include <Candy/Tools/LinAlg.h>
+#include <Candy/Tools/Ptr.h>
+#include <boost/enable_shared_from_this.hpp>
+
+namespace Tangerin { class EntityServerInterface; }
 
 namespace Tangerin
 {
@@ -27,10 +32,11 @@ namespace Tangerin
 	typedef EntityTypes::EntityType EntityType;
 
 	class Entity
+	: public boost::enable_shared_from_this<Entity>
 	{
 	public:
-		Entity(EntityType type)
-		: type_(type) {}
+		Entity(const Ptr(EntityServerInterface)& manager, EntityType type)
+		: manager_(manager), type_(type) {}
 
 		virtual ~Entity() {}
 
@@ -38,6 +44,10 @@ namespace Tangerin
 			return type_;
 		}
 
+//		const std::string& getRenderInfoTag() const {
+//			return render_info_tag_;
+//		}
+//
 		const Eigen::Affine3f& getPose() const {
 			return pose_;
 		}
@@ -77,11 +87,20 @@ namespace Tangerin
 			return light_sun_;
 		}
 
+		virtual void Register() = 0;
+
+		virtual void Initialize() = 0;
+
 		virtual void Tick(float dt, float time) = 0;
+
+	protected:
+		Ptr(EntityServerInterface) manager_;
 
 	private:
 		/** Entity type */
 		EntityType type_;
+
+//		std::string render_info_tag_;
 
 		/** Entity render pose */
 		Eigen::Affine3f pose_;

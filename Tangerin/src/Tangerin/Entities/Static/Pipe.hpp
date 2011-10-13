@@ -16,9 +16,13 @@ class Pipe
 : public StaticEntity
 {
 public:
-	Pipe();
+	Pipe(const Ptr(EntityServerInterface)& manager);
 
 	virtual ~Pipe();
+
+	void Register();
+
+	void Initialize();
 
 	void Tick(float dt, float total);
 

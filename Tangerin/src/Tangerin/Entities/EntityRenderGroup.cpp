@@ -18,9 +18,9 @@
 
 namespace Tangerin {
 
-EntityRenderGroup::EntityRenderGroup(const std::string& fn_mesh, const std::string& fn_tex_ao, const std::string& fn_tex_emit, bool is_dynamic)
-	: is_dynamic_(is_dynamic)
+EntityRenderGroup::EntityRenderGroup(const Ptr(EntityRenderInfo)& eri)
 {
+	render_info_ = eri;
 	// load mesh or mesh animation
 //	if(is_dynamic_) {
 //		visual_ = Candy::ResourcePool::Singleton->Get(
@@ -28,10 +28,8 @@ EntityRenderGroup::EntityRenderGroup(const std::string& fn_mesh, const std::stri
 //	}
 //	else {
 	visual_ = Ptr(Candy::IDrawable)(Candy::ResourcePool::Singleton->Get(
-			Ptr(Candy::MeshId)(new Candy::MeshId(Candy::MeshPTN, fn_mesh))),
+			Ptr(Candy::MeshId)(new Candy::MeshId(Candy::MeshPTN, render_info_->fn_mesh_))),
 			boost::detail::dynamic_cast_tag());
-	fn_tex_ao_ = fn_tex_ao;
-	fn_tex_emit_ = fn_tex_emit;
 //	}
 	// callback for applying creep variables to the shader for rendering
 	on_prepare_item_ = boost::bind(&EntityRenderGroup::PrepareItem, this, _1, _2);
@@ -49,12 +47,12 @@ void EntityRenderGroup::Remove(const Ptr(Entity)& a)
 
 void EntityRenderGroup::InitializeShader()
 {
-	if(fn_tex_emit_.empty()) {
-		shader_ = Candy::CreatePtnShader("shader/Creature_Textured.vert", "shader/Creature_Tex_AO.frag", fn_tex_ao_, "uTextureAmbient");
+	if(render_info_->fn_texture_emit_.empty()) {
+		shader_ = Candy::CreatePtnShader("shader/Creature_Textured.vert", "shader/Creature_Tex_AO.frag", render_info_->fn_texture_ao_, "uTextureAmbient");
 	}
 	else {
-		shader_ = Candy::CreatePtnShader("shader/Creature_Textured.vert", "shader/Creature_Tex_AO_Emit.frag", fn_tex_ao_, "uTextureAmbient");
-		Ptr(Candy::TextureId) ti(new Candy::TextureId(fn_tex_emit_));
+		shader_ = Candy::CreatePtnShader("shader/Creature_Textured.vert", "shader/Creature_Tex_AO_Emit.frag", render_info_->fn_texture_ao_, "uTextureAmbient");
+		Ptr(Candy::TextureId) ti(new Candy::TextureId(render_info_->fn_texture_emit_));
 		shader_->AddTexture("uTextureEmit", Candy::ResourcePool::Singleton->Get(ti));
 	}
 	// position of sun in the sky
@@ -94,7 +92,7 @@ bool EntityRenderGroup::PrepareItem(size_t i, const Ptr(Candy::ShaderX)& shader)
 //	Tnode(2,2) *= sizez;
 	Candy::IDrawable::sCamera->Change(c->getPoseMatrix());
 	// color
-	Vec3f color = Vec3f(1,1,1);
+//	Vec3f color = Vec3f(1,1,1);
 //	// ambient light
 //	//const Vec3f cAmbientColor(0.3f, 0.3f, 0.35f);
 //	Vec3f object_light_ambient = (a.dyn().light_ambient_ * color).array() * Appearance::AmbientColor.array();

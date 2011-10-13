@@ -17,11 +17,11 @@ namespace Tangerin
 	: public Entity
 	{
 	public:
-		Creature(EntityType type)
-		: Entity(type), height_over_ground_(0.0f), is_alive_(true), health_(100.0f), position_(0.0f, 0.0f, 0.0f), speed_(1.0f), has_target_(false), is_target_reached_recently_(true) {}
+		Creature(const Ptr(EntityServerInterface)& manager, EntityType type)
+		: Entity(manager, type), height_over_ground_(0.0f), is_alive_(true), health_(100.0f), position_(0.0f, 0.0f, 0.0f), speed_(1.0f), has_target_(false), is_target_reached_recently_(true) {}
 
-		Creature(EntityType type, const Vec3f& p)
-		: Entity(type), height_over_ground_(0.0f), is_alive_(true), health_(100.0f), position_(p), speed_(1.0f), has_target_(false), is_target_reached_recently_(true) {}
+		Creature(const Ptr(EntityServerInterface)& manager, EntityType type, const Vec3f& p)
+		: Entity(manager, type), height_over_ground_(0.0f), is_alive_(true), health_(100.0f), position_(p), speed_(1.0f), has_target_(false), is_target_reached_recently_(true) {}
 
 		virtual ~Creature() {}
 
