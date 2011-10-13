@@ -105,6 +105,36 @@ namespace Rooms
 		}
 	};
 
+	class Lamp : public Base {
+	public:
+		virtual ~Lamp() {}
+		Lamp() {
+			dim_.x = 10;
+			dim_.y = 10;
+			dim_.z = 7;
+		}
+		CubeType getLocal(const CoordU& cl) {
+			unsigned int z = cl.z;
+			if(z == 6) {
+				return CubeTypes::DebugWhite;
+			}
+			if(z == 0 || z == 1 || z == 2 || z == 3 || z == 4) {
+				if(3 <= cl.x && cl.x <= 6 && 3 <= cl.y && cl.y <= 6) {
+					return CubeTypes::LightWhite;
+				}
+			}
+			if(z == 1 || z == 2 || z == 3 || z == 4 || z == 5) {
+				if(cl.x == 0 || cl.x == 9) {
+					return (cl.y == 2 || cl.y == 3 || cl.y == 6 || cl.y == 7) ? CubeTypes::Empty : CubeTypes::DebugWhite;
+				}
+				if(cl.y == 0 || cl.y == 9) {
+					return (cl.x == 2 || cl.x == 3 || cl.x == 6 || cl.x == 7) ? CubeTypes::Empty : CubeTypes::DebugWhite;
+				}
+			}
+			return CubeTypes::Empty;
+		}
+	};
+
 	class Composite : public Base {
 	public:
 		virtual ~Composite() {}
@@ -155,39 +185,44 @@ public:
 		room_contents_.reset(new Rooms::Composite());
 		// some boxes
 		{
-			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(16,16,16), CubeTypes::DebugBlue));
-			box->pos_ = CoordI(16,16,0);
+			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(14,14,16), CubeTypes::DebugBlue));
+			box->pos_ = CoordI(17,17,0);
 			room_contents_->add(box);
 		}
 		{
-			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(16,16,16), CubeTypes::DebugGreen));
-			box->pos_ = CoordI(32,16,0);
+			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(14,14,16), CubeTypes::DebugGreen));
+			box->pos_ = CoordI(33,17,0);
 			room_contents_->add(box);
 		}
 		{
-			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(16,16,16), CubeTypes::DebugRed));
+			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(14,14,16), CubeTypes::DebugRed));
 			box->pos_ = CoordI(64,48,0);
 			room_contents_->add(box);
 		}
 		// some lights
 		{
-			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(1,1,32), CubeTypes::LightYellow));
-			box->pos_ = CoordI(1,1,8);
+			Ptr(Rooms::Lamp) lamp(new Rooms::Lamp());
+			lamp->pos_ = CoordI(40 - lamp->dim_.x/2, 32 - lamp->dim_.y/2, ws.world_z2() - lamp->dim_.z - 3);
+			room_contents_->add(lamp);
+		}
+		{
+			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(1,1,40), CubeTypes::LightYellow));
+			box->pos_ = CoordI(1,1,0);
 			room_contents_->add(box);
 		}
 		{
-			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(1,1,32), CubeTypes::LightYellow));
-			box->pos_ = CoordI(78,1,8);
+			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(1,1,40), CubeTypes::LightYellow));
+			box->pos_ = CoordI(78,1,0);
 			room_contents_->add(box);
 		}
 		{
-			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(1,1,32), CubeTypes::LightYellow));
-			box->pos_ = CoordI(78,62,8);
+			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(1,1,40), CubeTypes::LightYellow));
+			box->pos_ = CoordI(78,62,0);
 			room_contents_->add(box);
 		}
 		{
-			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(1,1,32), CubeTypes::LightYellow));
-			box->pos_ = CoordI(1,62,8);
+			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(1,1,40), CubeTypes::LightYellow));
+			box->pos_ = CoordI(1,62,0);
 			room_contents_->add(box);
 		}
 
@@ -198,10 +233,10 @@ public:
 		bool is_floor = cw.z == size_.world_z1();
 		bool is_ceiling = cw.z == size_.world_z2();
 		bool is_wall = (cw.x == size_.world_x1() || cw.x == size_.world_x2() || cw.y == size_.world_y1() || cw.y == size_.world_y2());
-		if(is_floor) {
+		if(is_ceiling) {
 			return CubeType::DebugWhite;
 		}
-		if(is_ceiling) {
+		if(is_floor) {
 			unsigned int u = cw.x & 0xF;
 			unsigned int v = cw.y & 0xF;
 			if(u >= 8) {
@@ -220,11 +255,21 @@ public:
 //					{0, 0, 0, 0, 0, 0, 0, 1},
 //					{1, 1, 1, 1, 1, 1, 1, 1},
 //			};
+//			int pattern[8][8] = {
+//					{0, 0, 0, 0, 0, 0, 0, 1},
+//					{0, 0, 0, 0, 0, 0, 0, 1},
+//					{0, 0, 0, 0, 0, 0, 0, 1},
+//					{0, 0, 0, 0, 0, 0, 0, 1},
+//					{0, 0, 0, 0, 0, 0, 0, 1},
+//					{0, 0, 0, 0, 0, 0, 0, 1},
+//					{0, 0, 0, 0, 0, 0, 0, 1},
+//					{1, 1, 1, 1, 1, 1, 1, 1},
+//			};
 			int pattern[8][8] = {
+					{0, 0, 0, 1, 0, 0, 0, 0},
+					{0, 0, 1, 0, 0, 0, 0, 0},
+					{0, 1, 0, 0, 0, 0, 0, 0},
 					{1, 0, 0, 0, 0, 0, 0, 0},
-					{0, 0, 0, 0, 0, 0, 0, 0},
-					{0, 0, 0, 0, 0, 0, 0, 0},
-					{0, 0, 0, 0, 0, 0, 0, 0},
 					{0, 0, 0, 0, 0, 0, 0, 0},
 					{0, 0, 0, 0, 0, 0, 0, 0},
 					{0, 0, 0, 0, 0, 0, 0, 0},
