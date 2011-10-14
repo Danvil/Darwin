@@ -166,22 +166,30 @@ namespace Collision
 		struct CubesWalker
 		{
 			CubesWalker(Cubes* cubes)
-				: cubes_(cubes), last_cell_(0) {}
+				: cubes_(cubes), last_cell_(0), is_empty_(false) {}
 
 			bool operator()(const Ci& p) {
 				Ci c_cell;
 				Cu c_local;
 				Properties::WorldToCellLocal(p, c_cell, c_local);
+				// only update cell if it changed
 				if(last_cell_ == 0 || last_cell_->coordinate() != c_cell) {
+					// get current cell
 					last_cell_ = cubes_->GetCell(c_cell);
+					if(last_cell_ == 0) {
+						// non existing cells result in a finish (but not as a hit ...)
+						hits_ = false;
+						return true;
+					}
+					// check if cell is fully empty
+					is_empty_ = last_cell_->IsFullyEmpty();
+					hits_ = !is_empty_;
 				}
-				if(last_cell_ != 0) {
-					hits_ = IsSolid(last_cell_->At(c_local));
-					return hits_;
-				} else {
-					hits_ = false;
-					return true;
+				// only test cell contents if it is not empty
+				if(!is_empty_) {
+					hits_ = IsSolid(last_cell_->AtNoCheck(c_local));
 				}
+				return hits_;
 			}
 
 			/**
@@ -253,11 +261,11 @@ namespace Collision
 
 		private:
 			Cubes* cubes_;
-			Ci c_cell_;
-			Cu c_local_;
-			const unsigned char* local_data_;
-			bool is_empty_;
+			//Ci c_cell_;
+			//Cu c_local_;
 			Cell* last_cell_;
+			//const unsigned char* local_data_;
+			bool is_empty_;
 			bool hits_;
 		};
 	}
