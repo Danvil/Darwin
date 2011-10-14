@@ -29,17 +29,21 @@ inline bool ComputeFormFactor(const Ptr(Cubes)& cubes, Cell::BorderSideIterator&
 	Vec3f b_n = Properties::SideNormal(a.world(), b.side());
 	// contribution if we would have a hit
 	Vec3f d = b_mid - a_mid;
+	float d_sq_norm = d.squaredNorm();
+	if(d_sq_norm > 1630.0f) {
+		// less than 1/512 light at this distance (at patch intensity of 10 and parallel patches)
+		return false;
+	}
 	float a_cos = a_n.dot(d);
 	float b_cos = -b_n.dot(d);
 	if(a_cos <= 0.0f || b_cos <= 0.0f) {
 		return false;
 	}
 	// cast ray between midpoints
-	float d_sq_norm = d.squaredNorm();
 	float d_norm = std::sqrt(d_sq_norm);
 	float q = 1.0f / 3.1415f * a_cos * b_cos / (d_sq_norm * d_sq_norm);
-	// remark: need an additional /d_sq_norm, because we
-	// need to normalize d for cos computation (twice)
+	// remark: first /d_sq_norm, because we need to normalize d for cos computation twice
+	// remark: second /d_sq_norm, to account for patch distance in the geometry term
 	*ff = q;
 	return !cubes->Pick(a_mid, (1.0f / d_norm) * d, d_norm);
 }
