@@ -4,6 +4,7 @@
 #include "Cube.h"
 #include "Impl/LinearKeyValueContainer.h"
 #define CHECK_IF_EMPTY_WHEN_MEMCPY
+#include <boost/assert.hpp>
 
 /** A cell of cubes (usually of size 16x16x16)
  * Some data (CubeInteriorData) is stored for every cube in an array.
@@ -247,6 +248,12 @@ public:
 		} else {
 			return data_[Properties::LocalToIndex(local)].GetType();
 		}
+	}
+
+	/** Gets cube type without checking if the cell is fully empty! */
+	CubeType AtNoCheck(const CoordU& local) const {
+		BOOST_ASSERT(data_ != 0);
+		return data_[Properties::LocalToIndex(local)].GetType();
 	}
 
 	CubeType At(unsigned int index) const {
