@@ -175,7 +175,7 @@
 					<folderInfo id="cdt.managedbuild.config.gnu.exe.release.1329785217.1685466288." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.release.26845003" name="Linux GCC" nonInternalBuilderId="cdt.managedbuild.target.gnu.builder.exe.release" superClass="cdt.managedbuild.toolchain.gnu.exe.release">
 							<targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.release.1914126775" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.release"/>
-							<builder buildPath="${workspace_loc:/Tangerin/LinuxProfile}" id="cdt.managedbuild.target.gnu.builder.exe.release.942026489" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="-1" superClass="cdt.managedbuild.target.gnu.builder.exe.release"/>
+							<builder buildPath="${workspace_loc:/Tangerin/LinuxProfile}" id="cdt.managedbuild.target.gnu.builder.exe.release.942026489" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="-1" superClass="cdt.managedbuild.target.gnu.builder.exe.release"/>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.647145380" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.1466711022" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release">
 								<option id="gnu.cpp.compiler.exe.release.option.optimization.level.1481315697" name="Optimization Level" superClass="gnu.cpp.compiler.exe.release.option.optimization.level" value="gnu.cpp.compiler.optimization.level.more" valueType="enumerated"/>
@@ -244,11 +244,11 @@
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.88178316;cdt.managedbuild.config.gnu.exe.debug.88178316.;cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1563957740;cdt.managedbuild.tool.gnu.c.compiler.input.256456822">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.1329785217;cdt.managedbuild.config.gnu.exe.release.1329785217.;cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.1013469728;cdt.managedbuild.tool.gnu.cpp.compiler.input.1648670255">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
-		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.1329785217;cdt.managedbuild.config.gnu.exe.release.1329785217.;cdt.managedbuild.tool.gnu.c.compiler.exe.release.1445659007;cdt.managedbuild.tool.gnu.c.compiler.input.635561601">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.1329785217;cdt.managedbuild.config.gnu.exe.release.1329785217.;cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.1013469728;cdt.managedbuild.tool.gnu.cpp.compiler.input.1648670255">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
 		</scannerConfigBuildInfo>
 	</storageModule>
 </cproject>
