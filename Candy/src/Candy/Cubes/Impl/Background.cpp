@@ -265,6 +265,18 @@ void Background::Run()
 			b_height.reset();
 			b_lighting.reset();
 			b_lighting_gi.reset();
+
+			// FIXME
+			std::cout << "Summarized Benchmark: " << std::endl;
+			std::cout << std::setprecision(3);
+			std::cout
+					<< "Created   count: " << b_total_created.count() << ",\t time: " << b_total_created.time() << " s,\t mean: " << b_total_created.mean_ms() << " ms/cell" << std::endl
+					<< "Vitalized count: " << b_total_vitalized.count() << ",\t time: " << b_total_vitalized.time() << " s,\t mean: " << b_total_vitalized.mean_ms() << " ms/cell" << std::endl
+					<< "Mesh      count: " << b_total_mesh.count() << ",\t time: " << b_total_mesh.time() << " s,\t mean: " << b_total_mesh.mean_ms() << " ms/cell" << std::endl
+					<< "Height    count: " << b_total_height.count() << ",\t time: " << b_total_height.time() << " s,\t mean: " << b_total_height.mean_ms() << " ms/cell" << std::endl
+					<< "Lighting  count: " << b_total_lighting.count() << ",\t time: " << b_total_lighting.time() << " s,\t speed: " << b_total_lighting.items_per_second() << " samples/s" << std::endl
+					<< "GI        count: " << b_total_lighting_gi.count() << ",\t time: " << b_total_lighting_gi.time() << " s,\t speed: " << b_total_lighting_gi.items_per_second() << " samples/s" << std::endl;
+
 		}
 
 #ifdef ENABLE_QUIT_AFTER_MAXTIME
