@@ -133,8 +133,8 @@ void Background::Run()
 	timer_all.start();
 #endif
 
-	Benchmarker b_created, b_vitalized, b_height, b_lighting, b_lighting_gi;
-	Benchmarker b_total_created, b_total_vitalized, b_total_height, b_total_lighting, b_total_lighting_gi;
+	Benchmarker b_created, b_vitalized, b_mesh, b_height, b_lighting, b_lighting_gi;
+	Benchmarker b_total_created, b_total_vitalized, b_total_mesh, b_total_height, b_total_lighting, b_total_lighting_gi;
 
 	// the monster background loop
 	while(_running)
@@ -241,7 +241,11 @@ void Background::Run()
 
 		// recreate mesh data if necessary
 		{
-			osgman_->UpdateMeshAll();
+			b_mesh.start();
+			b_total_mesh.start();
+			size_t n_mesh = osgman_->UpdateMeshAll();
+			b_mesh.stop(n_mesh);
+			b_total_mesh.stop(n_mesh);
 		}
 
 		// print status message
@@ -251,11 +255,13 @@ void Background::Run()
 			std::cout
 					<< "Created: " << b_created.count() << " (" << b_created.time() << " s)\t"
 					<< "Vitalized: " << b_vitalized.count() << " (" << b_vitalized.time() << " s)\t"
+					<< "Mesh: " << b_mesh.count() << " (" << b_mesh.time() << " s)\t"
 					<< "Height: " << b_height.count() << " (" << b_height.time() << " s)\t"
 					<< "Lighting: " << b_lighting.count() << " (" << b_lighting.items_per_second() << " samples/s)\t"
 					<< "GI: " << b_lighting_gi.count() << " (" << b_lighting_gi.items_per_second() << " samples/s)" << std::endl;
 			b_created.reset();
 			b_vitalized.reset();
+			b_mesh.reset();
 			b_height.reset();
 			b_lighting.reset();
 			b_lighting_gi.reset();
@@ -277,6 +283,7 @@ void Background::Run()
 	std::cout
 			<< "Created   count: " << b_total_created.count() << ",\t time: " << b_total_created.time() << " s,\t mean: " << b_total_created.mean_ms() << " ms/cell" << std::endl
 			<< "Vitalized count: " << b_total_vitalized.count() << ",\t time: " << b_total_vitalized.time() << " s,\t mean: " << b_total_vitalized.mean_ms() << " ms/cell" << std::endl
+			<< "Mesh      count: " << b_total_mesh.count() << ",\t time: " << b_total_mesh.time() << " s,\t mean: " << b_total_mesh.mean_ms() << " ms/cell" << std::endl
 			<< "Height    count: " << b_total_height.count() << ",\t time: " << b_total_height.time() << " s,\t mean: " << b_total_height.mean_ms() << " ms/cell" << std::endl
 			<< "Lighting  count: " << b_total_lighting.count() << ",\t time: " << b_total_lighting.time() << " s,\t speed: " << b_total_lighting.items_per_second() << " samples/s" << std::endl
 			<< "GI        count: " << b_total_lighting_gi.count() << ",\t time: " << b_total_lighting_gi.time() << " s,\t speed: " << b_total_lighting_gi.items_per_second() << " samples/s" << std::endl;

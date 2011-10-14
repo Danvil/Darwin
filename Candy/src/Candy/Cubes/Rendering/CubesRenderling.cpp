@@ -21,13 +21,17 @@ void CubesRenderling::Render()
 	guard_.unlock();
 }
 
-void CubesRenderling::UpdateMeshAll()
+size_t CubesRenderling::UpdateMeshAll()
 {
+	size_t n = 0;
 	guard_.lock();
 	for(CellRenderlingContainer::const_iterator it=cell_renderlings_.begin(); it!=cell_renderlings_.end(); ++it) {
-		it->second->UpdateMesh();
+		if(it->second->UpdateMesh()) {
+			n++;
+		}
 	}
 	guard_.unlock();
+	return n;
 }
 
 void CubesRenderling::NotifyAddCell(Cell* cell)

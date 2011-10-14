@@ -7,6 +7,7 @@
 
 #include "RadiosityShooting.hpp"
 #include "RadiosityHelper.hpp"
+#include "ExecuteInThreads.hpp"
 #include "../Cubes.h"
 #include "../Appearance.h"
 #include <boost/progress.hpp>
@@ -89,18 +90,23 @@ namespace Hexa
 
 		uint64_t RadiosityShooting::ShootLight(Ptr(Cubes) cubes)
 		{
+			uint64_t n = 0;
 			const unsigned int cThreadCount = 1;
-			if(cThreadCount == 1) {
-				if(!ShootLightST(cubes)) {
-					return 0;
+			const unsigned int cCount = 12;
+			for(unsigned int i=0; i<cCount; i++) {
+				n += cThreadCount * quads_count_;
+				if(cThreadCount == 1) {
+					if(!ShootLightST(cubes)) {
+						return n;
+					}
+				}
+				else {
+					if(!ShootLightMT(cubes, cThreadCount)) {
+						return n;
+					}
 				}
 			}
-			else {
-				if(!ShootLightMT(cubes, cThreadCount)) {
-					return 0;
-				}
-			}
-			return cThreadCount * quads_count_;
+			return n;
 		}
 
 		bool RadiosityShooting::ShootLightST(Ptr(Cubes) cubes)

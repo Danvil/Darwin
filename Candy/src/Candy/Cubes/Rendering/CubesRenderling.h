@@ -17,7 +17,7 @@ public:
 
 	void Render();
 
-	void UpdateMeshAll();
+	size_t UpdateMeshAll();
 
 	void NotifyAddCell(Cell* cell);
 

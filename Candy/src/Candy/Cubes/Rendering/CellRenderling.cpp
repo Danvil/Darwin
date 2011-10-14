@@ -161,7 +161,7 @@ namespace CandyCubes
 			}
 		};
 
-		void CellRenderling::UpdateMesh()
+		bool CellRenderling::UpdateMesh()
 		{
 			if(_cell->IsAppearanceChanged()) {
 				if(_cell->HasBorder()) {
@@ -175,7 +175,9 @@ namespace CandyCubes
 				}
 				_cell->ClearAppearanceDirtyFlag();
 				_needs_transfer = true;
+				return true;
 			}
+			return false;
 		}
 
 		void CellRenderling::TransferMesh()

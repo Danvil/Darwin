@@ -66,7 +66,7 @@ namespace CandyCubes
 		public:
 			void Render();
 
-			void UpdateMesh();
+			bool UpdateMesh();
 
 			void TransferMesh();
 
