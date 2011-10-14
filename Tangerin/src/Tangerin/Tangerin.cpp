@@ -155,6 +155,7 @@ TangerinMain::TangerinMain(const std::string& asset_path)
 
 TangerinMain::~TangerinMain()
 {
+	cubes_.reset();
 }
 
 void TangerinMain::Init()
