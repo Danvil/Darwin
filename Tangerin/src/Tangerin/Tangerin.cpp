@@ -27,13 +27,14 @@
 
 Ptr(Generator) CreateRoomGenerator(WorldSize& ws)
 {
-	ws.x1 = 0;
-	ws.x2 = 5;
-	ws.y1 = 0;
-	ws.y2 = 4;
-	ws.z1 = 0;
-	ws.z2 = 3;
-	return Ptr(Generator)(new PointWiseGenerator<RoomGenerator>(RoomGenerator(ws, 16)));
+	const unsigned int F = 1;
+	ws.x1 = 0*F;
+	ws.x2 = 5*F;
+	ws.y1 = 0*F;
+	ws.y2 = 4*F;
+	ws.z1 = 0*F;
+	ws.z2 = 3*F;
+	return Ptr(Generator)(new PointWiseGenerator<RoomGenerator<F>>(RoomGenerator<F>(ws)));
 }
 
 Ptr(Generator) CreateWorldGenerator(WorldSize& ws)
