@@ -114,12 +114,14 @@ namespace Rooms
 			dim_.z = 7;
 		}
 		CubeType getLocal(const CoordU& cl) {
+			unsigned int x = cl.x;
+			unsigned int y = cl.y;
 			unsigned int z = cl.z;
 			if(z == 6) {
 				return CubeTypes::DebugWhite;
 			}
 			if(z == 0 || z == 1 || z == 2 || z == 3 || z == 4) {
-				if(3 <= cl.x && cl.x <= 6 && 3 <= cl.y && cl.y <= 6) {
+				if(3 <= x && x <= 6 && 3 <= y && y <= 6 && (x + y) % 2 == 0) {
 					return CubeTypes::LightWhite;
 				}
 			}
@@ -177,11 +179,12 @@ namespace Rooms
 	};
 }
 
+template<unsigned int F=1>
 class RoomGenerator
 {
 public:
-	RoomGenerator(const WorldSize& ws, unsigned int factor)
-	: size_(ws), factor_(factor) {
+	RoomGenerator(const WorldSize& ws)
+	: size_(ws) {
 		room_contents_.reset(new Rooms::Composite());
 		// some boxes
 		{
@@ -202,7 +205,7 @@ public:
 		// some lights
 		{
 			Ptr(Rooms::Lamp) lamp(new Rooms::Lamp());
-			lamp->pos_ = CoordI(40 - lamp->dim_.x/2, 32 - lamp->dim_.y/2, ws.world_z2() - lamp->dim_.z - 3);
+			lamp->pos_ = CoordI(40 - lamp->dim_.x/2, 32 - lamp->dim_.y/2, ws.world_z2()/F - lamp->dim_.z - 3);
 			room_contents_->add(lamp);
 		}
 		{
@@ -228,12 +231,16 @@ public:
 
 	}
 
-	CubeType operator()(const CoordI& cw)
+	CubeType operator()(const CoordI& cw_raw)
 	{
-		bool is_floor = cw.z == size_.world_z1();
-		bool is_ceiling = cw.z == size_.world_z2();
-		bool is_wall = (cw.x == size_.world_x1() || cw.x == size_.world_x2() || cw.y == size_.world_y1() || cw.y == size_.world_y2());
+		bool is_floor = cw_raw.z == size_.world_z1();
+		bool is_ceiling = cw_raw.z == size_.world_z2();
+		bool is_wall = (cw_raw.x == size_.world_x1() || cw_raw.x == size_.world_x2() || cw_raw.y == size_.world_y1() || cw_raw.y == size_.world_y2());
+		CoordI cw(cw_raw.x / F, cw_raw.y / F, cw_raw.z / F);
 		if(is_ceiling) {
+			return CubeType::DebugWhite;
+		}
+		if(is_wall) {
 			return CubeType::DebugWhite;
 		}
 		if(is_floor) {
@@ -283,16 +290,12 @@ public:
 			default: return CubeType::DebugWhite;
 			}
 		}
-		if(is_wall) {
-			return CubeType::DebugWhite;
-		}
 		// contents
 		return room_contents_->get(cw);
 	}
 
 private:
 	WorldSize size_;
-	unsigned int factor_;
 	Ptr(Rooms::Composite) room_contents_;
 };
 
