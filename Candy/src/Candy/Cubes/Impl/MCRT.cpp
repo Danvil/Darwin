@@ -26,9 +26,9 @@ namespace Lighting
 			//assert(data); // TODO why is this happening? ignore for now ...
 			if(data != 0) {
 				float bdrf = n_dot_u * cReflectionFactor;
-				light.ambient += bdrf * data->lighting.ambient;
-				light.sun += bdrf * data->lighting.sun;
-				light.scenery += bdrf * data->lighting.scenery_with_object;
+				light.ambient += bdrf * data->getAmbient();
+				light.sun += bdrf * data->getSun();
+				light.scenery += bdrf * data->getSceneryWithObject();
 			}
 		} else {
 			// uniform ambient background light with slight highlight towards the sun
@@ -57,8 +57,7 @@ namespace Lighting
 		if(!cell->HasBorder()) {
 			return;
 		}
-		unsigned int old_samples = 32 + cell->CountLightingSamples(); // FIXME HACK!
-		float scl = 1.0f / float(old_samples + new_samples);
+		//unsigned int old_samples = 32 + cell->CountLightingSamples(); // FIXME HACK!
 		cell->AddSamples(new_samples);
 		for(Cell::BorderSideIterator it=cell->IterateBorderSides(); it; ++it) {
 			// some data
@@ -67,7 +66,7 @@ namespace Lighting
 			Vec3f pos = it.positionCenter();
 			CubeSideData* data = it.data();
 			unsigned int sideIndex = it.side();
-			const Vec3f& emit_color = Appearance::CubeEmitColor(type);
+			//const Vec3f& emit_color = Appearance::CubeEmitColor(type);
 			// accumulate lighting
 			CubeSideLightData lighting;
 			for(unsigned int i=0; i<new_samples; i++) {
@@ -75,11 +74,7 @@ namespace Lighting
 				AddRayLightingSun(cubes, it.world(), pos, sideIndex, lighting);
 			}
 			// update samples
-			CubeSideLightData& target = data->lighting;
-			target.ambient = scl * (float(old_samples) * target.ambient + lighting.ambient);
-			target.sun = scl * (float(old_samples) * target.sun + lighting.sun);
-			target.scenery = scl * (float(old_samples) * target.scenery + lighting.scenery + float(new_samples) * emit_color);
-			target.scenery_with_object = data->object_color.cwiseProduct(target.scenery);
+			data->addCurrentLight(lighting, float(new_samples));
 		}
 	}
 

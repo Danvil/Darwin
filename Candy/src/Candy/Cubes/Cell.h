@@ -203,7 +203,8 @@ public:
 		flag_content_dirty_ = false;
 		flag_appearance_dirty_ = false;
 		flag_height_dirty_ = false;
-		_lighting_samples = 0;
+		max_lighting_samples_ = 0;
+		current_lighting_samples_ = 0;
 		border_sides_ = new LinearKeyValueContainer();
 	}
 
@@ -327,11 +328,20 @@ public:
 	}
 
 	unsigned int CountLightingSamples() const {
-		return _lighting_samples;
+		return current_lighting_samples_;
+	}
+
+	bool IsNeverLighted() const {
+		return max_lighting_samples_ == 0;
+	}
+
+	void ResetLighting() {
+		max_lighting_samples_ = std::max(max_lighting_samples_, current_lighting_samples_);
+		current_lighting_samples_ = 0;
 	}
 
 	void AddSamples(unsigned int samples) {
-		_lighting_samples += samples;
+		current_lighting_samples_ += samples;
 	}
 
 	bool IsCreated() const {
@@ -412,7 +422,8 @@ private:
 	bool flag_content_dirty_;
 	bool flag_appearance_dirty_;
 	bool flag_height_dirty_;
-	unsigned int _lighting_samples;
+	unsigned int max_lighting_samples_;
+	unsigned int current_lighting_samples_;
 
 	LinearKeyValueContainer* border_sides_;
 

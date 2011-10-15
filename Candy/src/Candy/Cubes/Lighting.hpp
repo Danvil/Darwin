@@ -19,6 +19,8 @@ namespace Hexa
 	public:
 		virtual ~GlobalIlluminator() {}
 
+		virtual void Restart() {}
+
 		virtual uint64_t Iterate(Ptr(Cubes) cubes) = 0;
 
 	};

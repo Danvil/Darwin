@@ -109,7 +109,7 @@ namespace Lighting
 
 		// pick cells with minimal samples and sort
 		std::vector<Cell*> cells = cubes->GetCellsIf([](Cell* cell) {
-			return cell->CountLightingSamples() == 0 && cell->HasBorder() && !cell->IsContentChanged();
+			return cell->IsNeverLighted() && cell->HasBorder() && !cell->IsContentChanged();
 		});
 //		std::cout << "Cells which need lighting " << cells.size() << std::endl;
 //		std::sort(cells.begin(), cells.end(), CellByEyeDistance());
@@ -124,9 +124,12 @@ namespace Lighting
 
 	void ComputeCubeImpl(Cubes* cubes, const CoordI& cw, unsigned int sideIndex, CubeType type, CubeSideData* data)
 	{
-		data->lighting.ambient = ComputeAmbientLight(cubes, cw, sideIndex);
-		data->lighting.sun = ComputeSunLightSimple(cubes, cw, sideIndex);
-		data->lighting.scenery = Appearance::CubeEmitColor(type);
+		CubeSideLightData lighting;
+		lighting.ambient = ComputeAmbientLight(cubes, cw, sideIndex);
+		lighting.sun = ComputeSunLightSimple(cubes, cw, sideIndex);
+		lighting.scenery = Appearance::CubeEmitColor(type);
+		data->set(lighting, 1.0f); // FIXME weight?
+		data->mark();
 	}
 
 	void DirectLighting::ComputeCell(Cubes* cubes, Cell* cell)

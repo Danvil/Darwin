@@ -130,7 +130,7 @@ namespace CandyCubes
 			}
 
 			static void Add(std::vector<Vertex>* vertices, const CoordI& cc_world, CubeType type, CubeSideData* data, int side) {
-				const CubeSideLightData& light = data->lighting;
+				const CubeSideLightData& light = data->getLighting();
 				for(int i = 0; i < 4; i++) {
 					Vertex v;
 					CoordI vertex_coord = Properties::GetVertexCoord(cc_world, side, i);

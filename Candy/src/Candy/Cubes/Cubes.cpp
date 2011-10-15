@@ -111,7 +111,7 @@ namespace Impl
 {
 	inline void vitalize_cube_no_lighting(Cubes*, const Cell::BorderSideIterator& it) {
 		CubeSideData* x = it.data();
-		x->object_color = Appearance::CubeBaseColor(it.type());
+		x->setObjectColor(Appearance::CubeBaseColor(it.type()));
 	}
 
 	inline void vitalize_cube_with_lighting(Cubes* cubes, const Cell::BorderSideIterator& it) {
@@ -182,7 +182,7 @@ void Cubes::VitalizeCubeData(Cell* cell)
 	// delete old
 	delete old_side_data;
 	// reset light samples
-	cell->_lighting_samples = 0;
+	cell->ResetLighting();
 	// notify that cell data has changed
 	cell->ClearContentDirtyFlag();
 	cell->SetAppearanceDirtyFlag();

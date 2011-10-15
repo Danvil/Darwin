@@ -50,14 +50,7 @@ void Radiosity::Update(const Ptr(Cubes)& cubes)
 	size_t i=0;
 	for(auto it=cells_.cbegin(); it!=cells_.cend(); ++it) {
 		for(Cell::BorderSideIterator cit=(*it)->IterateBorderSides(); cit; ++cit, i++) {
-			float col_r = B_r_(i);
-			float col_g = B_g_(i);
-			float col_b = B_b_(i);
-			CubeSideLightData& light = cit.data()->lighting;
-			light.scenery.x() = col_r;
-			light.scenery.y() = col_g;
-			light.scenery.z() = col_b;
-			light.scenery_with_object = cit.data()->object_color.cwiseProduct(light.scenery);
+			cit.data()->setCurrentLight(Vec3f(B_r_(i), B_g_(i), B_b_(i)), 1.0f); // FIXME weight?
 		}
 		(*it)->SetAppearanceDirtyFlag();
 	}
@@ -90,9 +83,9 @@ void Radiosity::Prepare(const Ptr(Cubes)& cubes)
 			E_r_(i) = emit_color(0);
 			E_g_(i) = emit_color(1);
 			E_b_(i) = emit_color(2);
-			albedo_r_(i) = 0.70f * cit.data()->object_color(0);
-			albedo_g_(i) = 0.70f * cit.data()->object_color(1);
-			albedo_b_(i) = 0.70f * cit.data()->object_color(2);
+			albedo_r_(i) = 0.70f * cit.data()->getObjectColor()(0);
+			albedo_g_(i) = 0.70f * cit.data()->getObjectColor()(1);
+			albedo_b_(i) = 0.70f * cit.data()->getObjectColor()(2);
 			// form factors
 			size_t j=0;
 			for(auto jt=cells_.cbegin(); jt!=cells_.cend(); ++jt) {

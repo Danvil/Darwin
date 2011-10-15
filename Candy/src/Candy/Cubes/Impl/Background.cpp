@@ -25,7 +25,7 @@ Background::Background(Ptr(Cubes) cubes, Ptr(CubesRenderling) osgman, Ptr(Ground
 {
 	build_first_ = false;
 	_running = false;
-//	gi_basic_.reset(new Hexa::Lighting::DirectLighting());
+	gi_basic_.reset(new Hexa::Lighting::DirectLighting());
 //	gi_.reset(new Hexa::Lighting::MCRT());
 	gi_.reset(new Hexa::Lighting::RadiosityShooting());
 }
@@ -136,6 +136,10 @@ void Background::Run()
 	Benchmarker b_created, b_vitalized, b_mesh, b_height, b_lighting, b_lighting_gi;
 	Benchmarker b_total_created, b_total_vitalized, b_total_mesh, b_total_height, b_total_lighting, b_total_lighting_gi;
 
+	bool lighting_started_ = false;
+	bool needs_restart = true;
+	int restarted_cnt = 0;
+
 	// the monster background loop
 	while(_running)
 	{
@@ -189,7 +193,7 @@ void Background::Run()
 						// removed samples vary from distance
 						float distance = std::sqrt(float(dx * dx + dy * dy + dz * dz));
 						float samples_p = 0.0f + distance * 0.25f;
-						neigbour_cell->_lighting_samples = std::max(0u, (unsigned int)(samples_p * (float)(neigbour_cell->_lighting_samples)));
+						neigbour_cell->ResetLighting();// = std::max(0u, (unsigned int)(samples_p * (float)(neigbour_cell->_lighting_samples)));
 					});
 			});
 			b_vitalized.stop(n_vitalized);
@@ -205,13 +209,30 @@ void Background::Run()
 				b_lighting.stop(n_lighting);
 				b_total_lighting.stop(n_lighting);
 			}
-			if(!build_first_ || (n_created == 0 && n_vitalized == 0)) {
-				if(gi_) {
-					b_lighting_gi.start();
-					b_total_lighting_gi.start();
-					size_t n_lighting_gi = gi_->Iterate(cubes_);
-					b_lighting_gi.stop(n_lighting_gi);
-					b_total_lighting_gi.stop(n_lighting_gi);
+			if(gi_) {
+				if(lighting_started_ && (n_vitalized > 0)) {
+					needs_restart = true;
+				}
+				if(!build_first_ || (n_created == 0 && n_vitalized == 0)) {
+					if(needs_restart) {
+						gi_->Restart();
+						for(CellIterator cit=cubes_->IterateCells(); cit; ++cit) {
+							for(Cell::BorderSideIterator sit=cit->IterateBorderSides(); sit; ++sit) {
+								sit.data()->mark();
+							}
+						}
+						restarted_cnt ++;
+						needs_restart = false;
+						std::cout << "Restarted lighting" << std::endl;
+					}
+					else {
+						b_lighting_gi.start();
+						b_total_lighting_gi.start();
+						size_t n_lighting_gi = gi_->Iterate(cubes_);
+						b_lighting_gi.stop(n_lighting_gi);
+						b_total_lighting_gi.stop(n_lighting_gi);
+						lighting_started_ = true;
+					}
 				}
 			}
 		}
