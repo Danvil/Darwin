@@ -17,10 +17,13 @@ namespace Rooms
 	{
 	public:
 		Base()
-		: pos_(0,0,0), dim_(0,0,0), rotate_(0) {}
+		: dim_(0,0,0), pos_(0,0,0), rotate_(0) {}
 
 		Base(const CoordU& dim)
-		: pos_(0,0,0), dim_(dim), rotate_(0) {}
+		: dim_(dim), pos_(0,0,0), rotate_(0) {}
+
+		Base(const CoordU& dim, const CoordI& pos)
+		: dim_(dim), pos_(pos), rotate_(0) {}
 
 		virtual ~Base() {}
 
@@ -62,9 +65,51 @@ namespace Rooms
 
 		virtual CubeType getLocal(const CoordU& cl) = 0;
 
-		CoordI pos_;
 		CoordU dim_;
+		CoordI pos_;
 		unsigned int rotate_;
+	};
+
+	class Composite : public Base {
+	public:
+		virtual ~Composite() {}
+		Composite() { }
+		void add(const Ptr(Base)& obj) {
+			objs_.push_back(obj);
+			if(obj->pos_.x < pos_.x) {
+				dim_.x += (unsigned int)(pos_.x - obj->pos_.x);
+				pos_.x = obj->pos_.x;
+			}
+			if(obj->pos_.y < pos_.y) {
+				dim_.y += (unsigned int)(pos_.y - obj->pos_.y);
+				pos_.y = obj->pos_.y;
+			}
+			if(obj->pos_.z < pos_.z) {
+				dim_.z += (unsigned int)(pos_.z - obj->pos_.z);
+				pos_.z = obj->pos_.z;
+			}
+			if(obj->pos_.x + obj->dim_.x > pos_.x + dim_.x) {
+				dim_.x += (unsigned int)(obj->pos_.x + obj->dim_.x - pos_.x);
+			}
+			if(obj->pos_.y + obj->dim_.y > pos_.y + dim_.y) {
+				dim_.y += (unsigned int)(obj->pos_.y + obj->dim_.y - pos_.y);
+			}
+			if(obj->pos_.z + obj->dim_.z > pos_.z + dim_.z) {
+				dim_.z += (unsigned int)(obj->pos_.z + obj->dim_.z - pos_.z);
+			}
+		}
+		CubeType getLocal(const CoordU& cl) {
+			CoordI cw(int(cl.x), int(cl.y), int(cl.z));
+			CubeType t = CubeTypes::Empty;
+			for(const Ptr(Base)& x : objs_) {
+				if(x->isInside(cw)) {
+					t = x->get(cw);
+				}
+			}
+			return t;
+		}
+	private:
+		std::vector<Ptr(Base)> objs_;
 	};
 
 	class Box : public Base {
@@ -72,6 +117,8 @@ namespace Rooms
 		virtual ~Box() {}
 		Box(const CoordU& dim, CubeType type)
 		: Base(dim), type_(type) {}
+		Box(const CoordU& dim, CubeType type, const CoordI& pos)
+		: Base(dim, pos), type_(type) {}
 		CubeType getLocal(const CoordU& cl) {
 			return type_;
 		}
@@ -137,115 +184,15 @@ namespace Rooms
 		}
 	};
 
-	class Composite : public Base {
-	public:
-		virtual ~Composite() {}
-		Composite() { }
-		void add(const Ptr(Base)& obj) {
-			objs_.push_back(obj);
-			if(obj->pos_.x < pos_.x) {
-				dim_.x += (unsigned int)(pos_.x - obj->pos_.x);
-				pos_.x = obj->pos_.x;
-			}
-			if(obj->pos_.y < pos_.y) {
-				dim_.y += (unsigned int)(pos_.y - obj->pos_.y);
-				pos_.y = obj->pos_.y;
-			}
-			if(obj->pos_.z < pos_.z) {
-				dim_.z += (unsigned int)(pos_.z - obj->pos_.z);
-				pos_.z = obj->pos_.z;
-			}
-			if(obj->pos_.x + obj->dim_.x > pos_.x + dim_.x) {
-				dim_.x += (unsigned int)(obj->pos_.x + obj->dim_.x - pos_.x);
-			}
-			if(obj->pos_.y + obj->dim_.y > pos_.y + dim_.y) {
-				dim_.y += (unsigned int)(obj->pos_.y + obj->dim_.y - pos_.y);
-			}
-			if(obj->pos_.z + obj->dim_.z > pos_.z + dim_.z) {
-				dim_.z += (unsigned int)(obj->pos_.z + obj->dim_.z - pos_.z);
-			}
+	class Pattern : public Base {
+	private:
+		Pattern(unsigned int pattern[8][8])
+		: Base(CoordU(8,8,1)) {
+			std::copy(pattern, pattern+64, pattern_);
 		}
 		CubeType getLocal(const CoordU& cl) {
-			CoordI cw(int(cl.x), int(cl.y), int(cl.z));
-			for(const Ptr(Base)& x : objs_) {
-				if(x->isInside(cw)) {
-					return x->get(cw);
-				}
-			}
-			return CubeTypes::Empty;
-		}
-	private:
-		std::vector<Ptr(Base)> objs_;
-	};
-}
-
-template<unsigned int F=1>
-class RoomGenerator
-{
-public:
-	RoomGenerator(const WorldSize& ws)
-	: size_(ws) {
-		room_contents_.reset(new Rooms::Composite());
-		// some boxes
-		{
-			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(14,14,16), CubeTypes::DebugBlue));
-			box->pos_ = CoordI(17,17,0);
-			room_contents_->add(box);
-		}
-		{
-			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(14,14,16), CubeTypes::DebugGreen));
-			box->pos_ = CoordI(33,17,0);
-			room_contents_->add(box);
-		}
-		{
-			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(14,14,16), CubeTypes::DebugRed));
-			box->pos_ = CoordI(64,48,0);
-			room_contents_->add(box);
-		}
-		// some lights
-		{
-			Ptr(Rooms::Lamp) lamp(new Rooms::Lamp());
-			lamp->pos_ = CoordI(40 - lamp->dim_.x/2, 32 - lamp->dim_.y/2, ws.world_z2()/F - lamp->dim_.z - 3);
-			room_contents_->add(lamp);
-		}
-		{
-			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(1,1,40), CubeTypes::EmitOrange));
-			box->pos_ = CoordI(1,1,0);
-			room_contents_->add(box);
-		}
-		{
-			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(1,1,40), CubeTypes::EmitOrange));
-			box->pos_ = CoordI(78,1,0);
-			room_contents_->add(box);
-		}
-		{
-			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(1,1,40), CubeTypes::EmitOrange));
-			box->pos_ = CoordI(78,62,0);
-			room_contents_->add(box);
-		}
-		{
-			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(1,1,40), CubeTypes::EmitOrange));
-			box->pos_ = CoordI(1,62,0);
-			room_contents_->add(box);
-		}
-
-	}
-
-	CubeType operator()(const CoordI& cw_raw)
-	{
-		bool is_floor = cw_raw.z == size_.world_z1();
-		bool is_ceiling = cw_raw.z == size_.world_z2();
-		bool is_wall = (cw_raw.x == size_.world_x1() || cw_raw.x == size_.world_x2() || cw_raw.y == size_.world_y1() || cw_raw.y == size_.world_y2());
-		CoordI cw(cw_raw.x / F, cw_raw.y / F, cw_raw.z / F);
-		if(is_ceiling) {
-			return CubeType::DebugWhite;
-		}
-		if(is_wall) {
-			return CubeType::DebugWhite;
-		}
-		if(is_floor) {
-			unsigned int u = cw.x & 0xF;
-			unsigned int v = cw.y & 0xF;
+			unsigned int u = cl.x & 0xF;
+			unsigned int v = cl.y & 0xF;
 			if(u >= 8) {
 				u = 15 - u;
 			}
@@ -272,24 +219,109 @@ public:
 //					{0, 0, 0, 0, 0, 0, 0, 1},
 //					{1, 1, 1, 1, 1, 1, 1, 1},
 //			};
-			int pattern[8][8] = {
-					{0, 0, 0, 1, 0, 0, 0, 0},
-					{0, 0, 1, 0, 0, 0, 0, 0},
-					{0, 1, 0, 0, 0, 0, 0, 0},
-					{1, 0, 0, 0, 0, 0, 0, 0},
-					{0, 0, 0, 0, 0, 0, 0, 0},
-					{0, 0, 0, 0, 0, 0, 0, 0},
-					{0, 0, 0, 0, 0, 0, 0, 0},
-					{0, 0, 0, 0, 0, 0, 0, 0},
-			};
-			switch(pattern[u][v]) {
-			case 1: return CubeType::LightWhite;
-			case 2: return CubeType::LightRed;
-			case 3: return CubeType::LightGreen;
-			case 4: return CubeType::LightBlue;
-			default: return CubeType::DebugWhite;
+//			int pattern[8][8] = {
+//					{0, 0, 0, 1, 0, 0, 0, 0},
+//					{0, 0, 1, 0, 0, 0, 0, 0},
+//					{0, 1, 0, 0, 0, 0, 0, 0},
+//					{1, 0, 0, 0, 0, 0, 0, 0},
+//					{0, 0, 0, 0, 0, 0, 0, 0},
+//					{0, 0, 0, 0, 0, 0, 0, 0},
+//					{0, 0, 0, 0, 0, 0, 0, 0},
+//					{0, 0, 0, 0, 0, 0, 0, 0},
+//			};
+			switch(pattern_[u][v]) {
+			case 1: return CubeType::EmitGrey1;
+			case 2: return CubeType::EmitGrey2;
+			case 3: return CubeType::EmitGrey3;
+			case 4: return CubeType::EmitGrey4;
+			case 5: return CubeType::EmitGrey5;
+			case 6: return CubeType::EmitGrey6;
+			default: return CubeType::PlainWhite;
 			}
 		}
+	private:
+		unsigned int pattern_[8][8];
+	};
+
+}
+
+template<unsigned int F=1>
+class RoomGenerator
+{
+public:
+	RoomGenerator(const WorldSize& ws)
+	: size_(ws) {
+		room_contents_.reset(new Rooms::Composite());
+		unsigned int rsx = (unsigned int)(ws.world_x2() - ws.world_x1() + 1)/F;
+		unsigned int rsy = (unsigned int)(ws.world_y2() - ws.world_y1() + 1)/F;
+		unsigned int rsz = (unsigned int)(ws.world_z2() - ws.world_z1() + 1)/F;
+		// walls
+		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(rsx,rsy,1), CubeTypes::PlainGrey3, CoordI(0,0,0))));
+		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(rsx,rsy,1), CubeTypes::PlainGrey4, CoordI(0,0,rsz-1))));
+		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(rsx,1,rsz), CubeTypes::PlainGrey4, CoordI(0,0,0))));
+		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(rsx,1,rsz), CubeTypes::PlainGrey4, CoordI(0,rsy-1,0))));
+		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(1,rsy,rsz), CubeTypes::PlainGrey4, CoordI(0,0,0))));
+		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(1,rsy,rsz), CubeTypes::PlainGrey4, CoordI(rsx-1,0,0))));
+		const unsigned int border_height = 28;
+
+		const unsigned int door_height = 32;
+		const unsigned int door_width = 16;
+		const unsigned int door_pos = 16;
+		const unsigned int door_down = 16;
+
+		// door
+		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(1,door_width,door_height), CubeTypes::AlaMinecraft, CoordI(0,door_pos,0))));
+
+
+//		// some boxes
+//		{
+//			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(14,14,16), CubeTypes::DebugBlue));
+//			box->pos_ = CoordI(17,17,0);
+//			room_contents_->add(box);
+//		}
+//		{
+//			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(14,14,16), CubeTypes::DebugGreen));
+//			box->pos_ = CoordI(33,17,0);
+//			room_contents_->add(box);
+//		}
+//		{
+//			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(14,14,16), CubeTypes::DebugRed));
+//			box->pos_ = CoordI(64,48,0);
+//			room_contents_->add(box);
+//		}
+		// some lights
+//		{
+//			Ptr(Rooms::Lamp) lamp(new Rooms::Lamp());
+//			lamp->pos_ = CoordI(40 - lamp->dim_.x/2, 32 - lamp->dim_.y/2, ws.world_z2()/F - lamp->dim_.z - 3);
+//			room_contents_->add(lamp);
+//		}
+
+		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(4,4,4), CubeTypes::EmitWhite, CoordI(24-2,16-2,0))));
+		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(4,4,4), CubeTypes::EmitWhite, CoordI(24-2,48-2,0))));
+		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(4,4,4), CubeTypes::EmitWhite, CoordI(56-2,16-2,0))));
+		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(4,4,4), CubeTypes::EmitWhite, CoordI(56-2,48-2,0))));
+
+//		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(1,1,40), CubeTypes::EmitOrange, CoordI(1,1,0))));
+//		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(1,1,40), CubeTypes::EmitOrange, CoordI(78,1,0))));
+//		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(1,1,40), CubeTypes::EmitOrange, CoordI(78,62,0))));
+//		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(1,1,40), CubeTypes::EmitOrange, CoordI(1,62,0))));
+
+		// border
+		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(rsx,1,1), CubeTypes::EmitGreen, CoordI(1,1,border_height)))); // south
+		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(rsx,1,1), CubeTypes::EmitGreen, CoordI(1,rsy-2,border_height)))); // north
+		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(1,rsy,1), CubeTypes::EmitGreen, CoordI(rsx-2,1,border_height)))); // east
+		// west (around the door)
+		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(1,door_pos-2,1), CubeTypes::EmitGreen, CoordI(1,1,border_height)))); // west
+		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(1,door_width+4,1), CubeTypes::EmitGreen, CoordI(1,door_pos-2,door_height+1)))); // west
+		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(1,rsy-(door_pos+door_width+1)-1,1), CubeTypes::EmitGreen, CoordI(1,door_pos+door_width+1,border_height)))); // west
+		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(1,1,door_height-border_height+1+door_down), CubeTypes::EmitGreen, CoordI(1,door_pos-2,border_height-door_down)))); // west
+		room_contents_->add(Ptr(Rooms::Box)(new Rooms::Box(CoordU(1,1,door_height-border_height+1+door_down), CubeTypes::EmitGreen, CoordI(1,door_pos+door_width+1,border_height-door_down)))); // west
+
+	}
+
+	CubeType operator()(const CoordI& cw_raw)
+	{
+		CoordI cw(cw_raw.x / F, cw_raw.y / F, cw_raw.z / F);
 		// contents
 		return room_contents_->get(cw);
 	}
