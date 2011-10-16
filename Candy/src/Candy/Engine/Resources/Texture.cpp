@@ -11,6 +11,7 @@
 #include <IL/il.h>
 #define ILUT_USE_OPENGL
 #include <IL/ilut.h>
+#include <stdexcept>
 //---------------------------------------------------------------------------
 namespace Candy {
 //---------------------------------------------------------------------------
@@ -90,7 +91,7 @@ void Texture2::Load(const std::string& filename, bool linear, bool mipmaps)
 	bool success = ilLoadImage(filename.c_str()) == IL_TRUE;
 	if(!success) {
 		ilDeleteImages(1, &Id); // delete image
-		throw std::string("Failed to load image from file: '" + filename + "'");
+		throw std::runtime_error("Failed to load image from file: '" + filename + "'");
 	}
 	width_ = ilGetInteger(IL_IMAGE_WIDTH);
 	height_ = ilGetInteger(IL_IMAGE_HEIGHT);

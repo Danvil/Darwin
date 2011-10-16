@@ -67,7 +67,7 @@ namespace CandyCubes
 
 				Candy::IDrawable::sCamera->AddCameraShaders(shader_);
 
-				Ptr(Candy::TextureId) ti(new Candy::TextureId("cubes_diffuse_all.jpg"));
+				Ptr(Candy::TextureId) ti(new Candy::TextureId("Texture_Composite.png"));
 				shader_->AddTexture("uTexture", Candy::ResourcePool::Singleton->Get(ti));
 
 				Candy::Uniform4f* ambient = new Candy::Uniform4f("uAmbientColor");
@@ -94,12 +94,12 @@ namespace CandyCubes
 
 		struct AddSideVertex
 		{
-			static void PickUV(const CoordI& cc_world, CubeType type, int side, int vertex, float& u, float& v) {
+			static void PickUV(const CoordI& cc_world, CubeSideData* data, int side, int vertex, float& u, float& v) {
 
 				const unsigned int N = 1;
 				const float D = 1.0f / float(N) / 4.0f;
 
-				unsigned int tex_index = Appearance::CubeTypeToTextureIndex(type);
+				unsigned int tex_index = data->getMaterial()->texture_index_;
 				unsigned int tex_u = tex_index & 3;
 				unsigned int tex_v = 3 - tex_index / 4;
 
@@ -155,7 +155,7 @@ namespace CandyCubes
 					v.scenery_r = light.scenery(0) > 1.0f ? 1.0f : light.scenery(0);
 					v.scenery_g = light.scenery(1) > 1.0f ? 1.0f : light.scenery(1);
 					v.scenery_b = light.scenery(2) > 1.0f ? 1.0f : light.scenery(2);
-					PickUV(cc_world, type, side, i, v.u, v.v);
+					PickUV(cc_world, data, side, i, v.u, v.v);
 					vertices->push_back(v);
 				}
 			}

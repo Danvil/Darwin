@@ -6,35 +6,84 @@ namespace CubeTypes
 {
 	enum Type
 	{
-		// "air"
+		// special types
 		Empty = 0,
+		NonExistent = 255,
 
 		// solid cubes
-		Indestructible = 1,
-		Stone = 10,
-		Sand = 11,
-		Ice = 12,
-		Mud = 13,
-//		Grass = 20,
-		Water = 30,
-		Lava = 31,
-		CrystalGood = 41,
-		CrystalEvil = 42,
+		Concrete = 1,
+		Stone = 2,
+		Dirt = 3,
+		Danvil = 4,
+		AlaMinecraft = 5,
 
-		LightWhite = 50,
-		LightRed = 51,
-		LightGreen = 52,
-		LightBlue = 53,
-		LightYellow = 54,
-		LightCyan = 55,
-		LightMagenta = 56,
+		// grey and white (diffuse)
+		PlainGreyBegin = 114,
+		PlainGrey0 = PlainGreyBegin,
+		PlainGrey1 = PlainGreyBegin + 1,
+		PlainGrey2 = PlainGreyBegin + 2,
+		PlainGrey3 = PlainGreyBegin + 3,
+		PlainGrey4 = PlainGreyBegin + 4,
+		PlainGrey5 = PlainGreyBegin + 5,
+		PlainGrey6 = PlainGreyBegin + 6,
+		PlainGreyEnd = PlainGreyBegin + 7,
+		PlainBlack = PlainGrey0,
+		PlainWhite = PlainGrey6,
 
-		DebugWhite = 130,
-		DebugRed = 131,
-		DebugGreen = 132,
-		DebugBlue = 133,
+		// grey and white (emit)
+		EmitGreyBegin = PlainGreyEnd,
+		EmitGrey0 = EmitGreyBegin,
+		EmitGrey1 = EmitGreyBegin + 1,
+		EmitGrey2 = EmitGreyBegin + 2,
+		EmitGrey3 = EmitGreyBegin + 3,
+		EmitGrey4 = EmitGreyBegin + 4,
+		EmitGrey5 = EmitGreyBegin + 5,
+		EmitGrey6 = EmitGreyBegin + 6,
+		EmitGreyEnd = EmitGreyBegin + 7,
+		EmitBlack = EmitGrey0,
+		EmitWhite = EmitGrey6,
 
-		NonExistent = 255
+		// strong colors (diffuse)
+		PlainColorBegin	= EmitGreyEnd,
+		PlainRed 		= PlainColorBegin,
+		PlainOrange		= PlainRed+3,
+		PlainYellow 	= PlainRed+6,
+		PlainGreen 		= PlainRed+12,
+		PlainCyan 		= PlainRed+18,
+		PlainBlue 		= PlainRed+24,
+		PlainMagenta 	= PlainRed+30,
+		PlainColorEnd	= PlainRed+36,
+
+		// strong colors (emit)
+		EmitColorBegin	= PlainColorEnd,
+		EmitRed			= EmitColorBegin,
+		EmitOrange		= EmitRed+3,
+		EmitYellow 		= EmitRed+6,
+		EmitGreen 		= EmitRed+12,
+		EmitCyan 		= EmitRed+18,
+		EmitBlue		= EmitRed+24,
+		EmitMagenta		= EmitRed+30,
+		EmitColorEnd	= EmitRed+36,
+
+		// deprecated
+		Indestructible = Stone,
+		Sand = Dirt,
+		Mud = Dirt,
+		Water = PlainCyan,
+		Lava = EmitYellow,
+		LightWhite = EmitWhite,
+		LightRed = EmitRed,
+		LightGreen = EmitGreen,
+		LightBlue = EmitBlue,
+		LightYellow = EmitYellow,
+		LightCyan = EmitCyan,
+		LightMagenta = EmitMagenta,
+		DebugWhite = PlainWhite,
+		DebugRed = PlainRed,
+		DebugGreen = PlainGreen,
+		DebugBlue = PlainBlue,
+
+
 	};
 }
 
@@ -84,10 +133,48 @@ struct CubeSideLightData
 
 };
 
+struct CubeMaterialProperties
+{
+	CubeMaterialProperties()
+	: texture_index_(0), color_(1.0f,1.0f,1.0f), emit_(0.0f,0.0f,0.0f)
+	{}
+
+	CubeMaterialProperties(size_t texture_index, const Vec3f& color)
+	: texture_index_(texture_index), color_(color), emit_(0.0f,0.0f,0.0f) {}
+
+	CubeMaterialProperties(size_t texture_index, const Vec3f& color, const Vec3f& emit)
+	: texture_index_(texture_index), color_(color), emit_(emit) {}
+
+	/** Texture index */
+	size_t texture_index_;
+
+	/** Diffuse color */
+	Vec3f color_;
+
+	/** Lighting emit color (and strength) */
+	Vec3f emit_;
+};
+
 struct CubeSideData
 {
 	CubeSideData()
 	: weight_old_(0.0f), weight_new_(1.0f) {}
+
+	void setMaterial(const CubeMaterialProperties* m) {
+		material_ = m;
+	}
+
+	const CubeMaterialProperties* getMaterial() const {
+		return material_;
+	}
+
+	const Vec3f& getObjectColor() const {
+		return material_->color_;
+	}
+
+	const Vec3f& getEmitColor() const {
+		return material_->emit_;
+	}
 
 	void set(const CubeSideLightData& total_data, float weight) {
 		lighting_old_ = total_data;
@@ -96,7 +183,7 @@ struct CubeSideData
 		weight_new_ = weight;
 		lighting_current_ = total_data;
 		weight_current_ = weight;
-		scenery_with_object_ = lighting_current_.scenery.cwiseProduct(object_color_);
+		scenery_with_object_ = lighting_current_.scenery.cwiseProduct(getObjectColor());
 	}
 
 	void mark() {
@@ -147,14 +234,6 @@ struct CubeSideData
 		return scenery_with_object_;
 	}
 
-	void setObjectColor(const Vec3f& object_color) {
-		object_color_ = object_color;
-	}
-
-	const Vec3f& getObjectColor() const {
-		return object_color_;
-	}
-
 private:
 	void update() {
 		float q = std::min(1.0f, weight_new_ / std::min(weight_old_, float(1024)));
@@ -163,7 +242,7 @@ private:
 		lighting_current_.ambient	= p * lighting_old_.ambient	+ q * lighting_new_.ambient;
 		lighting_current_.sun		= p * lighting_old_.sun		+ q * lighting_new_.sun;
 		lighting_current_.scenery	= p * lighting_old_.scenery	+ q * lighting_new_.scenery;
-		scenery_with_object_ = lighting_current_.scenery.cwiseProduct(object_color_);
+		scenery_with_object_ = lighting_current_.scenery.cwiseProduct(getObjectColor());
 	}
 
 private:
@@ -185,8 +264,8 @@ private:
 
 	Vec3f scenery_with_object_;
 
-	/** Cube side base color */
-	Vec3f object_color_; // all sides have the same base color
+	/** Material properties */
+	const CubeMaterialProperties* material_;
 };
 
 struct CubeInteriorData

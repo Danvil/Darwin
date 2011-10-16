@@ -127,7 +127,7 @@ namespace Lighting
 		CubeSideLightData lighting;
 		lighting.ambient = ComputeAmbientLight(cubes, cw, sideIndex);
 		lighting.sun = ComputeSunLightSimple(cubes, cw, sideIndex);
-		lighting.scenery = Appearance::CubeEmitColor(type);
+		lighting.scenery = data->getEmitColor();
 		data->set(lighting, 1.0f); // FIXME weight?
 		data->mark();
 	}

@@ -79,7 +79,7 @@ void Radiosity::Prepare(const Ptr(Cubes)& cubes)
 	for(auto it=cells_.cbegin(); it!=cells_.cend(); ++it) {
 		for(Cell::BorderSideIterator cit=(*it)->IterateBorderSides(); cit; ++cit, i++) {
 			// emittance
-			const Vec3f& emit_color = Appearance::CubeEmitColor(cit.type());
+			const Vec3f& emit_color = cit.data()->getEmitColor();
 			E_r_(i) = emit_color(0);
 			E_g_(i) = emit_color(1);
 			E_b_(i) = emit_color(2);

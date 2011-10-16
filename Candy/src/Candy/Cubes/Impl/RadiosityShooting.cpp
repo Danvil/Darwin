@@ -68,7 +68,6 @@ namespace Hexa
 			size_t i =0;
 			for(auto it=cells_.cbegin(); it!=cells_.cend(); ++it) {
 				for(Cell::BorderSideIterator cit=(*it)->IterateBorderSides(); cit; ++cit, i++) {
-					const Vec3f& emit_color = Appearance::CubeEmitColor(cit.type());
 					Patch& p = patches_[i];
 					p.form_factors_computed_ = false;
 					// patch coordinates
@@ -90,6 +89,7 @@ namespace Hexa
 					ambient_scl_g_ += ag;
 					ambient_scl_b_ += ab;
 					// get patch emit color
+					const Vec3f& emit_color = cit.data()->getEmitColor();
 					float er = emit_color(0);
 					float eg = emit_color(1);
 					float eb = emit_color(2);
