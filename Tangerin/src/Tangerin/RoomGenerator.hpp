@@ -209,22 +209,22 @@ public:
 			room_contents_->add(lamp);
 		}
 		{
-			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(1,1,40), CubeTypes::LightYellow));
+			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(1,1,40), CubeTypes::EmitOrange));
 			box->pos_ = CoordI(1,1,0);
 			room_contents_->add(box);
 		}
 		{
-			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(1,1,40), CubeTypes::LightYellow));
+			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(1,1,40), CubeTypes::EmitOrange));
 			box->pos_ = CoordI(78,1,0);
 			room_contents_->add(box);
 		}
 		{
-			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(1,1,40), CubeTypes::LightYellow));
+			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(1,1,40), CubeTypes::EmitOrange));
 			box->pos_ = CoordI(78,62,0);
 			room_contents_->add(box);
 		}
 		{
-			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(1,1,40), CubeTypes::LightYellow));
+			Ptr(Rooms::Box) box(new Rooms::Box(CoordU(1,1,40), CubeTypes::EmitOrange));
 			box->pos_ = CoordI(1,62,0);
 			room_contents_->add(box);
 		}
