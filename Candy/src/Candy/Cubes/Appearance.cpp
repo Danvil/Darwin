@@ -69,8 +69,8 @@ namespace Appearance
 			cMaterials[i] = new CubeMaterialProperties(0, Vec3f(I,I,I));
 		}
 		for(int i=int(CubeTypes::EmitGreyBegin); i<int(CubeTypes::EmitGreyEnd); i++) {
-			float I = float(i - int(CubeTypes::EmitGreyBegin)) / float(int(CubeTypes::EmitGreyEnd) - int(CubeTypes::EmitGreyBegin) - 1);
-			cMaterials[i] = new CubeMaterialProperties(0, Vec3f(I,I,I), 5.0f*Vec3f(I,I,I));
+			float I = 0.5f + 0.5f * float(i - int(CubeTypes::EmitGreyBegin)) / float(int(CubeTypes::EmitGreyEnd) - int(CubeTypes::EmitGreyBegin) - 1);
+			cMaterials[i] = new CubeMaterialProperties(0, Vec3f(I,I,I), 10.0f*Vec3f(I,I,I));
 		}
 		for(int i=int(CubeTypes::PlainColorBegin); i<int(CubeTypes::PlainColorEnd); i++) {
 			float hue = float(i - int(CubeTypes::PlainColorBegin)) / float(int(CubeTypes::PlainColorEnd) - int(CubeTypes::PlainColorBegin));
