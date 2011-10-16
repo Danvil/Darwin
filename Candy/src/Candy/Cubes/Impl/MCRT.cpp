@@ -26,9 +26,9 @@ namespace Lighting
 			//assert(data); // TODO why is this happening? ignore for now ...
 			if(data != 0) {
 				float bdrf = n_dot_u * cReflectionFactor;
-				light.ambient += bdrf * data->getAmbient();
-				light.sun += bdrf * data->getSun();
-				light.scenery += bdrf * data->getSceneryWithObject();
+				light.ambient += bdrf * data->getLighting().ambient;
+				light.sun += bdrf * data->getLighting().sun;
+				light.scenery += bdrf * data->getLighting().scenery.cwiseProduct(data->getMaterial()->albedo_);
 			}
 		} else {
 			// uniform ambient background light with slight highlight towards the sun

@@ -79,8 +79,8 @@ namespace Candy
 				*light_sun = 0;
 			}
 			else {
-				*light_ambient = data->getAmbient();
-				*light_sun = data->getSun();
+				*light_ambient = data->getLighting().ambient;
+				*light_sun = data->getLighting().sun;
 			}
 		}
 

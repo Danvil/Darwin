@@ -79,13 +79,13 @@ void Radiosity::Prepare(const Ptr(Cubes)& cubes)
 	for(auto it=cells_.cbegin(); it!=cells_.cend(); ++it) {
 		for(Cell::BorderSideIterator cit=(*it)->IterateBorderSides(); cit; ++cit, i++) {
 			// emittance
-			const Vec3f& emit_color = cit.data()->getEmitColor();
-			E_r_(i) = emit_color(0);
-			E_g_(i) = emit_color(1);
-			E_b_(i) = emit_color(2);
-			albedo_r_(i) = 0.70f * cit.data()->getObjectColor()(0);
-			albedo_g_(i) = 0.70f * cit.data()->getObjectColor()(1);
-			albedo_b_(i) = 0.70f * cit.data()->getObjectColor()(2);
+			const CubeMaterialProperties* material = cit.data()->getMaterial();
+			E_r_(i) = material->emit_(0);
+			E_g_(i) = material->emit_(1);
+			E_b_(i) = material->emit_(2);
+			albedo_r_(i) = material->albedo_(0);
+			albedo_g_(i) = material->albedo_(1);
+			albedo_b_(i) = material->albedo_(2);
 			// form factors
 			size_t j=0;
 			for(auto jt=cells_.cbegin(); jt!=cells_.cend(); ++jt) {

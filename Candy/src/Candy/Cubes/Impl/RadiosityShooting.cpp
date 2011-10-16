@@ -68,6 +68,7 @@ namespace Hexa
 			size_t i =0;
 			for(auto it=cells_.cbegin(); it!=cells_.cend(); ++it) {
 				for(Cell::BorderSideIterator cit=(*it)->IterateBorderSides(); cit; ++cit, i++) {
+					const CubeMaterialProperties* material = cit.data()->getMaterial();
 					Patch& p = patches_[i];
 					p.form_factors_computed_ = false;
 					// patch coordinates
@@ -78,9 +79,9 @@ namespace Hexa
 					p.side_point_ = cit.positionCenter() + CenterPointSlightlyOutsideOfCubeSide(p.c_world_, p.side_);
 					p.side_normal_ = Properties::SideNormal(p.c_world_, p.side_);
 					// compute albedo from object color
-					float ar = 0.70f * cit.data()->getObjectColor()(0);
-					float ag = 0.70f * cit.data()->getObjectColor()(1);
-					float ab = 0.70f * cit.data()->getObjectColor()(2);
+					float ar = material->albedo_(0);
+					float ag = material->albedo_(1);
+					float ab = material->albedo_(2);
 					p.albedo_r_ = ar;
 					p.albedo_g_ = ag;
 					p.albedo_b_ = ab;
@@ -89,10 +90,9 @@ namespace Hexa
 					ambient_scl_g_ += ag;
 					ambient_scl_b_ += ab;
 					// get patch emit color
-					const Vec3f& emit_color = cit.data()->getEmitColor();
-					float er = emit_color(0);
-					float eg = emit_color(1);
-					float eb = emit_color(2);
+					float er = material->emit_(0);
+					float eg = material->emit_(1);
+					float eb = material->emit_(2);
 					p.E_r_ = er;
 					p.E_g_ = eg;
 					p.E_b_ = eb;

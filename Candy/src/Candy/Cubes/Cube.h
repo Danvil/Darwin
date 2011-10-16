@@ -136,20 +136,22 @@ struct CubeSideLightData
 struct CubeMaterialProperties
 {
 	CubeMaterialProperties()
-	: texture_index_(0), color_(1.0f,1.0f,1.0f), emit_(0.0f,0.0f,0.0f)
-	{}
+	: texture_index_(0), color_(1.0f,1.0f,1.0f), albedo_(0.7f,0.7f,0.7f), emit_(0.0f,0.0f,0.0f) {}
 
 	CubeMaterialProperties(size_t texture_index, const Vec3f& color)
-	: texture_index_(texture_index), color_(color), emit_(0.0f,0.0f,0.0f) {}
+	: texture_index_(texture_index), color_(color), albedo_(0.7f * color_), emit_(0.0f,0.0f,0.0f) {}
 
 	CubeMaterialProperties(size_t texture_index, const Vec3f& color, const Vec3f& emit)
-	: texture_index_(texture_index), color_(color), emit_(emit) {}
+	: texture_index_(texture_index), color_(color), albedo_(0.7f * color_), emit_(emit) {}
 
 	/** Texture index */
 	size_t texture_index_;
 
 	/** Diffuse color */
 	Vec3f color_;
+
+	/** Surface albedo */
+	Vec3f albedo_;
 
 	/** Lighting emit color (and strength) */
 	Vec3f emit_;
@@ -168,14 +170,6 @@ struct CubeSideData
 		return material_;
 	}
 
-	const Vec3f& getObjectColor() const {
-		return material_->color_;
-	}
-
-	const Vec3f& getEmitColor() const {
-		return material_->emit_;
-	}
-
 	void set(const CubeSideLightData& total_data, float weight) {
 		lighting_old_ = total_data;
 		weight_old_ = weight;
@@ -183,7 +177,6 @@ struct CubeSideData
 		weight_new_ = weight;
 		lighting_current_ = total_data;
 		weight_current_ = weight;
-		scenery_with_object_ = lighting_current_.scenery.cwiseProduct(getObjectColor());
 	}
 
 	void mark() {
@@ -218,22 +211,6 @@ struct CubeSideData
 		return lighting_current_;
 	}
 
-	float getAmbient() const {
-		return lighting_current_.ambient;
-	}
-
-	float getSun() const {
-		return lighting_current_.sun;
-	}
-
-	const Vec3f& getScenery() const {
-		return lighting_current_.scenery;
-	}
-
-	const Vec3f& getSceneryWithObject() const {
-		return scenery_with_object_;
-	}
-
 private:
 	void update() {
 		float q = std::min(1.0f, weight_new_ / std::min(weight_old_, float(1024)));
@@ -242,7 +219,6 @@ private:
 		lighting_current_.ambient	= p * lighting_old_.ambient	+ q * lighting_new_.ambient;
 		lighting_current_.sun		= p * lighting_old_.sun		+ q * lighting_new_.sun;
 		lighting_current_.scenery	= p * lighting_old_.scenery	+ q * lighting_new_.scenery;
-		scenery_with_object_ = lighting_current_.scenery.cwiseProduct(getObjectColor());
 	}
 
 private:
@@ -261,8 +237,6 @@ private:
 	CubeSideLightData lighting_current_;
 
 	float weight_current_;
-
-	Vec3f scenery_with_object_;
 
 	/** Material properties */
 	const CubeMaterialProperties* material_;
