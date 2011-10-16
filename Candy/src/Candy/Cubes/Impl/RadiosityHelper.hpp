@@ -76,10 +76,10 @@ inline bool ComputeFormFactor(const Ptr(Cubes)& cubes, const Patch& a, const Pat
 	// contribution if we would have a hit
 	Vec3f d = b.side_point_ - a.side_point_;
 	float d_sq_norm = d.squaredNorm();
-	if(d_sq_norm > 1630.0f) {
-		// less than 1/512 light at this distance (at patch intensity of 10 and parallel patches)
-		return false;
-	}
+//	if(d_sq_norm > 1630.0f) {
+//		// less than 1/512 light at this distance (at patch intensity of 10 and parallel patches)
+//		return false;
+//	}
 	float a_cos = a.side_normal_.dot(d);
 	float b_cos = -b.side_normal_.dot(d);
 	if(a_cos <= 0.0f || b_cos <= 0.0f) {
