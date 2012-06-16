@@ -25,10 +25,12 @@ namespace Lighting
 			CubeSideData* data = cubes->GetData(c, side);
 			//assert(data); // TODO why is this happening? ignore for now ...
 			if(data != 0) {
+				// FIXME fix light equation
 				float bdrf = n_dot_u * cReflectionFactor;
 				light.ambient += bdrf * data->getLighting().ambient;
 				light.sun += bdrf * data->getLighting().sun;
 				light.scenery += bdrf * data->getLighting().scenery.cwiseProduct(data->getMaterial()->albedo_);
+				light.scenery += data->getMaterial()->emit_;
 			}
 		} else {
 			// uniform ambient background light with slight highlight towards the sun
