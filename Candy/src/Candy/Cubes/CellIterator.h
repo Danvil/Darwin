@@ -28,8 +28,8 @@ public:
 		return *this;
 	}
 private:
-	static std::vector<Cell*>::iterator find_next(std::vector<Cell*>::iterator it, std::vector<Cell*>::iterator end) {
-		while(*it == 0 && it != end) ++it;
+	static std::vector<Cell*>::iterator find_next(std::vector<Cell*>::iterator it, const std::vector<Cell*>::iterator& end) {
+		while(it != end && *it == 0) ++it;
 		return it;
 	}
 private:
