@@ -332,7 +332,7 @@ public:
 	}
 
 	bool IsNeverLighted() const {
-		return max_lighting_samples_ == 0;
+		return current_lighting_samples_ == 0;
 	}
 
 	void ResetLighting() {
