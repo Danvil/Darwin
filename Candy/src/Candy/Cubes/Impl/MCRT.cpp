@@ -168,9 +168,7 @@ namespace Lighting
 				std::vector<boost::thread*> threads;
 				unsigned int sample_count = cSamplesMin;
 				for(size_t i=0; i<thread_count; i++) {
-					if(cells[i]->CountLightingSamples() > sample_count) {
-						sample_count = cells[i]->CountLightingSamples();
-					}
+					sample_count = std::max(sample_count, cells[i]->CountLightingSamples());
 				}
 				for(size_t i=0; i<thread_count; i++) {
 					threads.push_back(new boost::thread(&UpdateLighting, cubes_, cells[i], sample_count));
