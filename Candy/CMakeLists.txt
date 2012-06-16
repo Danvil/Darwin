@@ -1,0 +1,71 @@
+add_library(Candy SHARED
+	src/Candy/Cubes/Appearance.cpp
+	src/Candy/Cubes/Cell.cpp
+	src/Candy/Cubes/Cubes.cpp
+	src/Candy/Cubes/DanvilCubes.cpp
+	src/Candy/Cubes/Generator/Generator.cpp
+	src/Candy/Cubes/Impl/Background.cpp
+	src/Candy/Cubes/Impl/DirectLighting.cpp
+	src/Candy/Cubes/Impl/GroundHeightLookup.cpp
+	src/Candy/Cubes/Impl/MCRT.cpp
+	src/Candy/Cubes/Impl/Physics.cpp
+	src/Candy/Cubes/Impl/Radiosity.cpp
+	src/Candy/Cubes/Impl/RadiosityShooting.cpp
+	src/Candy/Cubes/Impl/WaterSolver.cpp
+	src/Candy/Cubes/Rendering/CellRenderling.cpp
+	src/Candy/Cubes/Rendering/CubesRenderling.cpp
+	src/Candy/Cubes/Rendering/SphereRenderer.cpp
+	src/Candy/Engine/Animation.cpp
+	src/Candy/Engine/Camera.cpp
+	src/Candy/Engine/CoordinateCross.cpp
+	src/Candy/Engine/GlutHook.cpp
+	src/Candy/Engine/Mesh.cpp
+	src/Candy/Engine/Node.cpp
+	src/Candy/Engine/PtnVisual.cpp
+	src/Candy/Engine/Resources.cpp
+	src/Candy/Engine/Scene.cpp
+	src/Candy/Engine/Shader.cpp
+	src/Candy/Engine/Uniform.cpp
+	src/Candy/Engine/Resources/MeshFactory.cpp
+	src/Candy/Engine/Resources/ResourceInfo.cpp
+	src/Candy/Engine/Resources/ResourcePool.cpp
+	src/Candy/Engine/Resources/ShaderProgram.cpp
+	src/Candy/Engine/Resources/Texture.cpp
+	src/Candy/Engine/Tests/Crate.cpp
+	src/Candy/Engine/Tests/Fractal.cpp
+	src/Candy/SLGUI/Layout.cpp
+	src/Candy/SLGUI/Manager.cpp
+	src/Candy/SLGUI/Object.cpp
+	src/Candy/SLGUI/Painter.cpp
+	src/Candy/SLGUI/Scheme.cpp
+	src/Candy/SLGUI/Widget.cpp
+	src/Candy/SLGUI/Widgets/Button.cpp
+	src/Candy/SLGUI/Widgets/Frame.cpp
+	src/Candy/SLGUI/Widgets/KeyValueList.cpp
+	src/Candy/SLGUI/Widgets/Label.cpp
+	src/Candy/SLGUI/Widgets/ListBox.cpp
+	src/Candy/SLGUI/Widgets/TextBox.cpp
+	src/Candy/SLGUI/Widgets/Window.cpp
+	src/Candy/Tools/Image.cpp
+	src/Candy/Tools/LinAlg.cpp
+	src/Candy/Tools/Perlin.cpp
+	src/Candy/Tools/Plot.cpp
+	src/Candy/Tools/Random.cpp
+)
+
+include_directories(
+	${EIGEN3_INCLUDE_DIR}
+	src
+	/usr/include/freetype2
+)
+
+target_link_libraries(Candy
+	boost_program_options
+	IL
+	ILUT
+	ftgl
+	GLEW
+	noise
+	boost_signals
+	boost_thread
+)

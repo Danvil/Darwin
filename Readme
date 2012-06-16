@@ -1,2 +1,11 @@
 Darwin Readme
 
+Eigen3
+
+FTGL libftgl-dev
+
+DEVIL libdevil-dev
+
+freetype2 ?
+
+libnoise libnoise-dev
