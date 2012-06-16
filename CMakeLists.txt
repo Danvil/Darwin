@@ -6,4 +6,5 @@ add_definitions(-std=c++0x)
 
 project(Darwin)
 add_subdirectory(Candy)
+add_subdirectory(Cornell)
 add_subdirectory(Tangerin)
