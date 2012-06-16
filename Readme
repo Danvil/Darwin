@@ -12,8 +12,10 @@ Run instructions:
 1. Download the asset files from here
 https://content.wuala.com/contents/Danvil/Public/Darwin_assets.tar.gz?key=wZSXjVZ8yDkb
 
-2. Run Tangerin with the path to the assets as command line option
-./Tangerin /home/david/Darwin_assets
+2. Run Cornell with the path to the assets as command line option
+./Cornell /home/david/Darwin_assets
+
+3. Admire cubes with radiosity :)
 
 
 Dependencies:
