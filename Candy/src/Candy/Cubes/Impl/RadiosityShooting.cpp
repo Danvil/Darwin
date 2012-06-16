@@ -151,6 +151,9 @@ namespace Hexa
 			float total_unshot_g = 0.0f;
 			float total_unshot_b = 0.0f;
 			size_t selected_patch_index = 0;
+			if(patches_.size() == 0) {
+				return false;
+			}
 			float max_rad = PatchSelectionCriterion(patches_[0].B_unshot_r_ , patches_[0].B_unshot_g_, patches_[0].B_unshot_b_);
 			for(size_t i=0; i<quads_count_; i++) {
 				Patch& p = patches_[i];
