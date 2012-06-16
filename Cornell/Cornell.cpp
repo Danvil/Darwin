@@ -26,12 +26,12 @@
 Ptr(Generator) CreateWorldGenerator(WorldSize& ws)
 {
 #ifdef NDEBUG
-	const int R = 4;
+	const int R = 3;
 #else
-	const int R = 2;
+	const int R = 1;
 #endif
-	Ptr(Generator) gen = Generators::FactorCornellBox(2);
-	ws = WorldSize(R, -R, -R);
+	Ptr(Generator) gen = Generators::FactorCornellBox(R);
+	ws = WorldSize(R, -R, +R);
 	return gen;
 }
 

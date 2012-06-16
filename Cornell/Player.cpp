@@ -23,7 +23,7 @@ Player::Player(Ptr(Candy::DanvilCubes) cubes, Ptr(Candy::Scene) scene)
 : cubes_(cubes), scene_(scene)
 {
 	Eigen::Affine3f mv = LinAlg::LookAt(
-			Vec3f(17,33,29),
+			Vec3f(0,-50,0),
 			Vec3f(0,0,0),
 			Vec3f(0,0,1));
 	scene_->GetCamera()->SetView(mv);
