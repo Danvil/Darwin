@@ -13,12 +13,6 @@
 namespace Tangerin
 {
 
-const float cPlayerEyeHeight = 1.67f;
-const float cPlayerEyeChange = 0.07f;
-const float cPlayerEyePhase = 2.0f * 3.1415f / 1.3f;
-const float cStepDeltaMin = 0.35f;
-const float cStepDeltaFalloff = 0.70f;
-
 Player::Player(Ptr(Candy::DanvilCubes) cubes, Ptr(Candy::Scene) scene)
 : cubes_(cubes), scene_(scene)
 {
