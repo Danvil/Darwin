@@ -1,6 +1,5 @@
 #include "Tangerin.h"
 #include "Entities/CreatureSpawner.hpp"
-#include "RoomGenerator.hpp"
 #include <Candy/Cubes/Cell.h>
 #include <Candy/Cubes/Appearance.h>
 #include <Candy/Cubes/Rendering/CubesRenderling.h>
@@ -24,18 +23,6 @@
 #include <fstream>
 #include <iostream>
 #include <ctime>
-
-Ptr(Generator) CreateRoomGenerator(WorldSize& ws)
-{
-	const unsigned int F = 1;
-	ws.x1 = 0*F;
-	ws.x2 = 5*F;
-	ws.y1 = 0*F;
-	ws.y2 = 4*F;
-	ws.z1 = 0*F;
-	ws.z2 = 3*F;
-	return Ptr(Generator)(new PointWiseGenerator<RoomGenerator<F>>(RoomGenerator<F>(ws)));
-}
 
 Ptr(Generator) CreateWorldGenerator(WorldSize& ws)
 {
@@ -115,8 +102,8 @@ TangerinMain::TangerinMain(const std::string& asset_path)
 	//scene_->Add(Candy::Fractal::ConstructSierpinskiCubes(4));
 
 	WorldSize ws;
-	//Ptr(Generator) generator = CreateWorldGenerator(ws);
-	Ptr(Generator) generator = CreateRoomGenerator(ws);
+	Ptr(Generator) generator = CreateWorldGenerator(ws);
+	//Ptr(Generator) generator = CreateRoomGenerator(ws);
 
 	Candy::GenerationProperties gen_props;
 	gen_props.generator_ = generator;
