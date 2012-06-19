@@ -31,7 +31,7 @@ CornellMain::CornellMain(const std::string& asset_path)
 	Appearance::Load(asset_path + "/");
 
 	Eigen::Affine3f mv = LinAlg::LookAt(
-			Vec3f(17,33,29),
+			Vec3f(0,-50,0),
 			Vec3f(0,0,0),
 			Vec3f(0,0,1));
 	scene_->GetCamera()->SetView(mv);
