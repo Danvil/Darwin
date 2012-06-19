@@ -37,7 +37,7 @@ CornellMain::CornellMain(const std::string& asset_path)
 	scene_->GetCamera()->SetView(mv);
 
 #ifdef NDEBUG
-	const int R = 3;
+	const int R = 2;
 #else
 	const int R = 1;
 #endif
