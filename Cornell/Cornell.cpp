@@ -23,18 +23,6 @@
 #include <iostream>
 #include <ctime>
 
-Ptr(Generator) CreateWorldGenerator(WorldSize& ws)
-{
-#ifdef NDEBUG
-	const int R = 3;
-#else
-	const int R = 1;
-#endif
-	Ptr(Generator) gen = Generators::FactorCornellBox(R);
-	ws = WorldSize(R, -R, +R);
-	return gen;
-}
-
 #include <Candy/SLGUI/Manager.h>
 #include <Candy/SLGUI/Scheme.h>
 Ptr(Candy::SLGUI::Manager) manager;
@@ -45,8 +33,6 @@ namespace Tangerin
 TangerinMain::TangerinMain(const std::string& asset_path)
 {
 	unsigned int seed = time(0);
-//	seed = 313;
-//	seed = 0;
 	std::cout << "Random generator seed: " << seed << std::endl;
 	Random::Seed(seed);
 	// initialize perlin noise
@@ -71,11 +57,13 @@ TangerinMain::TangerinMain(const std::string& asset_path)
 			Vec3f(0,0,1));
 	scene_->GetCamera()->SetView(mv);
 
-	//scene_->Add(new Candy::Crate());
-	//scene_->Add(Candy::Fractal::ConstructSierpinskiCubes(4));
-
-	WorldSize ws;
-	Ptr(Generator) generator = CreateWorldGenerator(ws);
+#ifdef NDEBUG
+	const int R = 3;
+#else
+	const int R = 1;
+#endif
+	Ptr(Generator) generator = Generators::FactorCornellBox(R);
+	WorldSize ws(R, -R, +R);
 
 	Candy::GenerationProperties gen_props;
 	gen_props.generator_ = generator;
@@ -85,23 +73,8 @@ TangerinMain::TangerinMain(const std::string& asset_path)
 	cubes_.reset(new Candy::DanvilCubes(gen_props));
 	scene_->Add(cubes_);
 
-//	cubes_.reset(new Cubes());
-//	man_.reset(new CubesRenderling(cubes_.get()));
-//	cubes_->OnAddCell = boost::bind(&CubesRenderling::NotifyAddCell, man_, _1);
-//	cubes_->OnChangeCell = boost::bind(&CubesRenderling::NotifyInvalidate, man_, _1);
-//	scene_->Add(man_);
-
-
-//	sphere_renderer_.reset(new Candy::Cubes::Rendering::SphereRenderer());
-//	scene_->Add(sphere_renderer_);
-//
-//	cubes_physics_.reset(new Candy::Cubes::Physics::PhysicsWorld(cubes_, sphere_renderer_));
-
 	player_.reset(new Player(cubes_, scene_));
 	ticker_.Add(player_);
-
-//	background_ = new Background(cubes_, man_);
-//	background_->Start();
 
 	manager.reset(new Candy::SLGUI::Manager());
 }
@@ -117,19 +90,12 @@ void TangerinMain::Init()
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 	glClearColor(Appearance::AmbientColor.x(), Appearance::AmbientColor.y(), Appearance::AmbientColor.z(), 1.0f);
-
-//	man_->UpdateMeshAll();
 }
 
 void TangerinMain::Reshape(int width, int height)
 {
 	scene_->GetCamera()->SetViewport(width, height);
 	manager->SetViewPortSize(width, height);
-//	// change viewport to full window area
-//	glViewport(0, 0, width, height);
-//	// change projection matrix
-//	Mat4f proj = LinAlg::ProjectionMatrix(float(height) / float(width), 0.1f, 1000.0f);
-//	scene_->ChangeProjectionMatrix(proj);
 }
 
 void TangerinMain::Render()
@@ -153,7 +119,6 @@ void TangerinMain::OnKeyPressed(Candy::KeyboardModifiers mod, int key)
 
 void TangerinMain::OnKeyReleased(Candy::KeyboardModifiers mod, int key)
 {
-	// never called!
 	manager->onKeyReleased(mod, key);
 	player_->OnKeyReleased(mod, key);
 }
