@@ -23,10 +23,6 @@
 #include <iostream>
 #include <ctime>
 
-#include <Candy/SLGUI/Manager.h>
-#include <Candy/SLGUI/Scheme.h>
-Ptr(Candy::SLGUI::Manager) manager;
-
 namespace Tangerin
 {
 
@@ -39,8 +35,6 @@ TangerinMain::TangerinMain(const std::string& asset_path)
 	Perlin::Initialize(seed);
 
 	asset_path_ = asset_path;
-
-	Candy::SLGUI::Scheme::LoadDefault(asset_path_);
 
 	// initialize devil
 	ilInit();
@@ -75,8 +69,6 @@ TangerinMain::TangerinMain(const std::string& asset_path)
 
 	player_.reset(new Player(cubes_, scene_));
 	ticker_.Add(player_);
-
-	manager.reset(new Candy::SLGUI::Manager());
 }
 
 TangerinMain::~TangerinMain()
@@ -95,14 +87,12 @@ void TangerinMain::Init()
 void TangerinMain::Reshape(int width, int height)
 {
 	scene_->GetCamera()->SetViewport(width, height);
-	manager->SetViewPortSize(width, height);
 }
 
 void TangerinMain::Render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	scene_->Render();
-	manager->render();
 }
 
 void TangerinMain::Update(float dt)
@@ -113,43 +103,31 @@ void TangerinMain::Update(float dt)
 
 void TangerinMain::OnKeyPressed(Candy::KeyboardModifiers mod, int key)
 {
-	manager->onKeyPressed(mod, key);
 	player_->OnKeyPressed(mod, key);
 }
 
 void TangerinMain::OnKeyReleased(Candy::KeyboardModifiers mod, int key)
 {
-	manager->onKeyReleased(mod, key);
 	player_->OnKeyReleased(mod, key);
 }
 
 void TangerinMain::OnMousePressed(Candy::KeyboardModifiers mod, Candy::MouseButton button, int x, int y)
 {
-	manager->onMousePressed(mod, button, x, y);
-	if(manager->ateEvent()) {
-		return;
-	}
 	player_->OnMousePressed(mod, button, x, y);
 }
 
 void TangerinMain::OnMouseReleased(Candy::KeyboardModifiers mod, Candy::MouseButton button, int x, int y)
 {
-	manager->onMouseReleased(mod, button, x, y);
 	player_->OnMouseReleased(mod, button, x, y);
 }
 
 void TangerinMain::OnMouseMove(Candy::KeyboardModifiers mod, Candy::MouseButton button, int x, int y, int dx, int dy)
 {
-	manager->onMouseMove(mod, button, x, y);
-	if(manager->ateEvent()) {
-		return;
-	}
 	player_->OnMouseMove(mod, button, x, y, dx, dy);
 }
 
 void TangerinMain::OnWheel(Candy::KeyboardModifiers mod, int delta)
 {
-	manager->onWheel(mod, delta);
 }
 
 }
