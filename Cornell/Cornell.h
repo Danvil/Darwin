@@ -11,54 +11,51 @@
 namespace Candy { class UniformMat4f; }
 namespace Candy { class Uniform4f; }
 
-namespace Tangerin
+class CornellMain
+	: public Candy::IEngine
 {
-	class TangerinMain
-		: public Candy::IEngine
-	{
-	public:
-		TangerinMain(const std::string& asset_path);
-		~TangerinMain();
+public:
+	CornellMain(const std::string& asset_path);
+	~CornellMain();
 
-		void Init();
+	void Init();
 
-		void Reshape(int width, int height);
+	void Reshape(int width, int height);
 
-		void Render();
+	void Render();
 
-		void Update(float dt);
+	void Update(float dt);
 
-		void OnKeyPressed(Candy::KeyboardModifiers mod, int key);
+	void OnKeyPressed(Candy::KeyboardModifiers mod, int key);
 
-		void OnKeyReleased(Candy::KeyboardModifiers mod, int key);
+	void OnKeyReleased(Candy::KeyboardModifiers mod, int key);
 
-		void OnMousePressed(Candy::KeyboardModifiers mod, Candy::MouseButton button, int x, int y);
+	void OnMousePressed(Candy::KeyboardModifiers mod, Candy::MouseButton button, int x, int y);
 
-		void OnMouseReleased(Candy::KeyboardModifiers mod, Candy::MouseButton button, int x, int y);
+	void OnMouseReleased(Candy::KeyboardModifiers mod, Candy::MouseButton button, int x, int y);
 
-		void OnMouseMove(Candy::KeyboardModifiers mod, Candy::MouseButton buttons, int x, int y, int dx, int dy);
+	void OnMouseMove(Candy::KeyboardModifiers mod, Candy::MouseButton buttons, int x, int y, int dx, int dy);
 
-		void OnWheel(Candy::KeyboardModifiers mod, int delta);
+	void OnWheel(Candy::KeyboardModifiers mod, int delta);
 
-		Ptr(Candy::Scene) scene() const {
-			return scene_;
-		}
+	Ptr(Candy::Scene) scene() const {
+		return scene_;
+	}
 
-	//	extern Cubes* cubes;
+//	extern Cubes* cubes;
 
-	//	CubesRenderling* cubes_renderling;
+//	CubesRenderling* cubes_renderling;
 
-		void Initialize();
+	void Initialize();
 
-	private:
-		std::string asset_path_;
+private:
+	std::string asset_path_;
 
-		Ptr(Player) player_;
+	Ptr(Player) player_;
 
-		Ptr(Candy::Scene) scene_;
+	Ptr(Candy::Scene) scene_;
 
-		Ptr(Candy::DanvilCubes) cubes_;
+	Ptr(Candy::DanvilCubes) cubes_;
 
-		Ticker ticker_;
-	};
-}
+	Ticker ticker_;
+};

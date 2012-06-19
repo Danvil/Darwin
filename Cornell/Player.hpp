@@ -15,30 +15,27 @@
 
 namespace Candy { class DanvilCubes; }
 
-namespace Tangerin
+class Player
+: public ITickable
 {
-	class Player
-	: public ITickable
-	{
-	public:
-		Player(Ptr(Candy::DanvilCubes) cubes, Ptr(Candy::Scene) scene);
+public:
+	Player(Ptr(Candy::DanvilCubes) cubes, Ptr(Candy::Scene) scene);
 
-		void Tick(float dt, float total);
+	void Tick(float dt, float total);
 
-		void OnKeyPressed(Candy::KeyboardModifiers mod, int key);
+	void OnKeyPressed(Candy::KeyboardModifiers mod, int key);
 
-		void OnKeyReleased(Candy::KeyboardModifiers mod, int key);
+	void OnKeyReleased(Candy::KeyboardModifiers mod, int key);
 
-		void OnMousePressed(Candy::KeyboardModifiers mod, Candy::MouseButton button, int x, int y);
+	void OnMousePressed(Candy::KeyboardModifiers mod, Candy::MouseButton button, int x, int y);
 
-		void OnMouseReleased(Candy::KeyboardModifiers mod, Candy::MouseButton button, int x, int y);
+	void OnMouseReleased(Candy::KeyboardModifiers mod, Candy::MouseButton button, int x, int y);
 
-		void OnMouseMove(Candy::KeyboardModifiers mod, Candy::MouseButton button, int x, int y, int dx, int dy);
+	void OnMouseMove(Candy::KeyboardModifiers mod, Candy::MouseButton button, int x, int y, int dx, int dy);
 
-	private:
-		Ptr(Candy::DanvilCubes) cubes_;
-		Ptr(Candy::Scene) scene_;
-	};
-}
+private:
+	Ptr(Candy::DanvilCubes) cubes_;
+	Ptr(Candy::Scene) scene_;
+};
 
 #endif

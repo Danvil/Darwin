@@ -13,10 +13,7 @@
 #include <iostream>
 #include <ctime>
 
-namespace Tangerin
-{
-
-TangerinMain::TangerinMain(const std::string& asset_path)
+CornellMain::CornellMain(const std::string& asset_path)
 {
 	unsigned int seed = time(0);
 	std::cout << "Random generator seed: " << seed << std::endl;
@@ -59,12 +56,12 @@ TangerinMain::TangerinMain(const std::string& asset_path)
 	ticker_.Add(player_);
 }
 
-TangerinMain::~TangerinMain()
+CornellMain::~CornellMain()
 {
 	cubes_.reset();
 }
 
-void TangerinMain::Init()
+void CornellMain::Init()
 {
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
@@ -72,50 +69,49 @@ void TangerinMain::Init()
 	glClearColor(Appearance::AmbientColor.x(), Appearance::AmbientColor.y(), Appearance::AmbientColor.z(), 1.0f);
 }
 
-void TangerinMain::Reshape(int width, int height)
+void CornellMain::Reshape(int width, int height)
 {
 	scene_->GetCamera()->SetViewport(width, height);
 }
 
-void TangerinMain::Render()
+void CornellMain::Render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	scene_->Render();
 }
 
-void TangerinMain::Update(float dt)
+void CornellMain::Update(float dt)
 {
 	cubes_->Tick(dt);
 	ticker_.Tick(dt);
 }
 
-void TangerinMain::OnKeyPressed(Candy::KeyboardModifiers mod, int key)
+void CornellMain::OnKeyPressed(Candy::KeyboardModifiers mod, int key)
 {
 	player_->OnKeyPressed(mod, key);
 }
 
-void TangerinMain::OnKeyReleased(Candy::KeyboardModifiers mod, int key)
+void CornellMain::OnKeyReleased(Candy::KeyboardModifiers mod, int key)
 {
 	player_->OnKeyReleased(mod, key);
 }
 
-void TangerinMain::OnMousePressed(Candy::KeyboardModifiers mod, Candy::MouseButton button, int x, int y)
+void CornellMain::OnMousePressed(Candy::KeyboardModifiers mod, Candy::MouseButton button, int x, int y)
 {
 	player_->OnMousePressed(mod, button, x, y);
 }
 
-void TangerinMain::OnMouseReleased(Candy::KeyboardModifiers mod, Candy::MouseButton button, int x, int y)
+void CornellMain::OnMouseReleased(Candy::KeyboardModifiers mod, Candy::MouseButton button, int x, int y)
 {
 	player_->OnMouseReleased(mod, button, x, y);
 }
 
-void TangerinMain::OnMouseMove(Candy::KeyboardModifiers mod, Candy::MouseButton button, int x, int y, int dx, int dy)
+void CornellMain::OnMouseMove(Candy::KeyboardModifiers mod, Candy::MouseButton button, int x, int y, int dx, int dy)
 {
 	player_->OnMouseMove(mod, button, x, y, dx, dy);
 }
 
-void TangerinMain::OnWheel(Candy::KeyboardModifiers mod, int delta)
+void CornellMain::OnWheel(Candy::KeyboardModifiers mod, int delta)
 {
 }
 
-}

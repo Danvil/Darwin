@@ -10,9 +10,6 @@
 #include <Candy/Cubes/DanvilCubes.hpp>
 #include <Candy/Tools/Coord.h>
 
-namespace Tangerin
-{
-
 Player::Player(Ptr(Candy::DanvilCubes) cubes, Ptr(Candy::Scene) scene)
 : cubes_(cubes), scene_(scene)
 {
@@ -85,6 +82,4 @@ void Player::OnMouseMove(Candy::KeyboardModifiers mod, Candy::MouseButton button
 		}
 		scene_->GetCamera()->SetView(view);
 	}
-}
-
 }
