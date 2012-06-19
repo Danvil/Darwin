@@ -3,23 +3,13 @@
 #include <Candy/Cubes/Appearance.h>
 #include <Candy/Cubes/Rendering/CubesRenderling.h>
 #include <Candy/Cubes/Generator.h>
-#include <Candy/Cubes/Generator/PointWiseGenerator.h>
-#include <Candy/Cubes/Impl/Physics.hpp>
-#include <Candy/Cubes/Rendering/SphereRenderer.hpp>
 #include <Candy/Engine/Resources.h>
 #include <Candy/Engine/Uniform.h>
 #include <Candy/Engine/CoordinateCross.h>
-#include <Candy/Engine/Tests/Crate.h>
-#include <Candy/Engine/Tests/Fractal.h>
-#include <Candy/Tools/Perlin.h>
-#include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
-#include <boost/random.hpp>
-#include <boost/thread.hpp>
 #include <GL/glew.h>
 #include <IL/il.h>
 #include <cmath>
-#include <fstream>
 #include <iostream>
 #include <ctime>
 
@@ -31,8 +21,6 @@ TangerinMain::TangerinMain(const std::string& asset_path)
 	unsigned int seed = time(0);
 	std::cout << "Random generator seed: " << seed << std::endl;
 	Random::Seed(seed);
-	// initialize perlin noise
-	Perlin::Initialize(seed);
 
 	asset_path_ = asset_path;
 
