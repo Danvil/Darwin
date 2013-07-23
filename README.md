@@ -1,6 +1,5 @@
-
-
 Darwin is an experimental high-performance 3D voxel engine written in C++.
+----
 
 ![Darwin Example Rendering 1](https://content.wuala.com/contents/Danvil/Public/darwin/2011-08-12%20Cornell%20Radiosity.png)
 ![Darwin Example Rendering 2](https://content.wuala.com/contents/Danvil/Public/darwin/2011-07-10%2056M%20Cubes.jpg)
@@ -12,8 +11,7 @@ I would be happy to hear if my work is useful to you.
 
 Build instructions:
 ----
-mkdir build; cd build
-cmake ..
+mkdir build; cd build; cmake ..
 
 
 Run instructions:
