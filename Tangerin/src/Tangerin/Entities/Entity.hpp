@@ -11,7 +11,7 @@
 #include "EntityServerInterface.hpp"
 #include <Candy/Tools/LinAlg.h>
 #include <Candy/Tools/Ptr.h>
-#include <boost/enable_shared_from_this.hpp>
+#include <memory>
 
 namespace Tangerin { class EntityServerInterface; }
 
@@ -32,7 +32,7 @@ namespace Tangerin
 	typedef EntityTypes::EntityType EntityType;
 
 	class Entity
-	: public boost::enable_shared_from_this<Entity>
+	: public std::enable_shared_from_this<Entity>
 	{
 	public:
 		Entity(const Ptr(EntityServerInterface)& manager, EntityType type)

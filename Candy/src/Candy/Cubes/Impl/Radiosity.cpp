@@ -67,7 +67,7 @@ void Radiosity::Prepare(const Ptr(Cubes)& cubes)
 	}
 	// we compute all form factors and store them in a sparse matrix
 	std::cout << "Radiosity: Computing form factors (" << quads_count_ << " quads)" << std::endl;
-	ff_ = Eigen::DynamicSparseMatrix<float,Eigen::RowMajor>(quads_count_, quads_count_);
+	ff_ = Eigen::SparseMatrix<float,Eigen::RowMajor>(quads_count_, quads_count_);
 	E_r_ = Eigen::VectorXf(quads_count_);
 	E_g_ = Eigen::VectorXf(quads_count_);
 	E_b_ = Eigen::VectorXf(quads_count_);

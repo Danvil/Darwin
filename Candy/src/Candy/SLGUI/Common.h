@@ -11,7 +11,7 @@
 #include "../Candy_Dll.h"
 #include <Eigen/Core>
 #include <Eigen/Geometry>
-#include <Candy/Tools/Ptr.h>
+#include <memory>
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 namespace Candy {
 namespace SLGUI {
@@ -25,7 +25,7 @@ typedef Eigen::Vector2f Point2;
 
 typedef Eigen::Vector4f Colorf;
 
-#define PTR(X) boost::shared_ptr<X>
+#define PTR(X) std::shared_ptr<X>
 
 template<typename A, typename B>
 bool DanvilIsOfType(const PTR(B)& b) {
@@ -34,7 +34,7 @@ bool DanvilIsOfType(const PTR(B)& b) {
 
 template<typename A, typename B>
 PTR(A) DanvilConvert(const PTR(B)& b) {
-	return PTR(A)(b, boost::detail::dynamic_cast_tag());
+	return std::dynamic_pointer_cast<A>(b);
 }
 
 template<typename T>

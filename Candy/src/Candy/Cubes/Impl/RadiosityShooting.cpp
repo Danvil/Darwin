@@ -57,7 +57,7 @@ namespace Hexa
 			// now form factors yet
 			patches_.resize(quads_count_);
 			//ff_.resize(quads_count_);
-			ff_ = Eigen::DynamicSparseMatrix<float,Eigen::RowMajor>(quads_count_, quads_count_);
+			ff_ = Eigen::SparseMatrix<float,Eigen::RowMajor>(quads_count_, quads_count_);
 			// compute emittance and albedo
 //			E_r_ = Eigen::VectorXf(quads_count_);
 //			E_g_ = Eigen::VectorXf(quads_count_);

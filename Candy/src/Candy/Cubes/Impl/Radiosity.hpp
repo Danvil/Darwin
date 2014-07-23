@@ -35,7 +35,7 @@ private:
 	bool has_ff_;
 	std::vector<Cell*> cells_;
 	unsigned int quads_count_;
-	Eigen::DynamicSparseMatrix<float,Eigen::RowMajor> ff_;
+	Eigen::SparseMatrix<float,Eigen::RowMajor> ff_;
 	Eigen::VectorXf albedo_r_, albedo_g_, albedo_b_;
 	Eigen::VectorXf E_r_, E_g_, E_b_;
 	Eigen::VectorXf B_r_, B_g_, B_b_;

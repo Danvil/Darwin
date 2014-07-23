@@ -9,9 +9,9 @@
 #define STARLORD_SLGUI_OBJECT_H_
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #include "Common.h"
-#include <vector>
-#include <boost/enable_shared_from_this.hpp>
 #include <boost/signal.hpp>
+#include <vector>
+#include <memory>
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 namespace Candy {
 namespace SLGUI {
@@ -21,7 +21,7 @@ class Widget;
 class Layout;
 
 class CANDY_API Object
-: public boost::enable_shared_from_this<Object>
+: public std::enable_shared_from_this<Object>
 {
 public:
 	Object();
@@ -29,7 +29,7 @@ public:
 	virtual ~Object();
 
 	bool hasParent() const {
-		return parent;
+		return parent != nullptr;
 	}
 
 	bool hasChildren() const {

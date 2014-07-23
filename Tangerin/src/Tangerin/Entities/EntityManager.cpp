@@ -58,7 +58,7 @@ void EntityManager::Tick(float dt, float total)
 		cubes_->GetLightAtPosition(entity->getCenterPosition(), &light_ambient, &light_sun);
 		entity->setLight(light_ambient*Vec3f(1,1,1), light_sun*Vec3f(1,1,1));
 		// special udpate for creatures
-		Ptr(Creature) creature(entity, boost::detail::dynamic_cast_tag());
+		Ptr(Creature) creature = std::dynamic_pointer_cast<Creature>(entity);
 		if(creature) {
 			float h = cubes_->GetHeight(creature->position());
 			creature->position()[2] = h + creature->getHeightOverGround(); // FIX
@@ -107,7 +107,7 @@ void EntityManager::ChangeRenderInfo(const Ptr(Entity)& entity, const std::strin
 Ptr(Entity) EntityManager::GetEntity(const CoordI& coordinate)
 {
 	for(const Ptr(Entity)& entity : entities_) {
-		Ptr(StaticEntity) se(entity, boost::detail::dynamic_cast_tag());
+		Ptr(StaticEntity) se = std::dynamic_pointer_cast<StaticEntity>(entity);
 		if(se && se->getCubeCoordinate() == coordinate) {
 			return entity;
 		}

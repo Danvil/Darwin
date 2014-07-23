@@ -47,10 +47,10 @@ void Pipe::setCubeCoordinate(const CoordI& cc)
 {
 	StaticEntity::setCubeCoordinate(cc);
 	// check surroundings
-	Ptr(StaticEntity) n_p0(manager_->GetEntity(cc + CoordI(+1,0,0)), boost::detail::dynamic_cast_tag());
-	Ptr(StaticEntity) n_0p(manager_->GetEntity(cc + CoordI(0,+1,0)), boost::detail::dynamic_cast_tag());
-	Ptr(StaticEntity) n_m0(manager_->GetEntity(cc + CoordI(-1,0,0)), boost::detail::dynamic_cast_tag());
-	Ptr(StaticEntity) n_0m(manager_->GetEntity(cc + CoordI(0,-1,0)), boost::detail::dynamic_cast_tag());
+	Ptr(StaticEntity) n_p0 = std::dynamic_pointer_cast<StaticEntity>(manager_->GetEntity(cc + CoordI(+1,0,0)));
+	Ptr(StaticEntity) n_0p = std::dynamic_pointer_cast<StaticEntity>(manager_->GetEntity(cc + CoordI(0,+1,0)));
+	Ptr(StaticEntity) n_m0 = std::dynamic_pointer_cast<StaticEntity>(manager_->GetEntity(cc + CoordI(-1,0,0)));
+	Ptr(StaticEntity) n_0m = std::dynamic_pointer_cast<StaticEntity>(manager_->GetEntity(cc + CoordI(0,-1,0)));
 	if(n_p0 && n_0p) {
 		manager_->ChangeRenderInfo(shared_from_this(), "pipe_arc");
 	}

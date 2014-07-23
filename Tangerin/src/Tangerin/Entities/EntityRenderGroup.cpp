@@ -27,9 +27,8 @@ EntityRenderGroup::EntityRenderGroup(const Ptr(EntityRenderInfo)& eri)
 //			Ptr(Candy::MeshAnimId)(new Candy::MeshAnimId(Candy::MeshPN, fn_mesh)));
 //	}
 //	else {
-	visual_ = Ptr(Candy::IDrawable)(Candy::ResourcePool::Singleton->Get(
-			Ptr(Candy::MeshId)(new Candy::MeshId(Candy::MeshPTN, render_info_->fn_mesh_))),
-			boost::detail::dynamic_cast_tag());
+	visual_ = std::dynamic_pointer_cast<Candy::IDrawable>(Candy::ResourcePool::Singleton->Get(
+		Ptr(Candy::MeshId)(new Candy::MeshId(Candy::MeshPTN, render_info_->fn_mesh_))));
 //	}
 	// callback for applying creep variables to the shader for rendering
 	on_prepare_item_ = boost::bind(&EntityRenderGroup::PrepareItem, this, _1, _2);

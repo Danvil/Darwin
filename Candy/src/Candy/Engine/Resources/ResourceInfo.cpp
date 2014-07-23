@@ -30,7 +30,7 @@ namespace Candy
 		if(!ResourceId::equals(r)) {
 			return false;
 		}
-		Ptr(ShaderInfo) theirs(r, boost::detail::dynamic_cast_tag());
+		Ptr(ShaderInfo) theirs = std::dynamic_pointer_cast<ShaderInfo>(r);
 		return this->vertex_src == theirs->vertex_src
 			&& this->geometry_src == theirs->geometry_src
 			&& this->fragment_src == theirs->fragment_src;
@@ -42,7 +42,7 @@ namespace Candy
 		if(!ResourceId::equals(r)) {
 			return false;
 		}
-		Ptr(TextureId) theirs(r, boost::detail::dynamic_cast_tag());
+		Ptr(TextureId) theirs = std::dynamic_pointer_cast<TextureId>(r);
 		return this->filename_ == theirs->filename_;
 	}
 
@@ -51,7 +51,7 @@ namespace Candy
 		if(!ResourceId::equals(r)) {
 			return false;
 		}
-		Ptr(MeshId) theirs(r, boost::detail::dynamic_cast_tag());
+		Ptr(MeshId) theirs = std::dynamic_pointer_cast<MeshId>(r);
 		return this->mesh_type_ == theirs->mesh_type_
 			&& this->filename_ == theirs->filename_;
 	}
@@ -61,7 +61,7 @@ namespace Candy
 		if(!ResourceId::equals(r)) {
 			return false;
 		}
-		Ptr(MeshAnimId) theirs(r, boost::detail::dynamic_cast_tag());
+		Ptr(MeshAnimId) theirs = std::dynamic_pointer_cast<MeshAnimId>(r);
 		return this->mesh_type_ == theirs->mesh_type_
 			&& this->pattern_ == theirs->pattern_;
 	}

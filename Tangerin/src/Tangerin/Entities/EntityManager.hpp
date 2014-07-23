@@ -13,7 +13,7 @@
 #include "EntityServerInterface.hpp"
 #include <Candy/Tools/Ptr.h>
 #include <Candy/Tools/Ticker.hpp>
-#include <boost/enable_shared_from_this.hpp>
+#include <memory>
 #include <map>
 
 namespace Candy { class DanvilCubes; }
@@ -24,7 +24,7 @@ namespace Tangerin
 	: public Candy::IDrawable,
 	  public ITickable,
 	  public EntityServerInterface,
-	  public boost::enable_shared_from_this<EntityManager>
+	  public std::enable_shared_from_this<EntityManager>
 	{
 	public:
 		EntityManager(const Ptr(Candy::DanvilCubes)& cubes);
@@ -34,7 +34,7 @@ namespace Tangerin
 		template<typename T>
 		Ptr(T) Add(EntityType type) {
 			Ptr(Entity) e = Add(type);
-			Ptr(T) p(e, boost::detail::dynamic_cast_tag());
+			Ptr(T) p = std::dynamic_pointer_cast<T>(e);
 			BOOST_ASSERT(p);
 			return p;
 		}

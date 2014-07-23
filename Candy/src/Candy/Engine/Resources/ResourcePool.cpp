@@ -28,22 +28,22 @@ namespace Candy
 
 	Ptr(ShaderProgram) ResourcePool::Get(Ptr(ShaderInfo) id)
 	{
-		return Ptr(ShaderProgram)(GetImpl(id), boost::detail::dynamic_cast_tag());
+		return std::dynamic_pointer_cast<ShaderProgram>(GetImpl(id));
 	}
 
 	Ptr(TextureSingle) ResourcePool::Get(Ptr(TextureId) id)
 	{
-		return Ptr(TextureSingle)(GetImpl(id), boost::detail::dynamic_cast_tag());
+		return std::dynamic_pointer_cast<TextureSingle>(GetImpl(id));
 	}
 
 	Ptr(Ressource) ResourcePool::Get(Ptr(MeshId) id)
 	{
-		return Ptr(Ressource)(GetImpl(id), boost::detail::dynamic_cast_tag());
+		return std::dynamic_pointer_cast<Ressource>(GetImpl(id));
 	}
 
 	Ptr(Animation) ResourcePool::Get(Ptr(MeshAnimId) id)
 	{
-		return Ptr(Animation)(GetImpl(id), boost::detail::dynamic_cast_tag());
+		return std::dynamic_pointer_cast<Animation>(GetImpl(id));
 	}
 
 	string readFileContents( const std::string& filename )
@@ -104,19 +104,17 @@ namespace Candy
 	Ptr(Ressource) ResourcePool::Create(Ptr(ResourceId) id)
 	{
 		switch(id->type()) {
-		case Shader: return CreateShader(Ptr(ShaderInfo)(id, boost::detail::dynamic_cast_tag()));
-		case Texture: return CreateTexture(Ptr(TextureId)(id, boost::detail::dynamic_cast_tag()));
-		case Mesh: return CreateMesh(Ptr(MeshId)(id, boost::detail::dynamic_cast_tag()));
-		case MeshAnim: return CreateMeshAnimation(Ptr(MeshAnimId)(id, boost::detail::dynamic_cast_tag()));
+		case Shader: return CreateShader(std::dynamic_pointer_cast<ShaderInfo>(id));
+		case Texture: return CreateTexture(std::dynamic_pointer_cast<TextureId>(id));
+		case Mesh: return CreateMesh(std::dynamic_pointer_cast<MeshId>(id));
+		case MeshAnim: return CreateMeshAnimation(std::dynamic_pointer_cast<MeshAnimId>(id));
 		default: throw 0;
 		}
 	}
 
 	Ptr(ShaderProgram) ResourcePool::CreateShader(Ptr(ShaderInfo) id)
 	{
-		ShaderProgram* raw = new ShaderProgram(id);
-		Ptr(ShaderProgram) x(raw);
-		return x;
+		return Ptr(ShaderProgram)(new ShaderProgram(id));
 	}
 
 	Ptr(TextureSingle) ResourcePool::CreateTexture(Ptr(TextureId) id)
@@ -134,8 +132,7 @@ namespace Candy
 		else {
 			raw->Load(assets_dir_ + id->filename_);
 		}
-		Ptr(TextureSingle) x(raw);
-		return x;
+		return Ptr(TextureSingle)(raw);
 	}
 
 	Ptr(Ressource) ResourcePool::CreateMesh(Ptr(MeshId) id)
@@ -165,7 +162,7 @@ namespace Candy
 				}
 			}
 			Ptr(Ressource) mesh = Get(Ptr(MeshId)(new MeshId(id->mesh_type_, fn)));
-			ticks.push_back(Ptr(IDrawable)(mesh, boost::detail::dynamic_cast_tag()));
+			ticks.push_back(std::dynamic_pointer_cast<IDrawable>(mesh));
 		}
 		return Ptr(Animation)(new Animation(ticks));
 	}

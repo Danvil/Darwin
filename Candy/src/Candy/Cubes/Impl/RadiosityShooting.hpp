@@ -52,7 +52,7 @@ namespace Hexa
 //			Eigen::VectorXf B_r_, B_g_, B_b_;
 //			Eigen::VectorXf B_unshot_r_, B_unshot_g_, B_unshot_b_;
 			std::vector<Patch> patches_;
-		    Eigen::DynamicSparseMatrix<float,Eigen::RowMajor> ff_;
+		    Eigen::SparseMatrix<float,Eigen::RowMajor> ff_;
 			//FormFactorConnection<float> ff_;
 			float ambient_scl_r_, ambient_scl_g_, ambient_scl_b_;
 			float ambient_r_, ambient_g_, ambient_b_;

@@ -184,7 +184,7 @@ void Manager::onMouseMove(KeyboardModifiers mod, MouseButton buttons, int x, int
 		heldStart = p;
 	}
 	 // if mouse is over widget we ate the event
-	didAteEvent = w;
+	didAteEvent = (w != nullptr);
 }
 
 void Manager::onWheel(KeyboardModifiers mod, int delta) {

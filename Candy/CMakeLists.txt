@@ -60,11 +60,13 @@ include_directories(
 )
 
 target_link_libraries(Candy
+	boost_system
 	boost_program_options
 	IL
 	ILUT
 	ftgl
 	GLEW
+	GL
 	noise
 	boost_signals
 	boost_thread

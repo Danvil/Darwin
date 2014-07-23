@@ -18,7 +18,7 @@ void SphereRenderer::Render()
 	if(!mesh_) {
 		Ptr(Candy::MeshId) mesh_info(new Candy::MeshId(Candy::MeshPN, "sphere.obj"));
 		Ptr(Candy::Ressource) res = Candy::ResourcePool::Singleton->Get(mesh_info);
-		mesh_ = Ptr(Candy::PN::Mesh)(res, boost::detail::dynamic_cast_tag());
+		mesh_ = std::dynamic_pointer_cast<Candy::PN::Mesh>(res);
 	}
 	if(!shader_) {
 		shader_.reset(new Candy::ShaderX());

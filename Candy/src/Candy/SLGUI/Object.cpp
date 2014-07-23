@@ -30,9 +30,7 @@ bool Object::isWidget() const {
 }
 
 PTR(Widget) Object::toWidget() const {
-	return PTR(Widget)(
-			PTR(const Widget)(shared_from_this(), boost::detail::dynamic_cast_tag()),
-			boost::detail::const_cast_tag());
+	return std::const_pointer_cast<Widget>(std::dynamic_pointer_cast<const Widget>(shared_from_this()));
 }
 
 void Object::addWidget(const PTR(Widget)& w) {
