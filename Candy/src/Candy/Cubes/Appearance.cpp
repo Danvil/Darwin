@@ -67,8 +67,8 @@ void Appearance::Load(const std::string& asset_dir)
 //		delete[] data;
 	// create materials
 	cMaterials[CubeTypes::Concrete]		= new CubeMaterialProperties(1, BaseColorArray[1]);
-	cMaterials[CubeTypes::Stone]		= new CubeMaterialProperties(0/*2*/, BaseColorArray[2]);
-	cMaterials[CubeTypes::Dirt]			= new CubeMaterialProperties(0/*3*/, BaseColorArray[3]);
+	cMaterials[CubeTypes::Stone]		= new CubeMaterialProperties(2, BaseColorArray[2]);
+	cMaterials[CubeTypes::Dirt]			= new CubeMaterialProperties(3, BaseColorArray[3]);
 	cMaterials[CubeTypes::Danvil]		= new CubeMaterialProperties(4, BaseColorArray[4]);
 	cMaterials[CubeTypes::AlaMinecraft]	= new CubeMaterialProperties(5, BaseColorArray[5]);
 	for(int i=int(CubeTypes::PlainGreyBegin); i<int(CubeTypes::PlainGreyEnd); i++) {
