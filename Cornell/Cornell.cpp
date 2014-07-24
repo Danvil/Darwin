@@ -41,8 +41,7 @@ CornellMain::CornellMain(const std::string& asset_path)
 #else
 	const int R = 1;
 #endif
-//	Ptr(Generator) generator = Generators::FactorCornellBox(R);
-	Ptr(Generator) generator = Generators::FactorTerra();
+	Ptr(Generator) generator = Generators::FactorCornellBox(R);
 	WorldSize ws(R, -R, +R);
 
 	Candy::GenerationProperties gen_props;
