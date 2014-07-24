@@ -26,8 +26,8 @@ Background::Background(Ptr(Cubes) cubes, Ptr(CubesRenderling) osgman, Ptr(Ground
 	build_first_ = false;
 	_running = false;
 	gi_basic_.reset(new Hexa::Lighting::DirectLighting());
-//	gi_.reset(new Hexa::Lighting::MCRT());
-	gi_.reset(new Hexa::Lighting::RadiosityShooting());
+	gi_.reset(new Hexa::Lighting::MCRT());
+//	gi_.reset(new Hexa::Lighting::RadiosityShooting());
 }
 
 
