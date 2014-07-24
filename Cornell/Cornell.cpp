@@ -28,7 +28,7 @@ CornellMain::CornellMain(const std::string& asset_path)
 
 	Candy::ResourcePool::Initialize(asset_path_ + "/");
 
-	Appearance::Load(asset_path + "/");
+	Appearance::Initialize(asset_path + "/");
 
 	Eigen::Affine3f mv = LinAlg::LookAt(
 			Vec3f(0,-50,0),
@@ -41,7 +41,8 @@ CornellMain::CornellMain(const std::string& asset_path)
 #else
 	const int R = 1;
 #endif
-	Ptr(Generator) generator = Generators::FactorCornellBox(R);
+//	Ptr(Generator) generator = Generators::FactorCornellBox(R);
+	Ptr(Generator) generator = Generators::FactorTerra();
 	WorldSize ws(R, -R, +R);
 
 	Candy::GenerationProperties gen_props;
@@ -66,7 +67,7 @@ void CornellMain::Init()
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
-	glClearColor(Appearance::AmbientColor.x(), Appearance::AmbientColor.y(), Appearance::AmbientColor.z(), 1.0f);
+	glClearColor(Appearance::singleton->AmbientColor().x(), Appearance::singleton->AmbientColor().y(), Appearance::singleton->AmbientColor().z(), 1.0f);
 }
 
 void CornellMain::Reshape(int width, int height)

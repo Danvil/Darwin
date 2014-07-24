@@ -60,7 +60,7 @@ void EntityRenderGroup::InitializeShader()
 	}
 	// position of sun in the sky
 	u_sun_position_ = new Candy::Uniform3f("uSunPosition");
-	u_sun_position_->Change(Appearance::SunPosition);
+	u_sun_position_->Change(Appearance::singleton->SunPosition());
 	shader_->AddUniformStart(u_sun_position_);
 	// creep color multiplied with ambient color multiplied with ambient strength
 	u_object_light_ambient_ = new Candy::Uniform4f("uObjectLightAmbient");
@@ -98,11 +98,11 @@ bool EntityRenderGroup::PrepareItem(size_t i, const Ptr(Candy::ShaderX)& shader)
 //	Vec3f color = Vec3f(1,1,1);
 //	// ambient light
 //	//const Vec3f cAmbientColor(0.3f, 0.3f, 0.35f);
-//	Vec3f object_light_ambient = (a.dyn().light_ambient_ * color).array() * Appearance::AmbientColor.array();
+//	Vec3f object_light_ambient = (a.dyn().light_ambient_ * color).array() * Appearance::singleton->AmbientColor().array();
 //	u_object_light_ambient_->Change(object_light_ambient(0), object_light_ambient(1), object_light_ambient(2), 1.0f);
 	u_object_light_ambient_->Change(c->getLightAmbient(), 1.0f);
 //	// sun light
-//	Vec3f object_light_sun = (a.dyn().light_sun_ * color).array() * Appearance::SunColor.array();
+//	Vec3f object_light_sun = (a.dyn().light_sun_ * color).array() * Appearance::singleton->SunColor().array();
 //	u_object_light_sun_->Change(object_light_sun(0), object_light_sun(1), object_light_sun(2), 1.0f);
 	u_object_light_sun_->Change(c->getLightSun(), 1.0f);
 //	// animation parameter for animated meshes

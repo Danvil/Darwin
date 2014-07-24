@@ -90,7 +90,7 @@ TangerinMain::TangerinMain(const std::string& asset_path)
 
 	Candy::ResourcePool::Initialize(asset_path_ + "/");
 
-	Appearance::Load(asset_path + "/");
+	Appearance::Initialize(asset_path + "/");
 
 	Eigen::Affine3f mv = LinAlg::LookAt(
 			Vec3f(17,33,29),
@@ -151,7 +151,7 @@ void TangerinMain::Init()
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
-	glClearColor(Appearance::AmbientColor.x(), Appearance::AmbientColor.y(), Appearance::AmbientColor.z(), 1.0f);
+	glClearColor(Appearance::singleton->AmbientColor().x(), Appearance::singleton->AmbientColor().y(), Appearance::singleton->AmbientColor().z(), 1.0f);
 
 //	man_->UpdateMeshAll();
 }

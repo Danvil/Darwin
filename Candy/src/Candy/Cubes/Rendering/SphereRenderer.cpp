@@ -36,15 +36,15 @@ void SphereRenderer::Render()
 		Candy::IDrawable::sCamera->AddCameraShaders(shader_);
 
 		Candy::Uniform4f* ambient = new Candy::Uniform4f("uAmbientColor");
-		ambient->Change(Appearance::AmbientColor, 1.0f);
+		ambient->Change(Appearance::singleton->AmbientColor(), 1.0f);
 		shader_->AddUniformStart(ambient);
 
 		Candy::Uniform4f* sun_color = new Candy::Uniform4f("uSunColor");
-		sun_color->Change(Appearance::SunColor, 1.0f);
+		sun_color->Change(Appearance::singleton->SunColor(), 1.0f);
 		shader_->AddUniformStart(sun_color);
 
 		Candy::Uniform3f* sun_dir = new Candy::Uniform3f("uSunDirection");
-		sun_dir->Change(Appearance::SunPosition);
+		sun_dir->Change(Appearance::singleton->SunPosition());
 		shader_->AddUniformStart(sun_dir);
 
 		u_color_ = new Candy::Uniform4f("uColor");

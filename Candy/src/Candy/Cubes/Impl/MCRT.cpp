@@ -34,7 +34,7 @@ namespace Lighting
 			}
 		} else {
 			// uniform ambient background light with slight highlight towards the sun
-			float q = u.dot(Appearance::SunPosition) / u.norm();
+			float q = u.dot(Appearance::singleton->SunPosition()) / u.norm();
 			float u = (q > 0.8f ? std::pow(q, 20) : 0.0f);
 			light.ambient += 0.9f + 0.1f * u;
 		}
@@ -43,7 +43,7 @@ namespace Lighting
 	inline void AddRayLightingSun(const Ptr(Cubes)& cubes, const CoordI& cw, const Vec3f& pos, int sideIndex, CubeSideLightData& light) {
 		// emit random ray from side towards sun
 		Vec3f a = pos + RandomCubeSidePoint(cw, sideIndex);
-		Vec3f u = Appearance::SunPosition;//(1000.0f * Appearance::SunPosition - a).normalized();
+		Vec3f u = Appearance::singleton->SunPosition();//(1000.0f * Appearance::singleton->SunPosition() - a).normalized();
 		// intersect ray with other cubes
 		Ci c;
 		float distance;
@@ -68,7 +68,6 @@ namespace Lighting
 			Vec3f pos = it.positionCenter();
 			CubeSideData* data = it.data();
 			unsigned int sideIndex = it.side();
-			//const Vec3f& emit_color = Appearance::CubeEmitColor(type);
 			// accumulate lighting
 			CubeSideLightData lighting;
 			for(unsigned int i=0; i<new_samples; i++) {

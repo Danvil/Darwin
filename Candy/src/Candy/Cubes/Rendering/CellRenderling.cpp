@@ -71,10 +71,10 @@ namespace CandyCubes
 				shader_->AddTexture("uTexture", Candy::ResourcePool::Singleton->Get(ti));
 
 				Candy::Uniform4f* ambient = new Candy::Uniform4f("uAmbientColor");
-				ambient->Change(Appearance::AmbientColor, 1.0f);
+				ambient->Change(Appearance::singleton->AmbientColor(), 1.0f);
 				shader_->AddUniformStart(ambient);
 				Candy::Uniform4f* sun = new Candy::Uniform4f("uSunColor");
-				sun->Change(Appearance::SunColor, 1.0f);
+				sun->Change(Appearance::singleton->SunColor(), 1.0f);
 				shader_->AddUniformStart(sun);
 			}
 			shader_->Apply();

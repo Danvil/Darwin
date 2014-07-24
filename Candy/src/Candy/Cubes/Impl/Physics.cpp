@@ -71,7 +71,7 @@ void PhysicsWorld::CreateBlock(CubeType type, const Vec3f& position)
 	Candy::Cubes::Rendering::SphereRenderer::Sphere sphere;
 	sphere.position = position;
 	sphere.radius = 0.62f;
-	sphere.color = Appearance::GetCubeMaterialProperties(type)->color_;
+	sphere.color = Appearance::singleton->GetCubeMaterialProperties(type)->color_;
 	size_t rid = sphere_renderer_->Add(sphere);
 	// random velocity
 	Vec3f rnd_vel = Random::UniformRandomInSphere(0.1f);

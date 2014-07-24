@@ -39,7 +39,7 @@ namespace Lighting
 
 	float ComputeSunLightSimple(Cubes* cubes, const CoordI& cw, int sideIndex) {
 		Vec3f n = Properties::SideNormal(cw, sideIndex);
-		return n.dot(Appearance::SunPosition);
+		return n.dot(Appearance::singleton->SunPosition());
 	}
 
 	float ComputeSunLightRandomSamples(Cubes* cubes, const CoordI& cw, int sideIndex)
@@ -49,7 +49,7 @@ namespace Lighting
 		Vec3f pos = Properties::WorldToPositionCenter(cw);
 		Vec3f n = Properties::SideNormal(cw, sideIndex);
 //		// center
-//		float w_center = ComputeSampleLight(cubes, pos, Appearance::SunPosition, n);
+//		float w_center = ComputeSampleLight(cubes, pos, Appearance::singleton->SunPosition(), n);
 //		if(cSamples == 1) {
 //			return w_center;
 //		}
@@ -59,7 +59,7 @@ namespace Lighting
 		for(unsigned int s=1; s<cSamples; s++) {
 			// cast ray from random position on cube side
 			Vec3f a = pos + RandomCubeSidePoint(cw, sideIndex);
-			w_soft += ComputeSampleLight(cubes, a, Appearance::SunPosition, n);
+			w_soft += ComputeSampleLight(cubes, a, Appearance::singleton->SunPosition(), n);
 		}
 //		return cCenterWeight * w_center + (1.0f - cCenterWeight) * w_soft / float(cSamples - 1);
 		return w_soft / float(cSamples);
@@ -75,7 +75,7 @@ namespace Lighting
 		for(unsigned int s=0; s<PatternCubeSidePointCount; s++) {
 			// cast ray from random position on cube side
 			Vec3f a = pos + PatternCubeSidePoint(cw, sideIndex, s);
-			sum += ComputeSampleLight(cubes, a, Appearance::SunPosition, n);
+			sum += ComputeSampleLight(cubes, a, Appearance::singleton->SunPosition(), n);
 		}
 		return sum / float(PatternCubeSidePointCount);
 	}
